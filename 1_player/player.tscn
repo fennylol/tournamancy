@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://dv7m42e1emxrj"]
+
+[ext_resource type="Script" uid="uid://btixegg8i4faq" path="res://1_player/player.gd" id="1_8s5v1"]
+[ext_resource type="Texture2D" uid="uid://ddq437x4g5mpf" path="res://1_player/Lhand.png" id="2_qeeko"]
+[ext_resource type="Texture2D" uid="uid://b6hyot8ua25dv" path="res://1_player/Rhand.png" id="3_lbqfs"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_25okf"]
+radius = 0.375
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_8s5v1"]
+radius = 0.375
+
+[node name="Player" type="CharacterBody3D" unique_id=1131720607]
+script = ExtResource("1_8s5v1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1427003306]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_25okf")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=563248551]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_8s5v1")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1504992795]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="RayCast3D" type="RayCast3D" parent="Camera3D" unique_id=314699103]
+target_position = Vector3(0, 0, -2.5)
+
+[node name="Lhand" type="Sprite3D" parent="Camera3D" unique_id=1657256075]
+transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, -1.505, -0.5, -1.25)
+pixel_size = 0.001
+texture = ExtResource("2_qeeko")
+
+[node name="Rhand" type="Sprite3D" parent="Camera3D" unique_id=1345139767]
+transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 1.5, -0.5, -1.25)
+pixel_size = 0.001
+texture = ExtResource("3_lbqfs")
