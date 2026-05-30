@@ -1,0 +1,33 @@
+[gd_resource type="ArrayMesh" format=4 uid="uid://baybrko56v5ln"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ttiif"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_e47t2"]
+_surfaces = [{
+"aabb": AABB(-0.25, -0.5, -0.25, 0.5, 1, 0.5),
+"format": 34896613377,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAACAAEAAwAEAAEABQAAAAIAAwAAAAUABAAGAAIABQACAAYAAwAHAAQAAwAFAAcABwAGAAQABwAFAAYA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAP//AAAAAP//AAAAAAAA/7///wAAAAAAAAAAAAD/////AAAAAP//AAD//wAA////v///AAD//wAAAAAAAA==")
+}]
+blend_shape_mode = 0
+
+[resource]
+resource_name = "pillar_Cube_001"
+_surfaces = [{
+"aabb": AABB(-0.25, -0.5, -0.25, 0.5, 1, 0.5),
+"attribute_data": PackedByteArray("/1////+f/7//n////1//v/9f/7//n/9//5//v/9f/3//X/9//5//P/+f/3//X/8//1//P/+fAAD/n/8//18AAP8f/3//X/8//1//f/8f/z//n/9//9//P//f/3//n/8/"),
+"format": 34896613399,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUA"),
+"material": SubResource("StandardMaterial3D_ttiif"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAP//VNUAAP//AABU1QAA/7///1TVAAAAAAAAVNUAAAAAAAD///////8AAP//AAD//wAA/////wAAAAD/////AAAAAFTV////v///VNX/////AABU1f//AAD//1TV//8AAP///78AAP+/////v////7////+/AAAAAP///78AAAAAAAD/v///AAD///+///8AAAAA/78AAAAA////v/////8AAP//AAD/v/////8AAP//AAD//////7//////VNVU1VTVVNVU1VTVVNVU1f+//7//v/+//7//v/+//7+qKqoqqiqqKqoqqiqqKqoq/////////////////////wAA/38AAP9/AAD/fwAA/3//f+Ow/3/jsP9/47D/f+Ow")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_e47t2")

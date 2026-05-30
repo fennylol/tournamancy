@@ -1,7 +1,10 @@
 extends CharacterBody3D
+class_name Player
 
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
+const GRAVITY = 9.8
+var mouse_captured = false
 
 @onready var camera  := $Camera3D
 @onready var lookdir := $Camera3D/RayCast3D
@@ -13,8 +16,7 @@ const LpointIMG: Texture2D = preload("res://1_player/Lpoint.png")
 const RhandIMG : Texture2D = preload("res://1_player/Rhand.png")
 const RpointIMG: Texture2D = preload("res://1_player/Rpoint.png")
 
-var mouse_captured = false
-var gravity = 9.8
+@export var sensitivity = 0.5
 
 
 # ╭----------------╮
@@ -43,8 +45,8 @@ func _ready():
 # mouse
 func _unhandled_input(event):
    if event is InputEventMouseMotion and mouse_captured:
-      rotate_y(-event.relative.x * .005)
-      camera.rotate_x(-event.relative.y * .005)
+      rotate_y(-event.relative.x * .005 * sensitivity)
+      camera.rotate_x(-event.relative.y * .005 * sensitivity)
       camera.rotation.x = clamp(camera.rotation.x, -PI/2, PI/2)
 
 # mouse capture
@@ -56,20 +58,20 @@ func _process(_delta):
       else:Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
    
    if mouse_captured:
-      if Input.is_action_pressed("use_left"):
+      if Input.is_action_just_pressed("use_left"):
          lhand.texture = LpointIMG
-      else:
+      elif Input.is_action_just_released("use_left"):
          lhand.texture = LhandIMG
       
-      if Input.is_action_pressed("use_right"):
+      if Input.is_action_just_pressed("use_right"):
          rhand.texture = RpointIMG
-      else:
+      elif Input.is_action_just_released("use_right"):
          rhand.texture = RhandIMG
 
 # movement
 func _physics_process(delta):
    if !mouse_captured: return
-   if not is_on_floor(): velocity.y -= gravity * delta
+   if not is_on_floor(): velocity.y -= GRAVITY * delta
    
    if Input.is_action_just_pressed("jump") and is_on_floor(): velocity.y = JUMP_VELOCITY
    
@@ -81,5 +83,12 @@ func _physics_process(delta):
    else:
       velocity.x = move_toward(velocity.x, 0, SPEED)
       velocity.z = move_toward(velocity.z, 0, SPEED)
+
+   if Input.is_action_pressed("use_left") or Input.is_action_pressed("use_right"):
+      if lookdir.is_colliding():
+         var hit = lookdir.get_collider()
+         if hit is Interactable:
+            hit._on_interact(self)
+
 
    move_and_slide()

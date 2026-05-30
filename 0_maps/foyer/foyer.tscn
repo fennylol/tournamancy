@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://dijyime6b78x1"]
 
 [ext_resource type="PackedScene" uid="uid://dv7m42e1emxrj" path="res://1_player/player.tscn" id="1_ttyqa"]
+[ext_resource type="PackedScene" uid="uid://c5ar3hknkofok" path="res://_RAWS/pillar.glb" id="2_xvh3c"]
+[ext_resource type="PackedScene" uid="uid://cnv7fvmjwgyvs" path="res://0_maps/assets/interactables/basic_button/basic_button.tscn" id="3_2vu8a"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ttyqa"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -21,7 +23,7 @@ size = Vector3(20, 1, 20)
 [sub_resource type="BoxMesh" id="BoxMesh_ttyqa"]
 size = Vector3(20, 1, 20)
 
-[node name="foyer" type="Node3D" unique_id=55400169]
+[node name="Foyer" type="Node3D" unique_id=55400169]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1571649318]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
@@ -30,14 +32,36 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1762737499]
 environment = SubResource("Environment_2vu8a")
 
-[node name="RigidBody3D" type="StaticBody3D" parent="." unique_id=728224889]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D" unique_id=1955162416]
-shape = SubResource("BoxShape3D_jhjmb")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D" unique_id=1856813969]
-mesh = SubResource("BoxMesh_ttyqa")
-
 [node name="Player" parent="." unique_id=1131720607 instance=ExtResource("1_ttyqa")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07335091, 0, 0.028328657)
+
+[node name="floor" type="StaticBody3D" parent="." unique_id=728224889]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="floor" unique_id=1955162416]
+shape = SubResource("BoxShape3D_jhjmb")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="floor" unique_id=1856813969]
+mesh = SubResource("BoxMesh_ttyqa")
+
+[node name="pillar" parent="." unique_id=822652854 instance=ExtResource("2_xvh3c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -9)
+
+[node name="BasicButton" parent="pillar" unique_id=274360327 instance=ExtResource("3_2vu8a")]
+transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.4226183, 0, 0.4226183, 0.90630776, 0, 0.9, 0)
+collision_mask = 2
+button_color = Color(1, 0.5037639, 0.7404184, 1)
+
+[node name="pillar2" parent="." unique_id=1238312467 instance=ExtResource("2_xvh3c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9)
+
+[node name="BasicButton" parent="pillar2" unique_id=1299028761 instance=ExtResource("3_2vu8a")]
+transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.4226183, 0, 0.4226183, 0.90630776, 0, 0.9, 0)
+button_color = Color(0.3917119, 0.98457927, 0.4897933, 1)
+
+[node name="pillar3" parent="." unique_id=918547285 instance=ExtResource("2_xvh3c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -9)
+
+[node name="BasicButton" parent="pillar3" unique_id=1082360992 instance=ExtResource("3_2vu8a")]
+transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261827, 0, 0.42261827, 0.90630776, 0, 0.9, 0)
+button_color = Color(0.6843957, 0.61363095, 0.87788737, 1)
