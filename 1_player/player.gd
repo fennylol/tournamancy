@@ -6,17 +6,23 @@ const JUMP_VELOCITY = 4.5
 const GRAVITY = 9.8
 var mouse_captured = false
 
-@onready var camera  := $Camera3D
-@onready var lookdir := $Camera3D/RayCast3D
-@onready var lhand   := $Camera3D/Lhand
-@onready var rhand   := $Camera3D/Rhand
+@onready var Camera  := $Camera3D
+@onready var LookDir := $Camera3D/RayCast3D
+@onready var Lhand   := $Camera3D/Lhand
+@onready var Rhand   := $Camera3D/Rhand
 
-const LhandIMG : Texture2D = preload("res://1_player/Lhand.png")
-const LpointIMG: Texture2D = preload("res://1_player/Lpoint.png")
-const RhandIMG : Texture2D = preload("res://1_player/Rhand.png")
-const RpointIMG: Texture2D = preload("res://1_player/Rpoint.png")
+const LhandIMG : Texture2D = preload("res://4_ui/hud/Lhand.png")
+const LpointIMG: Texture2D = preload("res://4_ui/hud/Lpoint.png")
+const RhandIMG : Texture2D = preload("res://4_ui/hud/Rhand.png")
+const RpointIMG: Texture2D = preload("res://4_ui/hud/Rpoint.png")
 
-@export var sensitivity = 0.5
+@export var Sensitivity = 0.5
+
+var PerFrameStatModifiers: Dictionary = {}
+var PassiveAbilities: Array[PassiveAbility] = []
+var ActiveSlot1: ActiveAbility = null
+var ActiveSlot2: ActiveAbility = null
+
 
 
 # ╭----------------╮
@@ -45,34 +51,52 @@ func _ready():
 # mouse
 func _unhandled_input(event):
    if event is InputEventMouseMotion and mouse_captured:
-      rotate_y(-event.relative.x * .005 * sensitivity)
-      camera.rotate_x(-event.relative.y * .005 * sensitivity)
-      camera.rotation.x = clamp(camera.rotation.x, -PI/2, PI/2)
+      rotate_y(-event.relative.x * .005 * Sensitivity)
+      Camera.rotate_x(-event.relative.y * .005 * Sensitivity)
+      Camera.rotation.x = clamp(Camera.rotation.x, -PI/2, PI/2)
 
-# mouse capture
 func _process(_delta):
+   # start of _process() passives and stat contributions
+   PerFrameStatModifiers = {}
+   for ability:PassiveAbility in PassiveAbilities:
+      ability._on_process_begin(self)
+      var stat_mods := ability._get_stat_contributions()
+      for stat in stat_mods.keys(): 
+         if stat_mods[stat] is int or stat_mods[stat] is float:
+            PerFrameStatModifiers[stat] += stat_mods[stat]
+   
+   
+   # mouse capture
    if Input.is_action_just_pressed("capture_mouse") or \
    Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not mouse_captured:
       mouse_captured = !mouse_captured
       if mouse_captured:Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
       else:Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-   
-   if mouse_captured:
-      if Input.is_action_just_pressed("use_left"):
-         lhand.texture = LpointIMG
-      elif Input.is_action_just_released("use_left"):
-         lhand.texture = LhandIMG
-      
-      if Input.is_action_just_pressed("use_right"):
-         rhand.texture = RpointIMG
-      elif Input.is_action_just_released("use_right"):
-         rhand.texture = RhandIMG
 
-# movement
+   # change hand textures
+   if mouse_captured:
+      if Input.is_action_just_pressed("use_left"): 
+         if ActiveSlot1:
+            ActiveSlot1._on_activate(self)
+         Lhand.texture = LpointIMG
+      elif Input.is_action_just_released("use_left") : 
+         Lhand.texture = LhandIMG
+      
+      if Input.is_action_just_pressed("use_right"): 
+         if ActiveSlot2:
+            ActiveSlot2._on_activate(self)
+         Rhand.texture = RpointIMG
+      elif Input.is_action_just_released("use_right"): 
+         Rhand.texture = RhandIMG
+   
+   
+   # end of _process() passives
+   for ability:PassiveAbility in PassiveAbilities: ability._on_process_end(self)
+
 func _physics_process(delta):
    if !mouse_captured: return
+   # movement
    if not is_on_floor(): velocity.y -= GRAVITY * delta
-   
    if Input.is_action_just_pressed("jump") and is_on_floor(): velocity.y = JUMP_VELOCITY
    
    var input_dir = Input.get_vector("left", "right", "up", "down")
@@ -84,11 +108,11 @@ func _physics_process(delta):
       velocity.x = move_toward(velocity.x, 0, SPEED)
       velocity.z = move_toward(velocity.z, 0, SPEED)
 
+   # use interactables
    if Input.is_action_pressed("use_left") or Input.is_action_pressed("use_right"):
-      if lookdir.is_colliding():
-         var hit = lookdir.get_collider()
+      if LookDir.is_colliding():
+         var hit = LookDir.get_collider()
          if hit is Interactable:
             hit._on_interact(self)
-
 
    move_and_slide()

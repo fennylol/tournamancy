@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://rsxo7i1bx2pe"
-path.s3tc="res://.godot/imported/Lpoint.png-acb2788e0bbe7315a440ec60d1f4793b.s3tc.ctex"
+path.s3tc="res://.godot/imported/Lpoint.png-ab31ab1759b5814ddf9f6b88da173307.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://1_player/Lpoint.png"
-dest_files=["res://.godot/imported/Lpoint.png-acb2788e0bbe7315a440ec60d1f4793b.s3tc.ctex"]
+source_file="res://4_ui/hud/Lpoint.png"
+dest_files=["res://.godot/imported/Lpoint.png-ab31ab1759b5814ddf9f6b88da173307.s3tc.ctex"]
 
 [params]
 
