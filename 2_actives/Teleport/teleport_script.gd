@@ -1,6 +1,12 @@
-extends ActiveAbility
+class_name TeleportSpell
+extends ActiveSpell
 
 var Distance: float = 5.0
 
+# set true cooldown
+func _init() -> void: Cooldown = 5.0
+
 func _on_activate(activator: Player) -> void:
-   activator.position.z -= Distance
+   if _can_activate(activator.SpellBook.get_stat(SpellData.StatTypes.COOLDOWN)):
+      TimeSinceActivation = 0.0
+      activator.translate(Vector3(0, 0, -Distance))

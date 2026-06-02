@@ -6,8 +6,7 @@ class_name BasicButton
     set(value):
         button_color = value
         if button_mesh:
-            if not button_mesh.material_override:
-               button_mesh.material_override = StandardMaterial3D.new()
+            button_mesh.material_override = StandardMaterial3D.new()
             button_mesh.material_override.albedo_color = button_color
 @onready var button_mesh: MeshInstance3D = $CollisionShape3D/MeshInstance3D
 
@@ -16,8 +15,7 @@ var press_time: float = 0.0
 
 func _ready() -> void:
    if button_mesh:
-      if not button_mesh.material_override:
-         button_mesh.material_override = StandardMaterial3D.new()
+      button_mesh.material_override = StandardMaterial3D.new()
       button_mesh.material_override.albedo_color = button_color
 
 func _process(delta: float) -> void:
