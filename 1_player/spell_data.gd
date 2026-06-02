@@ -32,7 +32,6 @@ enum StatTypes {
    MELEE_COOLDOWN    # 22 Melee cooldown
 }
    
-
 enum SpellFields {Name, IconPath, ScriptPath} # may at some point break this into PassiveSpellFields and ActiveSpellFields
 
 enum ActiveSpellIDs {Teleport, Fireball}
@@ -52,10 +51,19 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconPath : "res://3_passives/SpeedUp/speed_up_icon.png",
       SpellFields.ScriptPath : "res://3_passives/SpeedUp/speed_up_script.gd"
    },
-   
+
 }
 
-static func get_active_spell_data(id: ActiveSpellIDs) -> Dictionary: return ActiveSpells[id]
-static func is_valid_active_spell(data: Dictionary) -> bool: return true
-static func get_passive_spell_data(id: PassiveSpellIDs) -> Dictionary: return PassiveSpells[id]
-static func is_valid_passive_spell(data: Dictionary) -> bool: return true
+static func get_active_spell_data(id: ActiveSpellIDs) -> Dictionary: 
+   if ActiveSpells.keys().has(id): return ActiveSpells[id]
+   else: return {}
+
+static func is_valid_active_spell(_data: Dictionary) -> bool: 
+   return true # TODO: actually check lmao
+   
+static func get_passive_spell_data(id: PassiveSpellIDs) -> Dictionary: 
+   if PassiveSpells.keys().has(id): return PassiveSpells[id]
+   else: return {}
+
+static func is_valid_passive_spell(_data: Dictionary) -> bool:
+   return true # TODO: actually check lmao

@@ -59,16 +59,18 @@ func _process(delta):
    
 func _physics_process(delta):
    if !mouse_captured: return
+   var stat_influenced_speed   = SPEED         * SpellBook.get_stat(SpellData.StatTypes.SPEED)
+   var stat_influenced_gravity = GRAVITY       * SpellBook.get_stat(SpellData.StatTypes.GRAVITY)
+   var stat_influenced_jump    = JUMP_VELOCITY * SpellBook.get_stat(SpellData.StatTypes.JUMP)
    
    # vertical movement
-   if not is_on_floor(): velocity.y -= GRAVITY * delta
-   if Input.is_action_just_pressed("jump") and is_on_floor(): velocity.y = JUMP_VELOCITY
+   if not is_on_floor(): velocity.y -= stat_influenced_gravity * delta
+   if Input.is_action_just_pressed("jump") and is_on_floor(): velocity.y = stat_influenced_jump
    
    # horizontal movement
    var input_dir = Input.get_vector("left", "right", "up", "down")
    var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
    
-   var stat_influenced_speed = SPEED * SpellBook.get_stat(SpellData.StatTypes.SPEED)
    if direction:
       velocity.x = direction.x * stat_influenced_speed
       velocity.z = direction.z * stat_influenced_speed
