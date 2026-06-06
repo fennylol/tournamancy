@@ -37,7 +37,6 @@ func _recieve_message(Msg: String, Type: PingusPrime.SignalTypes) -> void:
       
 
 func _recieve_data(data: PackedByteArray) -> void:
-   print("recieved: ", data)
    OpponentCharacter.position.x = data.decode_float(0)
    OpponentCharacter.position.y = data.decode_float(4)
    OpponentCharacter.position.z = data.decode_float(8)

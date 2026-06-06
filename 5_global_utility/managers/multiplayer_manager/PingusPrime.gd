@@ -113,28 +113,34 @@ func _process(delta: float) -> void:
             var pkt_type: PingusTypes = pkt.decode_u32(0) as PingusTypes
             if pkt_type != PingusTypes.SPRAY and pkt_type != PingusTypes.INFORM: message_recieved.emit("ERROR: Encountered incorrect packet type while informing.", SignalTypes.CONTROL); return
             if pkt_type == PingusTypes.INFORM:
-               ExternPort = pkt.decode_u16(0)
+               ExternPort = pkt.decode_u16(TYPE_SIZE)
                message_recieved.emit("PingusPrime: Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort), SignalTypes.CONTROL)
                PingusState = PingusStates.CONNECTED
       # CONNECTED: both the PingusPrime and the target are aware of each other.
       # continually send pings to keep the connection alive.
       PingusStates.CONNECTED:
-         if Udp.get_available_packet_count() > 0:
-            var pkt := Udp.get_packet()
-            if pkt.size() < TYPE_SIZE: message_recieved.emit("ERROR: Encountered undersized packet while connected.", SignalTypes.CONTROL); return
-            if not Udp.get_packet_ip() == TargetAddr or not Udp.get_packet_port() == TargetPort: message_recieved.emit("ERROR: Encountered packet from unidentified source while connected.", SignalTypes.CONTROL); return
-            
-            var pkt_type: PingusTypes = pkt.decode_u32(0) as PingusTypes
-            if   pkt_type == PingusTypes.INFORM   : message_recieved.emit("Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort), SignalTypes.CONTROL)
-            elif pkt_type == PingusTypes.KEEPALIVE: message_recieved.emit(TargetAddr + ":" + str(TargetPort) + " is keeping connection to local port " + str(ExternPort) + " alive", SignalTypes.CONTROL)
-            elif pkt_type == PingusTypes.STRING   : message_recieved.emit(pkt.slice(TYPE_SIZE).get_string_from_utf8(), SignalTypes.DATA); PingusTimer = 0.0
-            elif pkt_type == PingusTypes.DATA     : data_recieved.emit(pkt.slice(TYPE_SIZE)); PingusTimer = 0.0
-            else: message_recieved.emit("ERROR: Encountered incorrect packet type while connected.", SignalTypes.CONTROL); return
-         
          PingusTimer += delta
          if PingusTimer >= KEEP_ALIVE_TIME:
             PingusTimer -= KEEP_ALIVE_TIME
             timed_pingus()
+         
+         while Udp.get_available_packet_count() > 0:
+            var pkt := Udp.get_packet()
+            if pkt.size() < TYPE_SIZE:
+               message_recieved.emit("ERROR: undersized packet while connected.", SignalTypes.CONTROL)
+               continue
+            if Udp.get_packet_ip() != TargetAddr or Udp.get_packet_port() != TargetPort:
+               message_recieved.emit("ERROR: packet from unidentified source.", SignalTypes.CONTROL)
+               continue
+
+            var pkt_type: PingusTypes = pkt.decode_u32(0) as PingusTypes
+            match pkt_type:
+               PingusTypes.INFORM:    message_recieved.emit("Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort), SignalTypes.CONTROL)
+               PingusTypes.KEEPALIVE: message_recieved.emit(TargetAddr + ":" + str(TargetPort) + " is keeping connection to local port " + str(ExternPort) + " alive", SignalTypes.CONTROL)
+               PingusTypes.STRING:    message_recieved.emit(pkt.slice(TYPE_SIZE).get_string_from_utf8(), SignalTypes.DATA); PingusTimer = 0.0
+               PingusTypes.DATA:      data_recieved.emit(pkt.slice(TYPE_SIZE)); PingusTimer = 0.0
+               _:                     message_recieved.emit("ERROR: incorrect packet type while connected.", SignalTypes.CONTROL)
+
 # ============== #
 # packet sending #
 # ============== #
