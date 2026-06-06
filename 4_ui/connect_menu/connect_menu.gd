@@ -12,7 +12,9 @@ class_name ConnectMenu
 signal connect_button_pressed(Address: String)
 
 func _ready() -> void:
-   _set_lan_label(IP.get_local_addresses()[3])
+   for address in IP.get_local_addresses():
+      if address.begins_with("192.168"):
+         _set_lan_label(address)
    CONNECT_BUTTON.pressed.connect(_on_connect_button_pressed)
 
 func _on_connect_button_pressed() -> void:
