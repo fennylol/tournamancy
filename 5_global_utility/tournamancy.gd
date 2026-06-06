@@ -5,6 +5,13 @@ extends Node3D
 @onready var ConnectionMenu : ConnectMenu = $ConnectMenu
 var MultiPlayerCoupler := PingusPrime.new()
 
+var _net_pos := Vector3.ZERO
+var _net_rot := Vector3.ZERO
+var _net_vel := Vector3.ZERO
+var _has_net_state := false
+var _time_since_packet := 0.0
+const EXTRAPOLATION_LIMIT := 0.5  # seconds
+
 func _ready() -> void:
    InputManager.init_inputs()
    
@@ -23,13 +30,24 @@ func _ready() -> void:
    MultiPlayerCoupler.set_name("mpc")
    add_child(MultiPlayerCoupler)
 
-func _process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
    if MultiPlayerCoupler.PingusState == PingusPrime.PingusStates.CONNECTED:
       _send_data()
 
+   if not _has_net_state: return
+
+   _time_since_packet += delta
+   if _time_since_packet < EXTRAPOLATION_LIMIT:
+      _net_pos += _net_vel * delta   # only extrapolate while data is fresh
+
+   var t := 1.0 - exp(-20.0 * delta)
+   OpponentCharacter.position = OpponentCharacter.position.lerp(_net_pos, t)
+   OpponentCharacter.quaternion = OpponentCharacter.quaternion.slerp(Quaternion.from_euler(_net_rot), t)
+   OpponentCharacter.velocity = _net_vel
+
 func _recieve_message(Msg: String, Type: PingusPrime.SignalTypes) -> void:
-   #print(Msg)
    if Type == PingusPrime.SignalTypes.CONTROL:
+      print(Msg)
       ConnectionMenu.STATUS_LABEL.text = Msg
    if MultiPlayerCoupler.PingusState == PingusPrime.PingusStates.CONNECTED:
       ConnectionMenu.visible = false
@@ -37,15 +55,11 @@ func _recieve_message(Msg: String, Type: PingusPrime.SignalTypes) -> void:
       
 
 func _recieve_data(data: PackedByteArray) -> void:
-   OpponentCharacter.position.x = data.decode_float(0)
-   OpponentCharacter.position.y = data.decode_float(4)
-   OpponentCharacter.position.z = data.decode_float(8)
-   OpponentCharacter.rotation.x = data.decode_float(12)
-   OpponentCharacter.rotation.y = data.decode_float(16)
-   OpponentCharacter.rotation.z = data.decode_float(20)
-   OpponentCharacter.velocity.x = data.decode_float(24)
-   OpponentCharacter.velocity.y = data.decode_float(28)
-   OpponentCharacter.velocity.z = data.decode_float(32)
+   _net_pos = Vector3(data.decode_float(0),  data.decode_float(4),  data.decode_float(8))
+   _net_rot = Vector3(data.decode_float(12), data.decode_float(16), data.decode_float(20))
+   _net_vel = Vector3(data.decode_float(24), data.decode_float(28), data.decode_float(32))
+   _has_net_state = true
+   _time_since_packet = 0.0
 
 func _send_data() -> void:
    var packed_data := PackedByteArray()

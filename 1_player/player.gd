@@ -102,7 +102,8 @@ func _unhandled_input(event):
 # simple movement #
 # =============== #
 func _simple_physics_process(delta):
-   if !mouse_captured: return
+   if not mouse_captured: return
+   if not enabled: return
    var stat_influenced_speed   = SPEED         * SpellBook.get_stat(SpellData.StatTypes.SPEED)
    var stat_influenced_gravity = GRAVITY       * SpellBook.get_stat(SpellData.StatTypes.GRAVITY)
    var stat_influenced_jump    = JUMP_VELOCITY * SpellBook.get_stat(SpellData.StatTypes.JUMP)
