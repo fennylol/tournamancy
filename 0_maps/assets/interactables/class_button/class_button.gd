@@ -6,4 +6,5 @@ class_name ClassButton
 
 func _on_interact(interacter: Player) -> void:
    super._on_interact(interacter)
+   print("becoming ", ClassData.ClassIDs.find_key(ClassID))
    interacter.SpellBook.adopt_class(ClassID)

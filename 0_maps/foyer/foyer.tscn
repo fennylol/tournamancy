@@ -3,7 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://dv7m42e1emxrj" path="res://1_player/player.tscn" id="1_ttyqa"]
 [ext_resource type="Texture2D" uid="uid://nlhy3ogq5qc5" path="res://_RAWS/icon.png" id="2_df7h0"]
 [ext_resource type="PackedScene" uid="uid://c5ar3hknkofok" path="res://_RAWS/pillar.glb" id="2_xvh3c"]
-[ext_resource type="PackedScene" uid="uid://cnv7fvmjwgyvs" path="res://0_maps/assets/interactables/basic_button/basic_button.tscn" id="3_2vu8a"]
 [ext_resource type="PackedScene" uid="uid://dfo252iy5r2oq" path="res://0_maps/assets/interactables/class_button/class_button.tscn" id="3_sdsrs"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ttyqa"]
@@ -63,9 +62,10 @@ button_color = Color(0.62398005, 0.66371423, 0.99636203, 1)
 [node name="pillar2" parent="floor" unique_id=1238312467 instance=ExtResource("2_xvh3c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -2.5)
 
-[node name="BasicButton" parent="floor/pillar2" unique_id=1299028761 instance=ExtResource("3_2vu8a")]
-transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.4226183, 0, 0.4226183, 0.90630776, 0, 0.9, 0)
-button_color = Color(0.3917119, 0.98457927, 0.4897933, 1)
+[node name="ClassButton" parent="floor/pillar2" unique_id=49028904 instance=ExtResource("3_sdsrs")]
+transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
+ClassID = 3
+button_color = Color(0.5058824, 1, 0.53333336, 1)
 
 [node name="pillar3" parent="floor" unique_id=918547285 instance=ExtResource("2_xvh3c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.5, -2.5)

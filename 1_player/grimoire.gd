@@ -19,7 +19,7 @@ func process_begin(delta: float, player: Player) -> void:
    for spell:PassiveSpell in PassiveSpells:
       spell._on_process_begin(delta, player)
    for spell:ActiveSpell in ActiveSpells:
-      if spell: spell._add_time(delta)
+      if spell: spell._on_process_begin(delta)
 
 func process_end(delta: float, player: Player) -> void:
    for spell:PassiveSpell in PassiveSpells:

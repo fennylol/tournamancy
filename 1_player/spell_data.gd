@@ -44,14 +44,33 @@ const ActiveSpells: Dictionary = {
    
 }
 
-enum PassiveSpellIDs {SpeedUp, JumpUp, GravityUp}
+enum PassiveSpellIDs { Health,
+                       Damage,
+                       Speed, Jump, Gravity }
 const PassiveSpells: Dictionary = {
-   PassiveSpellIDs.SpeedUp : {
-      SpellFields.Name : "Speed Boost",
-      SpellFields.IconPath : "res://3_passives/SpeedUp/speed_up_icon.png",
-      SpellFields.ScriptPath : "res://3_passives/SpeedUp/speed_up_script.gd"
+   PassiveSpellIDs.Health : {
+      SpellFields.Name : "HealthSpell",
+      SpellFields.IconPath : "res://3_passives/Health/health_icon.png",
+      SpellFields.ScriptPath : "res://3_passives/Health/health_script.gd"
    },
 
+   PassiveSpellIDs.Damage : {
+      SpellFields.Name : "DamageSpell",
+      SpellFields.IconPath : "res://3_passives/Damage/damage_icon.png",
+      SpellFields.ScriptPath : "res://3_passives/Damage/damage_script.gd"
+   },  
+
+   PassiveSpellIDs.Speed : {
+      SpellFields.Name : "SpeedSpell",
+      SpellFields.IconPath : "res://3_passives/Speed/speed_icon.png",
+      SpellFields.ScriptPath : "res://3_passives/Speed/speed_script.gd"
+   },
+
+   PassiveSpellIDs.Gravity : {
+      SpellFields.Name : "GravitySpell",
+      SpellFields.IconPath : "res://3_passives/Gravity/gravity_icon.png",
+      SpellFields.ScriptPath : "res://3_passives/Gravity/gravity_script.gd"
+   }
 }
 
 static func get_active_spell_data(id: ActiveSpellIDs) -> Dictionary: 

@@ -57,7 +57,7 @@ func _process(delta):
    SpellBook.process_end(delta, self)
 
 func _physics_process(delta: float) -> void:
-   var use_source_physics: bool = true
+   var use_source_physics: bool = false
    
    if use_source_physics: _source_physics_process(delta)
    else: _simple_physics_process(delta)
