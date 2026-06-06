@@ -14,6 +14,7 @@ func _ready() -> void:
       for function in MultiPlayerCoupler.message_recieved.get_connections():
          MultiPlayerCoupler.message_recieved.disconnect(function["callable"])
       MultiPlayerCoupler.message_recieved.connect(_recieve_message)
+      MultiPlayerCoupler.data_recieved.connect(_recieve_data)
       ConnectionMenu._set_wan_label(MultiPlayerCoupler.ExternAddr)
    MultiPlayerCoupler.message_recieved.connect(handle_IP_singleton)
    
@@ -22,12 +23,12 @@ func _ready() -> void:
    MultiPlayerCoupler.set_name("mpc")
    add_child(MultiPlayerCoupler)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
    if MultiPlayerCoupler.PingusState == PingusPrime.PingusStates.CONNECTED:
       _send_data()
 
 func _recieve_message(Msg: String, Type: PingusPrime.SignalTypes) -> void:
-   print(Msg)
+   #print(Msg)
    if Type == PingusPrime.SignalTypes.CONTROL:
       ConnectionMenu.STATUS_LABEL.text = Msg
    if MultiPlayerCoupler.PingusState == PingusPrime.PingusStates.CONNECTED:
@@ -36,6 +37,7 @@ func _recieve_message(Msg: String, Type: PingusPrime.SignalTypes) -> void:
       
 
 func _recieve_data(data: PackedByteArray) -> void:
+   print("recieved: ", data)
    OpponentCharacter.position.x = data.decode_float(0)
    OpponentCharacter.position.y = data.decode_float(4)
    OpponentCharacter.position.z = data.decode_float(8)
@@ -44,11 +46,12 @@ func _recieve_data(data: PackedByteArray) -> void:
    OpponentCharacter.rotation.z = data.decode_float(20)
 
 func _send_data() -> void:
-   var raw_data: Array = [PlayerCharacter.position.x,
-                          PlayerCharacter.position.y, 
-                          PlayerCharacter.position.z,
-                          PlayerCharacter.rotation.x,
-                          PlayerCharacter.rotation.y, 
-                          PlayerCharacter.rotation.z]
-   var packed_data := PackedByteArray(raw_data)
+   var packed_data := PackedByteArray()
+   packed_data.resize(24)
+   packed_data.encode_float(0, PlayerCharacter.position.x)
+   packed_data.encode_float(4, PlayerCharacter.position.y) 
+   packed_data.encode_float(8, PlayerCharacter.position.z)
+   packed_data.encode_float(12, PlayerCharacter.rotation.x)
+   packed_data.encode_float(16, PlayerCharacter.rotation.y) 
+   packed_data.encode_float(20, PlayerCharacter.rotation.z)
    MultiPlayerCoupler.send_data(packed_data)
