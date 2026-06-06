@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://dijyime6b78x1"]
 
-[ext_resource type="PackedScene" uid="uid://dv7m42e1emxrj" path="res://1_player/player.tscn" id="1_ttyqa"]
 [ext_resource type="PackedScene" uid="uid://bn2hnjsbj6jjw" path="res://0_maps/rough_city_01/rought_city_01.tscn" id="2_3tyep"]
 [ext_resource type="Texture2D" uid="uid://nlhy3ogq5qc5" path="res://_RAWS/icon.png" id="2_df7h0"]
 [ext_resource type="PackedScene" uid="uid://c5ar3hknkofok" path="res://_RAWS/pillar.glb" id="2_xvh3c"]
@@ -38,9 +37,6 @@ shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1762737499]
 environment = SubResource("Environment_2vu8a")
-
-[node name="Player" parent="." unique_id=1131720607 instance=ExtResource("1_ttyqa")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07335091, 0, 0.028328657)
 
 [node name="RoughtCity01" parent="." unique_id=1341565703 instance=ExtResource("2_3tyep")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -49.03843, -0.5, 20.88987)

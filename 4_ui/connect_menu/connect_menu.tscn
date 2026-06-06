@@ -1,0 +1,96 @@
+[gd_scene format=3 uid="uid://do53qj7jk7esd"]
+
+[ext_resource type="Script" uid="uid://b3gq5pxcg4786" path="res://4_ui/connect_menu/connect_menu.gd" id="1_js4gt"]
+
+[node name="ConnectMenu" type="HBoxContainer" unique_id=13288426]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_js4gt")
+
+[node name="spacer" type="Control" parent="." unique_id=1452459821]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=680828620]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="spacer" type="Control" parent="VBoxContainer" unique_id=458992889]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="wan_info" type="HBoxContainer" parent="VBoxContainer" unique_id=718756249]
+layout_mode = 2
+
+[node name="WAN_label" type="Label" parent="VBoxContainer/wan_info" unique_id=687741824]
+layout_mode = 2
+size_flags_horizontal = 6
+text = "PEE.POO.CUM.POO:WEINER"
+
+[node name="copy_wan_button" type="Button" parent="VBoxContainer/wan_info" unique_id=1307268099]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+text = "copy WAN"
+
+[node name="lan_info" type="HBoxContainer" parent="VBoxContainer" unique_id=839900756]
+layout_mode = 2
+
+[node name="LAN_label" type="Label" parent="VBoxContainer/lan_info" unique_id=1487800806]
+layout_mode = 2
+size_flags_horizontal = 6
+text = "PEE.POO.CUM.POO:WEINER"
+
+[node name="copy_lan_button" type="Button" parent="VBoxContainer/lan_info" unique_id=2026856837]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+text = "copy LAN"
+
+[node name="spacer2" type="Control" parent="VBoxContainer" unique_id=1066481421]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="target_ip_box" type="HBoxContainer" parent="VBoxContainer" unique_id=1754706376]
+layout_mode = 2
+
+[node name="target_IP_box" type="LineEdit" parent="VBoxContainer/target_ip_box" unique_id=1315086056]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+placeholder_text = "your friend's IP goes here"
+
+[node name="connect_button" type="Button" parent="VBoxContainer/target_ip_box" unique_id=714211972]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+text = "connect"
+
+[node name="spacer4" type="Control" parent="VBoxContainer" unique_id=880933413]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="status_label" type="Label" parent="VBoxContainer" unique_id=421767819]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "waiting to connect..."
+
+[node name="spacer3" type="Control" parent="VBoxContainer" unique_id=1402769618]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="spacer2" type="Control" parent="." unique_id=249199528]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5

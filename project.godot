@@ -12,7 +12,7 @@ config_version=5
 
 config/name="tournamancy"
 config/tags=PackedStringArray("ambitious", "demo", "game")
-run/main_scene="uid://dijyime6b78x1"
+run/main_scene="uid://bamfpbtds4sbn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="uid://nlhy3ogq5qc5"
 
