@@ -12,6 +12,7 @@ script = ExtResource("1_iumqp")
 [node name="Player" parent="." unique_id=1131720607 instance=ExtResource("3_y7xaf")]
 
 [node name="Opponent" parent="." unique_id=207561788 instance=ExtResource("3_u0se1")]
+visible = false
 
 [node name="Foyer" parent="." unique_id=55400169 instance=ExtResource("4_cpal3")]
 
