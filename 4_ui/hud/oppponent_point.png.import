@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dshg5nhcg5wf6"
-path="res://.godot/imported/Rpoint.png-68ae7a8fc18e160b8be66b2bed07586d.ctex"
+uid="uid://daowpdjq8bna1"
+path="res://.godot/imported/oppponent_point.png-fbda8cc1222f76d428d25e5771a13a6c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://4_ui/hud/Rpoint.png"
-dest_files=["res://.godot/imported/Rpoint.png-68ae7a8fc18e160b8be66b2bed07586d.ctex"]
+source_file="res://4_ui/hud/oppponent_point.png"
+dest_files=["res://.godot/imported/oppponent_point.png-fbda8cc1222f76d428d25e5771a13a6c.ctex"]
 
 [params]
 

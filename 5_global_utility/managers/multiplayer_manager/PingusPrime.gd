@@ -10,7 +10,7 @@ const TYPE_SIZE  : int           = 4
 const RETRY_TIME : float         = 2.5
 const MAX_RETRIES: int           = 5
 const SPRAY_RATE : int           = 100
-const INFORM_RATE: int           = 10
+const INFORM_RATE: int           = 50
 const KEEP_ALIVE_TIME  : float   = 15.0
 const KEEP_ALIVE_PINGUS: int     = 0x1153
 # ========= #

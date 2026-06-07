@@ -8,7 +8,11 @@ extends Node3D
 
 func _ready() -> void:
    InputManager.init_inputs()
-   MPM.on_connection_established.connect(func(): PlayerCharacter.enabled = true)
+   MPM.on_connection_established.connect(
+      func(): 
+         PlayerCharacter.enabled = true
+         OpponentCharacter.visible = true
+   )
    MPM.on_transform_data.connect(_on_transform_data)
    
 func _physics_process(_delta: float) -> void:

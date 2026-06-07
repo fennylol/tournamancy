@@ -14,10 +14,10 @@ var enabled: bool = false
 @onready var Lhand   := $Camera3D/Lhand
 @onready var Rhand   := $Camera3D/Rhand
 
-const LhandIMG : Texture2D = preload("res://4_ui/hud/Lhand.png")
-const LpointIMG: Texture2D = preload("res://4_ui/hud/Lpoint.png")
-const RhandIMG : Texture2D = preload("res://4_ui/hud/Rhand.png")
-const RpointIMG: Texture2D = preload("res://4_ui/hud/Rpoint.png")
+const HandImg : Texture2D = preload("res://4_ui/hud/Lhand.png")
+const PointImg: Texture2D = preload("res://4_ui/hud/Lpoint.png")
+#const RhandIMG : Texture2D = preload("res://4_ui/hud/Rhand.png")
+#const RpointIMG: Texture2D = preload("res://4_ui/hud/Rpoint.png")
 
 var SpellBook: Grimoire = Grimoire.new()
 
@@ -38,23 +38,23 @@ func _process(delta):
       # change hand textures
       if mouse_captured:
          if Input.is_action_just_pressed("interact"): 
-            Lhand.texture = LpointIMG
+            Lhand.texture = PointImg
          elif Input.is_action_just_released("interact") : 
-            Lhand.texture = LhandIMG
+            Lhand.texture = HandImg
 
          if Input.is_action_just_pressed("active_spell_0"):
-            Lhand.texture = LpointIMG
+            Lhand.texture = PointImg
             if SpellBook.ActiveSpells[0]:
                SpellBook.ActiveSpells[0]._on_activate(self)
          elif Input.is_action_just_released("active_spell_0") : 
-            Lhand.texture = LhandIMG
+            Lhand.texture = HandImg
          
          if Input.is_action_just_pressed("active_spell_1"):
-            Rhand.texture = RpointIMG
+            Rhand.texture = PointImg
             if SpellBook.ActiveSpells[1]:
                SpellBook.ActiveSpells[1]._on_activate(self)      
          elif Input.is_action_just_released("active_spell_1"): 
-            Rhand.texture = RhandIMG 
+            Rhand.texture = HandImg 
    SpellBook.process_end(delta, self)
 
 func _unhandled_input(event):
@@ -100,14 +100,21 @@ func _physics_process(delta):
 
 func generate_transform_data() -> PackedByteArray:
    var packed_data := PackedByteArray()
-   packed_data.resize((4*9))
+   packed_data.resize((4*9)+1)
+   
    packed_data.encode_float(0,  position.x)
    packed_data.encode_float(4,  position.y) 
    packed_data.encode_float(8,  position.z)
-   packed_data.encode_float(12, rotation.x)
+   packed_data.encode_float(12, Camera.rotation.x)
    packed_data.encode_float(16, rotation.y) 
    packed_data.encode_float(20, rotation.z)
    packed_data.encode_float(24, velocity.x)
    packed_data.encode_float(28, velocity.y)
    packed_data.encode_float(32, velocity.z)
+   
+   var flags := 0
+   if Lhand.texture == HandImg: flags |= 1 << 0
+   if Rhand.texture == HandImg: flags |= 1 << 1
+   packed_data.encode_u8(36, flags)
+   
    return packed_data
