@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bfjodamrt0c65"]
+
+[ext_resource type="Texture2D" uid="uid://ddq437x4g5mpf" path="res://4_ui/hud/Lhand.png" id="1_3xfn2"]
+[ext_resource type="Script" uid="uid://de5mdlfvbwnyk" path="res://1_player/dummy.gd" id="1_awwg2"]
+[ext_resource type="Texture2D" uid="uid://b6hyot8ua25dv" path="res://4_ui/hud/Rhand.png" id="2_awwg2"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_hgo8d"]
+radius = 0.375
+
+[node name="Dummy" type="Node3D" unique_id=207561788]
+script = ExtResource("1_awwg2")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=534799756]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_hgo8d")
+
+[node name="Camera3D" type="Node3D" parent="." unique_id=908928374]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="Lhand" type="Sprite3D" parent="Camera3D" unique_id=1099244049]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -0.4, -0.2, -0.425)
+pixel_size = 0.001
+texture = ExtResource("1_3xfn2")
+
+[node name="Rhand" type="Sprite3D" parent="Camera3D" unique_id=20036157]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0.4, -0.2, -0.425)
+pixel_size = 0.001
+texture = ExtResource("2_awwg2")
