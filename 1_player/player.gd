@@ -99,4 +99,15 @@ func _physics_process(delta):
    move_and_slide()
 
 func generate_transform_data() -> PackedByteArray:
-   return []
+   var packed_data := PackedByteArray()
+   packed_data.resize((4*9))
+   packed_data.encode_float(0,  position.x)
+   packed_data.encode_float(4,  position.y) 
+   packed_data.encode_float(8,  position.z)
+   packed_data.encode_float(12, rotation.x)
+   packed_data.encode_float(16, rotation.y) 
+   packed_data.encode_float(20, rotation.z)
+   packed_data.encode_float(24, velocity.x)
+   packed_data.encode_float(28, velocity.y)
+   packed_data.encode_float(32, velocity.z)
+   return packed_data

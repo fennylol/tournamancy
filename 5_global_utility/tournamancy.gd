@@ -12,7 +12,7 @@ func _ready() -> void:
    MPM.on_transform_data.connect(_on_transform_data)
    
 func _physics_process(_delta: float) -> void:
-   MPM.send_player_transform_data(PlayerCharacter)
+   MPM.send_player_transform_data(PlayerCharacter.generate_transform_data())
 
    
 func _on_transform_data(_id: int, data: PackedByteArray) -> void:

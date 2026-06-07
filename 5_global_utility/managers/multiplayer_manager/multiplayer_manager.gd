@@ -50,20 +50,12 @@ func _recieve_data(data: PackedByteArray) -> void:
 func _establish_new_connection(_data: PackedByteArray) -> void:
    pass
 
-func send_player_transform_data(player: Player) -> void:
+func send_player_transform_data(data: PackedByteArray) -> void:
    if not MultiPlayerCoupler.PingusState == PingusPrime.PingusStates.CONNECTED: return
    
    var packed_data := PackedByteArray()
-   packed_data.resize(TYPE_BYTE + (4*9))
+   packed_data.resize(TYPE_BYTE)
    packed_data.encode_u8(0, DataType.TransformData)
-   packed_data.encode_float(TYPE_BYTE + 0,  player.position.x)
-   packed_data.encode_float(TYPE_BYTE + 4,  player.position.y) 
-   packed_data.encode_float(TYPE_BYTE + 8,  player.position.z)
-   packed_data.encode_float(TYPE_BYTE + 12, player.rotation.x)
-   packed_data.encode_float(TYPE_BYTE + 16, player.rotation.y) 
-   packed_data.encode_float(TYPE_BYTE + 20, player.rotation.z)
-   packed_data.encode_float(TYPE_BYTE + 24, player.velocity.x)
-   packed_data.encode_float(TYPE_BYTE + 28, player.velocity.y)
-   packed_data.encode_float(TYPE_BYTE + 32, player.velocity.z)
+   packed_data.append_array(data)
    
    MultiPlayerCoupler.send_data(packed_data)
