@@ -6,7 +6,7 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_25okf"]
 radius = 0.375
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_8s5v1"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_41u22"]
 radius = 0.375
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_qeeko"]
@@ -24,7 +24,7 @@ shape = SubResource("CapsuleShape3D_25okf")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=563248551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CapsuleMesh_8s5v1")
+mesh = SubResource("CapsuleMesh_41u22")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1504992795]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
