@@ -20,7 +20,8 @@ func _ready() -> void:
 func _on_connect_button_pressed() -> void:
    var input_text = TARGET_IP_BOX.text.strip_edges()
    if is_valid_ip_port(input_text):
-      STATUS_LABEL.text = "CONNECTING TO: " + input_text
+      STATUS_LABEL.text  = "CONNECTING TO: " + input_text
+      TARGET_IP_BOX.text = ""
       connect_button_pressed.emit(input_text)
    else:
       STATUS_LABEL.text  = input_text + " is not a valid IP address."

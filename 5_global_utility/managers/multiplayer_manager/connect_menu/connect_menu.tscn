@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://do53qj7jk7esd"]
 
-[ext_resource type="Script" uid="uid://b3gq5pxcg4786" path="res://4_ui/connect_menu/connect_menu.gd" id="1_js4gt"]
+[ext_resource type="Script" uid="uid://b3gq5pxcg4786" path="res://5_global_utility/managers/multiplayer_manager/connect_menu/connect_menu.gd" id="1_js4gt"]
 
 [node name="ConnectMenu" type="HBoxContainer" unique_id=13288426]
 anchors_preset = 15

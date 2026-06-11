@@ -9,7 +9,7 @@ extends Node3D
 func _ready() -> void:
    InputManager.init_inputs()
    MPM.on_connection_established.connect(
-      func(): 
+      func(_id: int):
          PlayerCharacter.enabled = true
          OpponentCharacter.visible = true
    )
