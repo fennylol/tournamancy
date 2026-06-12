@@ -20,6 +20,11 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.5
 
+[node name="ID_label" type="Label" parent="VBoxContainer" unique_id=390847983]
+layout_mode = 2
+size_flags_horizontal = 6
+text = "NETWORK ID: "
+
 [node name="spacer" type="Control" parent="VBoxContainer" unique_id=458992889]
 layout_mode = 2
 size_flags_vertical = 3

@@ -55,41 +55,46 @@ var NetworkID  : int           = 0
 signal recieved_data(sender_id: int, data_type: int, data: PackedByteArray)
 signal connection_established(sender_id: int)
 
+func _ready() -> void:
+   var local_port: int = NetworkID % 65534
+   var bind_err = Udp.bind(local_port)
+   if bind_err != OK: printerr("PingusPrime: failed to bind UDP socket"); return
 func _init(external_address: String = "", network_id: int = 0) -> void:
    NetworkID = network_id
+   ExternAddr = external_address
+   if NetworkID  == 0 : _discover_network_id()
+   if ExternAddr == "": _discover_address()   
+func _discover_network_id() -> void:
    while NetworkID == 0:
       seed((Time.get_unix_time_from_system()*100000) as int)
       NetworkID = randi()
+func _discover_address() -> void:
+   var ipg := IPGopher.new()
+   ipg.ip_fetching_finished.connect(
+      func(result: IPGopher.IpFetchingErrs):
+         var retry_on_fail: Callable = func(err_str: String):
+            PingusTimer += 1
+            if PingusTimer < MAX_RETRIES:
+               _emit_control(err_str + " Retrying... ")
+               await get_tree().create_timer(RETRY_TIME).timeout
+               ipg._attempt_addr_fetch()
+            else:
+               _emit_control(err_str + " Aborting...")
 
-   ExternAddr = external_address
-   var local_port: int = 0
-   var bind_err = Udp.bind(local_port)
-   if bind_err != OK: printerr("PingusPrime: failed to bind UDP socket"); return
-func _ready() -> void:
-   if ExternAddr == "":
-      var ipg := IPGopher.new()
-      ipg.ip_fetching_finished.connect(
-         func(result: IPGopher.IpFetchingErrs):
-            var retry_on_fail: Callable = func(err_str: String):
-               PingusTimer += 1
-               if PingusTimer < MAX_RETRIES:
-                  _emit_control(err_str + " Retrying... ")
-                  await get_tree().create_timer(RETRY_TIME).timeout
-                  ipg._attempt_addr_fetch()
-               else:
-                  _emit_control(err_str + " Aborting...")
-
-            match result:
-               IPGopher.IpFetchingErrs.OK:
-                  ExternAddr = ipg.get_address_as_string()
-                  _emit_control("External IP recieved: " + ExternAddr)
-                  ipg.queue_free()
-               IPGopher.IpFetchingErrs.BAD_RESULT  : retry_on_fail.call("BAD_RESULT.")
-               IPGopher.IpFetchingErrs.BAD_RESPONSE: retry_on_fail.call("BAD_RESPONSE.")
-               IPGopher.IpFetchingErrs.BAD_IP      : retry_on_fail.call("BAD_IP.")
-      )
-      ipg.set_name("IPGopher")
-      add_child(ipg)
+         match result:
+            IPGopher.IpFetchingErrs.OK:
+               ExternAddr = ipg.get_address_as_string()
+               _emit_control("External IP recieved: " + ExternAddr)
+               ipg.queue_free()
+            IPGopher.IpFetchingErrs.BAD_RESULT  : retry_on_fail.call("BAD_RESULT.")
+            IPGopher.IpFetchingErrs.BAD_RESPONSE: retry_on_fail.call("BAD_RESPONSE.")
+            IPGopher.IpFetchingErrs.BAD_IP      : retry_on_fail.call("BAD_IP.")
+   )
+   ipg.set_name("IPGopher")
+   add_child(ipg)
+# =================== #
+# PingusState machine #
+# =================== #
 func _process(delta: float) -> void:
    if TargetAddr == "" or ExternAddr == "" or NetworkID == 0:
       if not PingusState == PingusStates.NOT_STARTED:

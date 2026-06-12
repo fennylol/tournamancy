@@ -32,6 +32,11 @@ func _ready() -> void:
    )
    ipg.set_name("PingusPrime.IPGopher")
    add_child(ipg)
+   
+   while NetworkID == 0:
+      seed((Time.get_unix_time_from_system()*100000) as int)
+      NetworkID = randi()
+   ConnectionMenu._set_id_label("NETWORK ID: " + str(NetworkID))
 
    ConnectionMenu.connect_button_pressed.connect(_create_connection)
    ConnectionMenu.ready_button_pressed.connect(_on_ready_button_pressed)
@@ -47,7 +52,6 @@ func _create_connection(target_address: String, target_id: int = 0) -> void:
          if conn.TargetID == target_id: return
 
    var MPC := PingusPrime.new(ExternalAddress, NetworkID)
-   NetworkID = MPC.NetworkID
    MPC.TargetAddr = target_address
    MPC.TargetID = target_id
    MPC.recieved_data.connect(_recieve_data)

@@ -1,6 +1,7 @@
 extends HBoxContainer
 class_name ConnectMenu
 
+@onready var ID_LABEL       : Label         = $VBoxContainer/ID_label
 @onready var WAN_LABEL      : Label         = $VBoxContainer/wan_info/WAN_label
 @onready var COPY_WAN_BUTTON: Button        = $VBoxContainer/wan_info/copy_wan_button
 @onready var LAN_LABEL      : Label         = $VBoxContainer/lan_info/LAN_label
@@ -23,7 +24,7 @@ func _ready() -> void:
 
 func _on_connect_button_pressed() -> void:
    var input_text = TARGET_IP_BOX.text.strip_edges()
-   if is_valid_ip_port(input_text):
+   if _is_valid_ip_port(input_text):
       TARGET_IP_BOX.text = ""
       connect_button_pressed.emit(input_text)
 
@@ -42,17 +43,21 @@ func update_peers(connections: Array) -> void:
       lines.append(peer_name + ": " + state_name)
    PEER_LIST.text = "\n".join(lines)
 
+func _set_id_label(input_text: String) -> void:
+   ID_LABEL.text = input_text
+
 func _set_wan_label(input_text: String) -> void:
-   if is_valid_ip_port(input_text):
+   if _is_valid_ip_port(input_text):
       WAN_LABEL.text = input_text
       COPY_WAN_BUTTON.pressed.connect(DisplayServer.clipboard_set.bind(input_text))
 
 func _set_lan_label(input_text: String) -> void:
-   if is_valid_ip_port(input_text):
+   if _is_valid_ip_port(input_text):
       LAN_LABEL.text = input_text
       COPY_LAN_BUTTON.pressed.connect(DisplayServer.clipboard_set.bind(input_text))
 
-func is_valid_ip_port(input_text: String) -> bool:
+
+func _is_valid_ip_port(input_text: String) -> bool:
    var regex = RegEx.new()
    regex.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
    var result = regex.search(input_text)
