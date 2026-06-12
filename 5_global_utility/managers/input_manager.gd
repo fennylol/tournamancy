@@ -12,7 +12,7 @@ static func init_inputs() -> void:
       event.button_index = keycode
       InputMap.action_add_event(input_name, event)
    
-   register_input.call("capture_mouse", KEY_ESCAPE)
+   register_input.call("menu", KEY_ESCAPE)
    register_input.call("jump", KEY_SPACE)
    
    register_input.call("left",  KEY_A)

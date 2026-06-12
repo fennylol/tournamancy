@@ -22,7 +22,6 @@ size_flags_stretch_ratio = 0.5
 
 [node name="spacer" type="Control" parent="VBoxContainer" unique_id=458992889]
 layout_mode = 2
-size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="wan_info" type="HBoxContainer" parent="VBoxContainer" unique_id=718756249]
@@ -55,9 +54,21 @@ text = "copy LAN"
 
 [node name="spacer2" type="Control" parent="VBoxContainer" unique_id=1066481421]
 layout_mode = 2
-size_flags_horizontal = 3
 size_flags_vertical = 3
-size_flags_stretch_ratio = 0.05
+size_flags_stretch_ratio = 0.25
+
+[node name="peer_list" type="TextEdit" parent="VBoxContainer" unique_id=421767819]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 10.0
+placeholder_text = "no connections..."
+editable = false
+wrap_mode = 1
+
+[node name="spacer4" type="Control" parent="VBoxContainer" unique_id=880933413]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.25
 
 [node name="target_ip_box" type="HBoxContainer" parent="VBoxContainer" unique_id=1754706376]
 layout_mode = 2
@@ -74,20 +85,19 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.3
 text = "connect"
 
-[node name="spacer4" type="Control" parent="VBoxContainer" unique_id=880933413]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-size_flags_stretch_ratio = 0.05
-
-[node name="status_label" type="Label" parent="VBoxContainer" unique_id=421767819]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "waiting to connect..."
-
 [node name="spacer3" type="Control" parent="VBoxContainer" unique_id=1402769618]
 layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="ready_button" type="Button" parent="VBoxContainer" unique_id=1485044988]
+layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+text = "ready"
+
+[node name="spacer5" type="Control" parent="VBoxContainer" unique_id=1345073842]
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="spacer2" type="Control" parent="." unique_id=249199528]

@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://bamfpbtds4sbn"]
 
 [ext_resource type="Script" uid="uid://18utgu4nnymv" path="res://5_global_utility/tournamancy.gd" id="1_iumqp"]
-[ext_resource type="PackedScene" uid="uid://bfjodamrt0c65" path="res://1_player/dummy.tscn" id="3_u0se1"]
 [ext_resource type="PackedScene" uid="uid://dv7m42e1emxrj" path="res://1_player/player.tscn" id="3_y7xaf"]
 [ext_resource type="PackedScene" uid="uid://dijyime6b78x1" path="res://0_maps/foyer/foyer.tscn" id="4_cpal3"]
 [ext_resource type="PackedScene" uid="uid://dhklqs0eyw4da" path="res://5_global_utility/managers/multiplayer_manager/multiplayer_manager.tscn" id="4_u0se1"]
@@ -10,9 +9,6 @@
 script = ExtResource("1_iumqp")
 
 [node name="Player" parent="." unique_id=1131720607 instance=ExtResource("3_y7xaf")]
-
-[node name="Opponent" parent="." unique_id=207561788 instance=ExtResource("3_u0se1")]
-visible = false
 
 [node name="Foyer" parent="." unique_id=55400169 instance=ExtResource("4_cpal3")]
 

@@ -47,11 +47,15 @@ var ExternPort : int           = -1:
       if result: ExternPort = NewPort
 var PingusTimer: float         = -1
 var NetworkID  : int           = 0
-signal message_recieved(msg: String, type: MessageTypes)
+signal message_recieved(netword_id: int, msg: String, type: MessageTypes)
 signal data_recieved(netword_id: int, data: PackedByteArray)
 
-func _init(external_address: String = "") -> void:
-   
+func _init(external_address: String = "", network_id: int = 0) -> void:
+   NetworkID = network_id
+   while NetworkID == 0:
+      seed((Time.get_unix_time_from_system()*100000) as int)
+      NetworkID = randi()
+      
    ExternAddr = external_address
    var local_port: int = 0
    var bind_err = Udp.bind(local_port)
@@ -73,7 +77,7 @@ func _ready() -> void:
             match result:
                IPGopher.IpFetchingErrs.OK:
                   ExternAddr = ipg.get_address_as_string()
-                  message_recieved.emit("IP RECIEVED", MessageTypes.CONTROL)
+                  message_recieved.emit(NetworkID, NetworkID, "IP RECIEVED", MessageTypes.CONTROL)
                   ipg.queue_free()
                IPGopher.IpFetchingErrs.BAD_RESULT  : retry_on_fail.call("BAD_RESULT.")
                IPGopher.IpFetchingErrs.BAD_RESPONSE: retry_on_fail.call("BAD_RESPONSE.")
@@ -82,10 +86,6 @@ func _ready() -> void:
       ipg.set_name("IPGopher")
       add_child(ipg)
 func _process(delta: float) -> void:
-   while NetworkID == 0:
-      seed(Time.get_unix_time_from_system() as int)
-      NetworkID = randi()
-   
    match PingusState:
       # NOT_STARTED: the PingusPrime has not begun attempting a connection.
       # -> SPRAYING: once a target is set, it will begin spraying packets at 
@@ -93,7 +93,7 @@ func _process(delta: float) -> void:
       PingusStates.NOT_STARTED:
          if TargetAddr != "" and TargetPort == -1:
             PingusState = PingusStates.SPRAYING
-            message_recieved.emit("Attempting to connect to " + TargetAddr, MessageTypes.CONTROL)
+            message_recieved.emit(NetworkID, "Attempting to connect to " + TargetAddr, MessageTypes.CONTROL)
       # SPRAYING: the PingusPrime is trying every valid port on the target.
       # (and the target is doing the same.)
       # -> INFORMING: when a packet is recieved, if it is the bytes 0x00..0x0F,
@@ -103,13 +103,14 @@ func _process(delta: float) -> void:
          _spray_pingus()
          while Udp.get_available_packet_count() > 0:
             var pkt = Udp.get_packet()
-            if pkt.size() < TYPE_SIZE: message_recieved.emit("ERROR: Encountered undersized packet while spraying.", MessageTypes.CONTROL); continue
+            if pkt.size() < TYPE_SIZE + ID_SIZE: message_recieved.emit(NetworkID, "ERROR: Encountered undersized packet while spraying.", MessageTypes.CONTROL); continue
             var pkt_type: PingusTypes = pkt.decode_u32(0) as PingusTypes
-            if pkt_type != PingusTypes.SPRAY and pkt_type != PingusTypes.INFORM: message_recieved.emit("ERROR: Encountered incorrect packet type while spraying.", MessageTypes.CONTROL); continue
+            var pkt_network_id: int = pkt.decode_u32(TYPE_SIZE)
+            if pkt_type != PingusTypes.SPRAY and pkt_type != PingusTypes.INFORM: message_recieved.emit(NetworkID, "ERROR: Encountered incorrect packet type while spraying.", MessageTypes.CONTROL); continue
             if Udp.get_packet_port() == Udp.get_local_port(): continue
             TargetAddr = Udp.get_packet_ip()
             TargetPort = Udp.get_packet_port()
-            message_recieved.emit("Establishing connection to " + TargetAddr + ":" + str(TargetPort), MessageTypes.CONTROL)
+            message_recieved.emit(pkt_network_id, "Establishing connection to " + TargetAddr + ":" + str(TargetPort), MessageTypes.CONTROL)
             if TargetAddr != "" and TargetPort >= 1:
                PingusState = PingusStates.INFORMING
       # INFORMING: the PingusPrime has recieved a valid packet. it is sending
@@ -120,13 +121,14 @@ func _process(delta: float) -> void:
          _inform_pingus()
          while Udp.get_available_packet_count() > 0:
             var pkt := Udp.get_packet()
-            if pkt.size() < TYPE_SIZE: message_recieved.emit("ERROR: Encountered undersized packet while informing.", MessageTypes.CONTROL); continue
+            if pkt.size() < TYPE_SIZE + ID_SIZE: message_recieved.emit(NetworkID, "ERROR: Encountered undersized packet while informing.", MessageTypes.CONTROL); continue
             var pkt_type: PingusTypes = pkt.decode_u32(0) as PingusTypes
-            if pkt_type != PingusTypes.SPRAY and pkt_type != PingusTypes.INFORM: message_recieved.emit("ERROR: Encountered incorrect packet type while informing.", MessageTypes.CONTROL); continue
+            var pkt_network_id: int = pkt.decode_u32(TYPE_SIZE)
+            if pkt_type != PingusTypes.SPRAY and pkt_type != PingusTypes.INFORM: message_recieved.emit(NetworkID, "ERROR: Encountered incorrect packet type while informing.", MessageTypes.CONTROL); continue
             if pkt_type == PingusTypes.INFORM:
-               ExternPort = pkt.decode_u16(TYPE_SIZE)
-               message_recieved.emit("PingusPrime: Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort), MessageTypes.CONTROL)
+               ExternPort = pkt.decode_u16(TYPE_SIZE + ID_SIZE)
                PingusState = PingusStates.CONNECTED
+               message_recieved.emit(pkt_network_id, "PingusPrime: Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort), MessageTypes.CONTROL)
       # CONNECTED: both the PingusPrime and the target are aware of each other.
       # continually send pings to keep the connection alive.
       PingusStates.CONNECTED:
@@ -138,19 +140,20 @@ func _process(delta: float) -> void:
          while Udp.get_available_packet_count() > 0:
             var pkt := Udp.get_packet()
             if pkt.size() < TYPE_SIZE:
-               message_recieved.emit("ERROR: undersized packet while connected.", MessageTypes.CONTROL)
+               message_recieved.emit(NetworkID, "ERROR: undersized packet while connected.", MessageTypes.CONTROL)
                continue
             if Udp.get_packet_ip() != TargetAddr or Udp.get_packet_port() != TargetPort:
-               message_recieved.emit("ERROR: packet from unidentified source.", MessageTypes.CONTROL)
+               message_recieved.emit(NetworkID, "ERROR: packet from unidentified source.", MessageTypes.CONTROL)
                continue
 
             var pkt_type: PingusTypes = pkt.decode_u32(0) as PingusTypes
+            var pkt_network_id: int = pkt.decode_u32(TYPE_SIZE)
             match pkt_type:
-               PingusTypes.INFORM:    message_recieved.emit("Extablished connection to " + TargetAddr + ":" + str(TargetPort) + " from local port " + str(ExternPort), MessageTypes.CONTROL)
-               PingusTypes.KEEPALIVE: message_recieved.emit(TargetAddr + ":" + str(TargetPort) + " is keeping connection to local port " + str(ExternPort) + " alive", MessageTypes.CONTROL)
-               PingusTypes.STRING:    message_recieved.emit(pkt.slice(TYPE_SIZE).get_string_from_utf8(), MessageTypes.DATA); PingusTimer = 0.0
-               PingusTypes.DATA:      data_recieved.emit(pkt.decode_u32(TYPE_SIZE), pkt.slice(TYPE_SIZE+ID_SIZE)); PingusTimer = 0.0
-               _:                     message_recieved.emit("ERROR: incorrect packet type while connected.", MessageTypes.CONTROL)
+               PingusTypes.INFORM:    message_recieved.emit(pkt_network_id, "Extablished connection to " + str(pkt_network_id) + " (" + TargetAddr + ":" + str(TargetPort) + ") from local port " + str(ExternPort), MessageTypes.CONTROL)
+               PingusTypes.KEEPALIVE: message_recieved.emit(pkt_network_id, str(pkt_network_id) + " (" + TargetAddr + ":" + str(TargetPort) + ") is keeping connection to local port " + str(ExternPort) + " alive", MessageTypes.CONTROL)
+               PingusTypes.STRING:    message_recieved.emit(pkt_network_id, pkt.slice(TYPE_SIZE).get_string_from_utf8(), MessageTypes.DATA); PingusTimer = 0.0
+               PingusTypes.DATA:      data_recieved.emit(pkt_network_id, pkt.slice(TYPE_SIZE+ID_SIZE)); PingusTimer = 0.0
+               _:                     message_recieved.emit(pkt_network_id, "ERROR: incorrect packet type while connected.", MessageTypes.CONTROL)
 # ============== #
 # packet sending #
 # ============== #
@@ -170,7 +173,7 @@ func _spray_pingus() -> void:
       
       var send_err = Udp.put_packet(pkt)
       if send_err != OK: printerr("Failed to send spray to ", TargetAddr, ":", TargetPort)
-      elif not TargetPort%107: message_recieved.emit("Spraying port " + str(TargetPort) + " on " + TargetAddr, MessageTypes.CONTROL)
+      elif not TargetPort%107: message_recieved.emit(NetworkID, "Spraying port " + str(TargetPort) + " on " + TargetAddr, MessageTypes.CONTROL)
 # PingusStates.INFORMING
 func _inform_pingus() -> void:
    Udp.set_dest_address(TargetAddr, TargetPort)
@@ -186,7 +189,7 @@ func _inform_pingus() -> void:
       
       var send_err = Udp.put_packet(pkt)
       if send_err != OK: printerr("Failed to send inform to ", TargetAddr, ":", TargetPort)
-      elif count==1: message_recieved.emit("Informing " + TargetAddr + " at port: " + str(TargetPort), MessageTypes.CONTROL)
+      elif count==1: message_recieved.emit(NetworkID, "Informing " + TargetAddr + " at port: " + str(TargetPort), MessageTypes.CONTROL)
 # PingusStates.CONNECTED
 func _timed_pingus() -> void:
    Udp.set_dest_address(TargetAddr, TargetPort)
@@ -198,7 +201,7 @@ func _timed_pingus() -> void:
    
    var send_err = Udp.put_packet(pkt)
    if send_err != OK: printerr("Failed to send keepalive to ", TargetAddr, ":", TargetPort)
-   else: message_recieved.emit("Preventing timeout with " + TargetAddr + ":" + str(TargetPort), MessageTypes.CONTROL)
+   else: message_recieved.emit(NetworkID, "Preventing timeout with " + TargetAddr + ":" + str(TargetPort), MessageTypes.CONTROL)
 func send_stringus(msg: String) -> void:
    Udp.set_dest_address(TargetAddr, TargetPort)
    
@@ -210,7 +213,7 @@ func send_stringus(msg: String) -> void:
    
    var send_err = Udp.put_packet(pkt)
    if send_err != OK: printerr("Failed to send stringus to ", TargetAddr, ":", TargetPort)
-   else: message_recieved.emit("Sent message to " + TargetAddr + ":" + str(TargetPort), MessageTypes.CONTROL)
+   else: message_recieved.emit(NetworkID, "Sent message to " + TargetAddr + ":" + str(TargetPort), MessageTypes.CONTROL)
 func send_data(data: PackedByteArray) -> void:
    Udp.set_dest_address(TargetAddr, TargetPort)
    
@@ -222,7 +225,7 @@ func send_data(data: PackedByteArray) -> void:
    
    var send_err = Udp.put_packet(pkt)
    if send_err != OK: printerr("Failed to send data to ", TargetAddr, ":", TargetPort)
-   else: message_recieved.emit("Sent data to " + TargetAddr + ":" + str(TargetPort), MessageTypes.CONTROL)
+   else: message_recieved.emit(NetworkID, "Sent data to " + TargetAddr + ":" + str(TargetPort), MessageTypes.CONTROL)
 # ======================== #
 # small utility class to   #
 # fetch external facing IP #
