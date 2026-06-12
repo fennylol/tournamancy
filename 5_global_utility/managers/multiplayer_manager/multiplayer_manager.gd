@@ -36,74 +36,84 @@ func _ready() -> void:
    ConnectionMenu.connect_button_pressed.connect(_create_connection)
    ConnectionMenu.ready_button_pressed.connect(_on_ready_button_pressed)
 
-func _create_connection(target_address: String) -> void:
-   for conn in PendingConnections.get_children():
-      if conn.TargetAddr == target_address: return
+# remote_id is the peer's NetworkID when known (gossip); 0 for manual connects.
+# several instances can share one IP, so peers are deduplicated by NetworkID:
+# here when the ID is already known, otherwise at establish time once the
+# peer's ID has been learned.
+func _create_connection(target_address: String, target_id: int = 0) -> void:
+   if target_id != 0 and target_id == NetworkID: return
+   if target_id != 0:
+      for conn in PendingConnections.get_children() + ActiveConnections.get_children():
+         if conn.TargetID == target_id: return
 
    var MPC := PingusPrime.new(ExternalAddress, NetworkID)
    NetworkID = MPC.NetworkID
    MPC.TargetAddr = target_address
-   MPC.message_recieved.connect(_recieve_message)
-   MPC.data_recieved.connect(_recieve_data)
+   MPC.TargetID = target_id
+   MPC.recieved_data.connect(_recieve_data)
+   MPC.connection_established.connect(_on_connection_established.bind(MPC))
    MPC.set_name("mpc_" + target_address + "_" + str(randi()))
    PendingConnections.add_child(MPC)
-   ConnectionMenu.update_peers(PendingConnections.get_children() + ActiveConnections.get_children())
+   _refresh_peer_list()
 
 func _on_ready_button_pressed() -> void:
    ready_button_pressed.emit()
    ConnectionMenu.visible = false
 
-func _recieve_message(network_id: int, Msg: String, _Type: PingusPrime.MessageTypes) -> void:
-   if network_id != NetworkID: print(Msg)
-   for conn in PendingConnections.get_children():
-      if conn.PingusState == PingusPrime.PingusStates.CONNECTED:
-         var new_addr: String = conn.TargetAddr
+func _on_connection_established(network_id: int, conn: PingusPrime) -> void:
+   # duplicates to a same-IP peer can only be detected once the peer's
+   # NetworkID is known: drop this connection if its peer is already active.
+   for peer in ActiveConnections.get_children():
+      if peer.TargetID == conn.TargetID:
          PendingConnections.remove_child(conn)
-         ActiveConnections.add_child(conn)
+         conn.queue_free()
+         _refresh_peer_list()
+         return
 
-         # tell every existing peer about the new one, and vice versa
-         for peer in ActiveConnections.get_children():
-            if peer == conn: continue
-            _send_connection_data(peer, new_addr)
-            _send_connection_data(conn, peer.TargetAddr)
+   PendingConnections.remove_child(conn)
+   ActiveConnections.add_child(conn)
 
-         connection_established.emit(network_id)
+   # tell every existing peer about the new one, and vice versa
+   for peer in ActiveConnections.get_children():
+      if peer == conn: continue
+      _send_connection_data(peer, conn)
+      _send_connection_data(conn, peer)
 
+   connection_established.emit(network_id)
+   _refresh_peer_list()
+
+func _refresh_peer_list() -> void:
    ConnectionMenu.update_peers(PendingConnections.get_children() + ActiveConnections.get_children())
 
 func passthrough_player_enabled_changed(new_val: bool) -> void:
    ConnectionMenu.visible = not new_val
 
-# ================ #
-# message handling #
-# ================ #
-enum DataType { TransformData = 0x20, ConnectionData = 0xCD }
-const TYPE_BYTE: int = 1
+# ============= #
+# data handling #
+# ============= #
+enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD }
+# ConnectionData payload: [peer NetworkID u32][peer address utf8]
+const PEER_ID_SIZE: int = 4
 
-func _recieve_data(network_id: int, data: PackedByteArray) -> void:
-   var type_byte: DataType = data.decode_u8(0) as DataType
-   var payload: PackedByteArray = data.slice(TYPE_BYTE)
-   match type_byte:
-      DataType.ConnectionData:
-         _establish_new_connection(payload)
-      DataType.TransformData:
-         transform_data.emit(network_id, payload)
+func _recieve_data(network_id: int, data_type: int, data: PackedByteArray) -> void:
+   match data_type:
+      DataTypes.ConnectionData: _establish_new_connection(data)
+      DataTypes.TransformData:  transform_data.emit(network_id, data)
+      PingusPrime.DataTypes.CONTROL:
+         _refresh_peer_list()
+         
 
 func _establish_new_connection(data: PackedByteArray) -> void:
-   _create_connection(data.get_string_from_utf8())
+   if data.size() < PEER_ID_SIZE: return
+   _create_connection(data.slice(PEER_ID_SIZE).get_string_from_utf8(), data.decode_u32(0))
 
-func _send_connection_data(conn: PingusPrime, address: String) -> void:
-   var packed_data := PackedByteArray()
-   packed_data.resize(TYPE_BYTE)
-   packed_data.encode_u8(0, DataType.ConnectionData)
-   packed_data.append_array(address.to_utf8_buffer())
-   conn.send_data(packed_data)
+func _send_connection_data(conn: PingusPrime, peer: PingusPrime) -> void:
+   var payload := PackedByteArray()
+   payload.resize(PEER_ID_SIZE)
+   payload.encode_u32(0, peer.TargetID)
+   payload.append_array(peer.TargetAddr.to_utf8_buffer())
+   conn.send_data(DataTypes.ConnectionData, payload)
 
 func send_player_transform_data(data: PackedByteArray) -> void:
-   var packed_data := PackedByteArray()
-   packed_data.resize(TYPE_BYTE)
-   packed_data.encode_u8(0, DataType.TransformData)
-   packed_data.append_array(data)
-
    for conn in ActiveConnections.get_children():
-      conn.send_data(packed_data)
+      conn.send_data(DataTypes.TransformData, data)

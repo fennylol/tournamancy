@@ -37,7 +37,9 @@ func update_peers(connections: Array) -> void:
          PingusPrime.PingusStates.INFORMING  : state_name = "informing..."
          PingusPrime.PingusStates.CONNECTED  : state_name = "connected"
          _                                   : state_name = "unknown"
-      lines.append(conn.TargetAddr + ": " + state_name)
+      var peer_name: String = conn.TargetAddr
+      if conn.TargetID != 0: peer_name = str(conn.TargetID) + " (" + conn.TargetAddr + ")"
+      lines.append(peer_name + ": " + state_name)
    PEER_LIST.text = "\n".join(lines)
 
 func _set_wan_label(input_text: String) -> void:
