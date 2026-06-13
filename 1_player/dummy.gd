@@ -1,9 +1,10 @@
 extends Node3D
 class_name Dummy
 
-@onready var Eyes  := $Eyes
-@onready var Lhand := $Eyes/Lhand
-@onready var Rhand := $Eyes/Rhand
+@onready var Eyes   : Node3D   = $Eyes
+@onready var Lhand  : Sprite3D = $Eyes/Lhand
+@onready var Rhand  : Sprite3D = $Eyes/Rhand
+@onready var NameTag: Label3D  = $NameTag
 
 const HandImg : Texture2D = preload("res://4_ui/hud/oppponent_hand.png")
 const PointImg: Texture2D = preload("res://4_ui/hud/oppponent_point.png")
@@ -42,3 +43,7 @@ func _on_transform_data(data: PackedByteArray) -> void:
    
    _has_net_state = true
    _time_since_packet = 0.0
+
+func _on_nametag_data(data: PackedByteArray) -> void:
+   NameTag.text = data.get_string_from_utf8()
+   

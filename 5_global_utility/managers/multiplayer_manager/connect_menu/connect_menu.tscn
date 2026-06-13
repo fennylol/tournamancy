@@ -87,8 +87,23 @@ placeholder_text = "your friend's IP goes here"
 [node name="connect_button" type="Button" parent="VBoxContainer/target_ip_box" unique_id=714211972]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.3
+size_flags_stretch_ratio = 0.5
 text = "connect"
+
+[node name="name_box" type="HBoxContainer" parent="VBoxContainer" unique_id=233220469]
+layout_mode = 2
+
+[node name="name_box" type="LineEdit" parent="VBoxContainer/name_box" unique_id=1818026537]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+placeholder_text = "Your Name Here"
+
+[node name="change_name_button" type="Button" parent="VBoxContainer/name_box" unique_id=1781356594]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+text = "change name"
 
 [node name="spacer3" type="Control" parent="VBoxContainer" unique_id=1402769618]
 layout_mode = 2

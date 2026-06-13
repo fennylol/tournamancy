@@ -9,18 +9,21 @@ class_name ConnectMenu
 @onready var PEER_LIST      : TextEdit      = $VBoxContainer/peer_list
 @onready var TARGET_IP_BOX  : LineEdit      = $VBoxContainer/target_ip_box/target_IP_box
 @onready var CONNECT_BUTTON : Button        = $VBoxContainer/target_ip_box/connect_button
+@onready var NAME_TAG_BOX   : LineEdit      = $VBoxContainer/name_box/name_box
+@onready var NAME_TAG_BUTTON: Button        = $VBoxContainer/name_box/change_name_button
 @onready var READY_BUTTON   : Button        = $VBoxContainer/ready_button
 
 
 signal connect_button_pressed(Address: String)
 signal ready_button_pressed()
+signal name_changed(new_name: String)
 
 func _ready() -> void:
-   for address in IP.get_local_addresses():
-      if address.begins_with("192.168"):
-         _set_lan_label(address)
+   for address in IP.get_local_addresses(): if address.begins_with("192.168"): _set_lan_label(address)
    CONNECT_BUTTON.pressed.connect(_on_connect_button_pressed)
    READY_BUTTON.pressed.connect(ready_button_pressed.emit)
+   NAME_TAG_BUTTON.pressed.connect(_on_name_tag_button_pressed)
+   
 
 func _on_connect_button_pressed() -> void:
    var input_text = TARGET_IP_BOX.text.strip_edges()
@@ -28,19 +31,28 @@ func _on_connect_button_pressed() -> void:
       TARGET_IP_BOX.text = ""
       connect_button_pressed.emit(input_text)
 
+func _on_name_tag_button_pressed() -> void:
+   var new_name: String = NAME_TAG_BOX.text.strip_edges()
+   if new_name != "":
+      NAME_TAG_BOX.placeholder_text = new_name
+      NAME_TAG_BOX.text = ""
+      name_changed.emit(new_name)
+
 func update_peers(connections: Array) -> void:
    var lines: PackedStringArray = []
    for conn in connections:
+      if conn is not PingusPrime: continue
       var state_name: String
       match conn.PingusState:
          PingusPrime.PingusStates.NOT_STARTED: state_name = "not started"
-         PingusPrime.PingusStates.SPRAYING   : state_name = "spraying..."
-         PingusPrime.PingusStates.INFORMING  : state_name = "informing..."
+         PingusPrime.PingusStates.SPRAYING   : state_name = "spraying port " + str(conn.TargetPort) + "..."
+         PingusPrime.PingusStates.INFORMING  : state_name = "informing port " + str(conn.TargetPort) + "..."
          PingusPrime.PingusStates.CONNECTED  : state_name = "connected"
          _                                   : state_name = "unknown"
       var peer_name: String = conn.TargetAddr
-      if conn.TargetID != 0: peer_name = str(conn.TargetID) + " (" + conn.TargetAddr + ")"
+      if conn.TargetID != 0: peer_name = conn.name.split("_")[0]
       lines.append(peer_name + ": " + state_name)
+      if conn.TargetID != 0:  lines.append(str(conn.TargetID) + " (" + conn.TargetAddr + ")\n")
    PEER_LIST.text = "\n".join(lines)
 
 func _set_id_label(input_text: String) -> void:
