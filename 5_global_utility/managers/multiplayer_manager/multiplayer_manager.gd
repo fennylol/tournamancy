@@ -16,12 +16,12 @@ var NetworkID: int = 0
 var NameTag: String = ""
 
 func _ready() -> void:
+   ConnectionMenu.settings_button_pressed.connect(_on_settings_button_pressed)
+   ConnectionMenu.name_changed.connect(_on_name_changed)
    ConnectionMenu.connect_button_pressed.connect(_create_connection)
    ConnectionMenu.ready_button_pressed.connect(_on_ready_button_pressed)
-   ConnectionMenu.name_changed.connect(_on_name_changed)
-   _get_addr_and_port()
-
-func _get_addr_and_port() -> void:
+   #_get_addr_and_port()
+#func _get_addr_and_port() -> void:
    var ipg := PingusPrime.IPGopher.new()
    ipg.ip_fetching_finished.connect(
       func(result: PingusPrime.IPGopher.IpFetchingErrs):
@@ -45,13 +45,12 @@ func _get_addr_and_port() -> void:
    while NetworkID == 0:
       seed((Time.get_unix_time_from_system()*100000) as int)
       NetworkID = randi()
-   ConnectionMenu._set_id_label("NETWORK ID: " + str(NetworkID))
+   ConnectionMenu._set_id_label(str(NetworkID))
    NameTag = str(NetworkID)
 
-func _on_name_changed(new_name: String) -> void:
-   NameTag = new_name
-   _send_nametag_data()
-   
+# =============== #
+# signal handling #
+# =============== #
 # remote_id is the peer's NetworkID when known (gossip); 0 for manual connects.
 # several instances can share one IP, so peers are deduplicated by NetworkID:
 # here when the ID is already known, otherwise at establish time once the
@@ -70,11 +69,6 @@ func _create_connection(target_address: String, target_id: int = 0) -> void:
    MPC.set_name("mpc_" + target_address + "_" + str(randi()))
    PendingConnections.add_child(MPC)
    _refresh_peer_list()
-
-func _on_ready_button_pressed() -> void:
-   ready_button_pressed.emit()
-   ConnectionMenu.visible = false
-
 func _on_connection_established(network_id: int, conn: PingusPrime) -> void:
    # duplicates to a same-IP peer can only be detected once the peer's
    # NetworkID is known: drop this connection if its peer is already active.
@@ -100,16 +94,27 @@ func _on_connection_established(network_id: int, conn: PingusPrime) -> void:
    connection_established.emit(network_id)
    _refresh_peer_list()
    _send_nametag_data()
-
-func _refresh_peer_list() -> void:
-   ConnectionMenu.update_peers(PendingConnections.get_children() + ActiveConnections.get_children())
+func _on_ready_button_pressed() -> void:
+   ready_button_pressed.emit()
+   ConnectionMenu.visible = false
+func _on_name_changed(new_name: String) -> void:
+   NameTag = new_name
+   _send_nametag_data()
+func _on_settings_button_pressed(min_port: int, max_port: int, rate: int) -> void:
+   for conn in PendingConnections.get_children():
+      if not conn is PingusPrime: continue
+      conn.SprayPortMin = min_port
+      conn.SprayPortMax = max_port
+      conn.SprayRate = rate
 
 func passthrough_player_enabled_changed(new_val: bool) -> void:
    ConnectionMenu.visible = not new_val
+func _refresh_peer_list() -> void:
+   ConnectionMenu.update_peers(PendingConnections.get_children() + ActiveConnections.get_children())
 
-# ============= #
-# data handling #
-# ============= #
+# ============ #
+# data routing #
+# ============ #
 enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD, NameTagData = 0x15}
 const PEER_ID_SIZE: int = 4
 
@@ -120,12 +125,10 @@ func _recieve_data(network_id: int, data_type: int, data: PackedByteArray) -> vo
       DataTypes.ConnectionData: _recieve_connection_data(data)
       PingusPrime.DataTypes.CONTROL:
          _refresh_peer_list()
-
 func _recieve_connection_data(data: PackedByteArray) -> void:
    if data.size() < PEER_ID_SIZE:
       return
    _create_connection(data.slice(PEER_ID_SIZE).get_string_from_utf8(), data.decode_u32(0))
-
 func _recieve_name_data(network_id: int, data: PackedByteArray) -> void:
    for conn in ActiveConnections.get_children():
       if not conn is PingusPrime: continue
@@ -137,15 +140,12 @@ func _recieve_name_data(network_id: int, data: PackedByteArray) -> void:
 func send_player_transform_data(data: PackedByteArray) -> void:
    for conn in ActiveConnections.get_children():
       conn.send_data(DataTypes.TransformData, data)
-
 func _send_connection_data(conn: PingusPrime, peer: PingusPrime) -> void:
    var payload := PackedByteArray()
    payload.resize(PEER_ID_SIZE)
    payload.encode_u32(0, peer.TargetID)
    payload.append_array(peer.TargetAddr.to_utf8_buffer())
    conn.send_data(DataTypes.ConnectionData, payload)
-
-
 func _send_nametag_data() -> void:
    for conn in ActiveConnections.get_children():
       conn.send_data(DataTypes.NameTagData, NameTag.to_utf8_buffer())
