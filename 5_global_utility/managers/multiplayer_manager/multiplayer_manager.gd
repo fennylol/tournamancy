@@ -15,6 +15,8 @@ var ExternalAddress: String = ""
 var NetworkID: int = 0
 var NameTag: String = ""
 
+var DEBUG_PRINT_CONTROL_MESSAGES: bool = true
+
 func _ready() -> void:
    ConnectionMenu.settings_button_pressed.connect(_on_settings_button_pressed)
    ConnectionMenu.name_changed.connect(_on_name_changed)
@@ -60,14 +62,20 @@ func _create_connection(target_address: String, target_id: int = 0) -> void:
    if target_id != 0:
       for conn in PendingConnections.get_children() + ActiveConnections.get_children():
          if conn.TargetID == target_id: return
-
+   
+   var parts := target_address.rsplit(":", true, 1)
+   
    var MPC := PingusPrime.new(ExternalAddress, NetworkID)
-   MPC.TargetAddr = target_address
+   MPC.TargetAddr = target_address if parts.size() == 1 else parts[0]
    MPC.TargetID = target_id
    MPC.recieved_data.connect(_recieve_data)
    MPC.connection_established.connect(_on_connection_established.bind(MPC))
    MPC.set_name("mpc_" + target_address + "_" + str(randi()))
    PendingConnections.add_child(MPC)
+   
+   if parts.size() >= 2:
+      MPC.TargetPort = parts[1].to_int()
+      MPC.PingusState = PingusPrime.PingusStates.INFORMING
    _refresh_peer_list()
 func _on_connection_established(network_id: int, conn: PingusPrime) -> void:
    # duplicates to a same-IP peer can only be detected once the peer's
@@ -124,6 +132,7 @@ func _recieve_data(network_id: int, data_type: int, data: PackedByteArray) -> vo
       DataTypes.NameTagData   : _recieve_name_data(network_id, data)
       DataTypes.ConnectionData: _recieve_connection_data(data)
       PingusPrime.DataTypes.CONTROL:
+         if DEBUG_PRINT_CONTROL_MESSAGES: print(data.get_string_from_utf8())
          _refresh_peer_list()
 func _recieve_connection_data(data: PackedByteArray) -> void:
    if data.size() < PEER_ID_SIZE:

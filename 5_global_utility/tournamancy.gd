@@ -7,7 +7,17 @@ class_name Tournamancy
 const DummyScene: PackedScene = preload("res://1_player/dummy.tscn")
 var _dummies: Dictionary = {}
 
+enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD, NameTagData = 0x15}
 func _ready() -> void:
+   var otp := OneTruePingus.new()
+   add_child(otp)
+   otp.recieved_data.connect(
+      func(_network_id: int, data_type: int, data: PackedByteArray) -> void:
+         match data_type:
+            PingusPrime.DataTypes.CONTROL:
+               print(data.get_string_from_utf8())
+   )
+   
    InputManager.init_inputs()
    MPM.connection_established.connect(_on_mpm_connection_established)
    MPM.ready_button_pressed.connect(_on_mpm_ready_button_pressed)

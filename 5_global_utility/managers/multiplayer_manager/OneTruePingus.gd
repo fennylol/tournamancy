@@ -1,12 +1,12 @@
 extends Node
-class_name  PingusPrime
+class_name OneTruePingus
 # ========= #
 # constants #
 # ========= #
-enum  PingusStates {NOT_STARTED, SPRAYING, INFORMING, CONNECTED}
-enum  PingusTypes {SPRAY = 0x5912A459, INFORM = 0x115F0125, KEEPALIVE = 0x8EE9115E, DATA = 0xDA7ADA7A}
-enum  DataTypes {CONTROL = 0xC0}
-const TYPE_SIZE      : int   = 4
+enum  PingusStates {NOT_STARTED, INFORMING, CONNECTED}
+enum  PingusTypes {INFORM = 0x1EF0, KEEPALIVE = 0x8EE9, DATA = 0xDA7A}
+enum  DataTypes   {CONTROL = 0xC0} # the rest should be user defined types
+const TYPE_SIZE      : int   = 2
 const ID_SIZE        : int   = 4
 # header layout: [pkt_type u32][sender NetworkID u32][target NetworkID u32].
 # target 0 means "anyone" (manual connects, before the peer's ID is known).
@@ -47,19 +47,7 @@ var ExternPort  : int           = -1:
       var result = regex.search(str(NewPort))
       if result: ExternPort = NewPort
 var NetworkID   : int           = 0
-var SprayPortMin: int           = 49152:
-   set(NewPort):
-      var regex = RegEx.new()
-      regex.compile("^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
-      var result = regex.search(str(NewPort))
-      if result: SprayPortMin = clampi(NewPort, 1, 65535)
-var SprayPortMax: int           = 65535:
-   set(NewPort):
-      var regex = RegEx.new()
-      regex.compile("^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
-      var result = regex.search(str(NewPort))
-      if result: SprayPortMax = clampi(NewPort, SprayPortMin, 65535)
-var SprayRate   : int           = 3000
+var SprayRate   : int           = 100
 # ======= #
 # signals #
 # ======= #
@@ -68,7 +56,7 @@ signal connection_established(sender_id: int)
 
 func _ready() -> void:
    var bind_err = Udp.bind(0)
-   if bind_err != OK: printerr("PingusPrime: failed to bind UDP socket"); return
+   if bind_err != OK: _emit_control("ERROR: OneTruePingus failed to bind UDP socket"); return
 func _init(external_address: String = "", network_id: int = 0) -> void:
    NetworkID = network_id
    ExternAddr = external_address
@@ -79,29 +67,29 @@ func _discover_network_id() -> void:
       seed((Time.get_unix_time_from_system()*100000) as int)
       NetworkID = randi()
 func _discover_address() -> void:
-   var ipg := IPGopher.new()
-   ipg.ip_fetching_finished.connect(
-      func(result: IPGopher.IpFetchingErrs):
+   var ag := AddressGopher.new()
+   ag.info_fetching_complete.connect(
+      func(result: AddressGopher.InfoFetchingResults, address: String = "", port: int = 0):
          var retry_on_fail: Callable = func(err_str: String):
             PingusTimer += 1
             if PingusTimer < MAX_RETRIES:
                _emit_control(err_str + " Retrying... ")
                await get_tree().create_timer(RETRY_TIME).timeout
-               ipg._attempt_addr_fetch()
+               ag.attempt_info_fetch()
             else:
                _emit_control(err_str + " Aborting...")
 
          match result:
-            IPGopher.IpFetchingErrs.OK:
-               ExternAddr = ipg.get_address_as_string()
-               _emit_control("External IP recieved: " + ExternAddr)
-               ipg.queue_free()
-            IPGopher.IpFetchingErrs.BAD_RESULT  : retry_on_fail.call("BAD_RESULT.")
-            IPGopher.IpFetchingErrs.BAD_RESPONSE: retry_on_fail.call("BAD_RESPONSE.")
-            IPGopher.IpFetchingErrs.BAD_IP      : retry_on_fail.call("BAD_IP.")
+            AddressGopher.InfoFetchingResults.OK                      : _emit_control("External IP recieved: " + address + ":" + str(port)); ag.queue_free()
+            AddressGopher.InfoFetchingResults.BAD_SERVER_LIST_RESULT  : retry_on_fail.call("BAD_SERVER_LIST_RESULT")
+            AddressGopher.InfoFetchingResults.BAD_SERVER_LIST_RESPONSE: retry_on_fail.call("BAD_SERVER_LIST_RESPONSE")
+            AddressGopher.InfoFetchingResults.BAD_SERVER_LIST_DATA    : retry_on_fail.call("BAD_SERVER_LIST_DATA")
+            AddressGopher.InfoFetchingResults.BAD_STUN_RESULT         : retry_on_fail.call("BAD_STUN_RESULT")
+            AddressGopher.InfoFetchingResults.BAD_STUN_RESPONSE       : retry_on_fail.call("BAD_STUN_RESPONSE")
+            AddressGopher.InfoFetchingResults.BAD_STUN_DATA           : retry_on_fail.call("BAD_STUN_DATA")
    )
-   ipg.set_name("IPGopher")
-   add_child(ipg)
+   ag.set_name("AddressGopher")
+   add_child(ag)
 # =================== #
 # PingusState machine #
 # =================== #
@@ -112,41 +100,14 @@ func _process(delta: float) -> void:
          _emit_control("ERROR: Malformed %s: %s. Returning to NOT_STARTED..." % (["target IP address", "[NULL]"] if TargetAddr == "" else ["external IP address", "[NULL]"] if ExternAddr == "" else ["network ID", "0"] if NetworkID == 0 else ["error", "like... this one.."]))
    
    match PingusState:
-      # NOT_STARTED: the PingusPrime has not begun attempting a connection.
-      # -> SPRAYING: once a target is set, it will begin spraying packets at
-      # the target.
+      # NOT_STARTED:  the OneTruePingus has not begun attempting a connection.
+      # -> INFORMING: once a target is set, it will begin spraying packets at
+      # the target to establish a connection.
       PingusStates.NOT_STARTED:
          if TargetAddr != "" and TargetPort == -1 and ExternAddr != "" and NetworkID != 0:
-            PingusState = PingusStates.SPRAYING
+            PingusState = PingusStates.INFORMING
             _emit_control("Attempting to connect to " + TargetAddr)
-      # SPRAYING: the PingusPrime is trying every valid port on the target.
-      # (and the target is doing the same.)
-      # -> INFORMING: when a SPRAY or INFORM packet is recieved, the target
-      # has found one of our ports so lock onto theirs and start informing.
-      PingusStates.SPRAYING:
-         _spray_pingus(delta)
-         while Udp.get_available_packet_count() > 0:
-            var pkt = Udp.get_packet()
-            # packet validation
-            if pkt.size() < HEADER_SIZE: _emit_control("ERROR: undersized packet while spraying."); continue
-            var pkt_type : PingusTypes = pkt.decode_u32(0) as PingusTypes
-            var sender_id: int         = pkt.decode_u32(TYPE_SIZE)
-            var target_id: int         = pkt.decode_u32(TYPE_SIZE + ID_SIZE)
-            if pkt_type != PingusTypes.SPRAY and pkt_type != PingusTypes.INFORM: _emit_control("ERROR: incorrect packet type while spraying."); continue
-            if sender_id == NetworkID: continue # one of our own sockets (same-machine instance)
-            if TargetID  != 0 and sender_id != TargetID: continue # not the peer this connection is for
-            if target_id != 0 and target_id != NetworkID: continue # meant for a different instance at our address
-            # data collection
-            TargetID   = sender_id
-            TargetAddr = Udp.get_packet_ip()
-            TargetPort = Udp.get_packet_port()
-            if TargetAddr != "" and TargetPort >= 1:
-               # state changes before the control emit so listeners reacting to
-               # control messages observe the up-to-date state.
-               PingusState = PingusStates.INFORMING
-               _emit_control("Establishing connection to " + TargetAddr + ":" + str(TargetPort), sender_id)
-               break
-      # INFORMING: the PingusPrime has recieved a valid packet. it is sending
+      # INFORMING: the OneTruePingus has a target set. it is sending
       # the target's port to the target.
       # -> CONNECTED: when an INFORM packet is recieved, the target is also
       # aware of the connection.
@@ -159,22 +120,19 @@ func _process(delta: float) -> void:
             var pkt_type : PingusTypes = pkt.decode_u32(0) as PingusTypes
             var sender_id: int         = pkt.decode_u32(TYPE_SIZE)
             var target_id: int         = pkt.decode_u32(TYPE_SIZE + ID_SIZE)
-            if pkt_type != PingusTypes.SPRAY and pkt_type != PingusTypes.INFORM: _emit_control("ERROR: incorrect packet type while informing."); continue
+            if pkt_type != PingusTypes.INFORM: _emit_control("ERROR: incorrect packet type while informing."); continue
             if sender_id == NetworkID: continue # one of our own sockets (same-machine instance)
             if TargetID  != 0 and sender_id != TargetID: continue # not the peer this connection is for
             if target_id != 0 and target_id != NetworkID: continue # meant for a different instance at our address
             # data collection
             if pkt_type == PingusTypes.INFORM:
+               if PingusState == PingusStates.CONNECTED: continue
                if pkt.size() < HEADER_SIZE + 2: _emit_control("ERROR: INFORM packet too small for port."); continue
                ExternPort = pkt.decode_u16(HEADER_SIZE)
                PingusState = PingusStates.CONNECTED
                _emit_control("Established connection to " + str(sender_id) + " (" + TargetAddr + ":" + str(TargetPort) + ") from local port " + str(ExternPort), sender_id)
                connection_established.emit(sender_id)
-               # the peer sends INFORM in bursts; stop draining here or every
-               # queued INFORM re-emits connection_established. leftovers are
-               # handled next frame by the CONNECTED branch.
-               break
-      # CONNECTED: both the PingusPrime and the target are aware of each other.
+      # CONNECTED: both the OneTruePingus and the target are aware of each other.
       # continually send pings to keep the connection alive.
       PingusStates.CONNECTED:
          PingusTimer += delta
@@ -199,7 +157,7 @@ func _process(delta: float) -> void:
                continue
             # data handling
             match pkt_type:
-               PingusTypes.INFORM:    _emit_control(str(sender_id) + " (" + TargetAddr + ":" + str(TargetPort) + ") re-confirmed connection", sender_id)
+               PingusTypes.INFORM:    _emit_control(str(sender_id) + " (" + TargetAddr + ":" + str(TargetPort) + ") re-confirmed connection", sender_id) 
                PingusTypes.KEEPALIVE: _emit_control(str(sender_id) + " (" + TargetAddr + ":" + str(TargetPort) + ") is keeping connection alive", sender_id)
                PingusTypes.DATA:
                   if pkt.size() < HEADER_SIZE + DATA_TYPE_SIZE: _emit_control("ERROR: DATA packet missing type byte."); continue
@@ -210,7 +168,7 @@ func _process(delta: float) -> void:
 # packet sending #
 # ============== #
 ## send typed application data. data_type is a single byte; values other than
-## PingusPrime.CONTROL are free for the application to define.
+## OneTruePingus.DataTypes.CONTROL (0xC0) are free for the application to define.
 func send_data(data_type: int, data: PackedByteArray = PackedByteArray()) -> void:
    Udp.set_dest_address(TargetAddr, TargetPort)
    var pkt := _make_header(PingusTypes.DATA)
@@ -228,19 +186,6 @@ func _make_header(pkt_type: PingusTypes) -> PackedByteArray:
    return hdr
 func _emit_control(msg: String, sender_id: int = 0) -> void:
    recieved_data.emit(sender_id if sender_id else NetworkID, DataTypes.CONTROL, msg.to_utf8_buffer())
-# PingusStates.SPRAYING
-func _spray_pingus(delta) -> void:
-   var count := ceili(SprayRate * delta)
-   while count > 0:
-      count -= 1
-      TargetPort -= 1
-      if TargetPort > SprayPortMax or TargetPort < SprayPortMin:
-         TargetPort = SprayPortMax
-
-      Udp.set_dest_address(TargetAddr, TargetPort)
-      var send_err = Udp.put_packet(_make_header(PingusTypes.SPRAY))
-      if send_err != OK: _emit_control("ERROR: failed to send spray to " + TargetAddr + ":" + str(TargetPort))
-   _emit_control("Spraying port " + str(TargetPort) + " on " + TargetAddr)
 # PingusStates.INFORMING
 func _inform_pingus(delta) -> void:
    Udp.set_dest_address(TargetAddr, TargetPort)
@@ -286,3 +231,127 @@ class IPGopher extends Node:
             http_req.queue_free()
       )
       http_req.request(IP_FETCHING_URL)
+# ============================= #
+# medium utility class to fetch #
+# external facing IP/port combo #
+# ============================= #
+class AddressGopher extends Node:
+   enum InfoFetchingResults { OK, BAD_SERVER_LIST_RESULT, BAD_SERVER_LIST_RESPONSE, BAD_SERVER_LIST_DATA, BAD_STUN_RESULT, BAD_STUN_RESPONSE, BAD_STUN_DATA }
+   signal info_fetching_complete(result: InfoFetchingResults, ip: String, port: int)
+
+   const SERVER_LIST_URL  : String = "https://raw.githubusercontent.com/pradt2/always-online-stun/master/valid_hosts.txt"
+   const MAGIC_COOKIE     : int    = 0x2112A442
+   const DEFAULT_STUN_PORT: int    = 3478
+   var   custom_stun_url  : String = ""
+
+   func _init(custom_stun_server_addr: String = "") -> void: custom_stun_url = custom_stun_server_addr
+   func _ready() -> void: attempt_info_fetch()
+   func attempt_info_fetch() -> void:
+      var stun_server_url: String = custom_stun_url
+      if not stun_server_url: stun_server_url = await _fetch_stun_server_addr_from_github_repo()
+      if not stun_server_url: return
+      
+      var parts := stun_server_url.rsplit(":", true, 1)
+      var host: String  = parts[0]
+      var port: int     = int(parts[1]) if parts.size() > 1 else DEFAULT_STUN_PORT
+      print("STUN target: %s:%d" % [host, port])
+
+      _stun_request(host, port)
+      
+   func _fetch_stun_server_addr_from_github_repo() -> String:
+      var http := HTTPRequest.new()
+      add_child(http)
+      if http.request(SERVER_LIST_URL) != OK:
+         info_fetching_complete.emit(InfoFetchingResults.BAD_SERVER_LIST_RESULT)
+         http.queue_free()
+         return ""
+
+      var res: Array = await http.request_completed   # [result, code, headers, data]
+      http.queue_free()
+      var result: int = res[0]
+      var code:   int = res[1]
+      var data: PackedByteArray = res[3]
+
+      if result != HTTPRequest.RESULT_SUCCESS: info_fetching_complete.emit(InfoFetchingResults.BAD_SERVER_LIST_RESULT);   return ""
+      if code   != HTTPClient.RESPONSE_OK    : info_fetching_complete.emit(InfoFetchingResults.BAD_SERVER_LIST_RESPONSE); return ""
+
+      var server_list = data.get_string_from_utf8().split("\n", false)  # false = drop empty lines
+      if server_list.is_empty(): info_fetching_complete.emit(InfoFetchingResults.BAD_SERVER_LIST_DATA); return ""
+
+      # 2) Pick a server and run a STUN binding request over UDP
+      var entry: String = server_list[randi() % server_list.size()].strip_edges()
+      return entry
+
+   func _stun_request(host: String, port: int, timeout := 3.0) -> void:
+      var ip: String = host
+      if not host.is_valid_ip_address(): ip = IP.resolve_hostname(host, IP.TYPE_IPV4)
+      if ip.is_empty(): info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_RESULT); return
+
+      var udp := PacketPeerUDP.new()
+      if udp.connect_to_host(ip, port) != OK: info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_RESULT); return
+
+      var txn := PackedByteArray()
+      for i in 12: txn.append(randi() & 0xFF)   # 12-byte transaction id
+
+      udp.put_packet(_build_binding_request(txn))
+
+      var elapsed := 0.0
+      while elapsed < timeout:
+         if udp.get_available_packet_count() > 0:
+            var packet := udp.get_packet()
+            udp.close()
+            var parsed := _parse_stun_response(packet)
+            if not parsed.success:
+               info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_DATA); return
+            info_fetching_complete.emit(InfoFetchingResults.OK, parsed.ip, parsed.port)
+            return
+         await get_tree().create_timer(0.05).timeout
+         elapsed += 0.05
+
+      udp.close()
+      info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_RESPONSE)
+
+   func _build_binding_request(txn: PackedByteArray) -> PackedByteArray:
+      var buf := StreamPeerBuffer.new()
+      buf.big_endian = true
+      buf.put_u16(0x0001)        # Binding Request
+      buf.put_u16(0x0000)        # message length: no attributes
+      buf.put_u32(MAGIC_COOKIE)
+      buf.put_data(txn)
+      return buf.data_array
+
+   func _parse_stun_response(resp: PackedByteArray) -> Dictionary:
+      var fail := {"success": false, "ip": "", "port": 0}
+      if resp.size() < 20: return fail
+
+      var buf := StreamPeerBuffer.new()
+      buf.data_array = resp
+      buf.big_endian = true
+      var msg_type := buf.get_u16()
+      var _msg_len := buf.get_u16()
+      var cookie   := buf.get_u32()
+      if cookie != MAGIC_COOKIE or msg_type != 0x0101:   # 0x0101 = Binding Success
+         return fail
+
+      var pos := 20
+      while pos + 4 <= resp.size():
+         buf.seek(pos)
+         var attr_type := buf.get_u16()
+         var attr_len  := buf.get_u16()
+         var val := pos + 4
+         if   attr_type == 0x0020: return _decode_addr(resp, val, true)   # XOR-MAPPED-ADDRESS
+         elif attr_type == 0x0001: return _decode_addr(resp, val, false)  # MAPPED-ADDRESS (legacy)
+         pos = val + attr_len
+         if attr_len % 4 != 0: pos += 4 - (attr_len % 4)   # attrs are 4-byte padded
+      return fail
+
+   func _decode_addr(resp: PackedByteArray, i: int, xored: bool) -> Dictionary:
+      var family := resp[i + 1]
+      if family != 0x01: return {"success": false, "ip": "", "port": 0}   # IPv4 only here
+      var raw_port := (resp[i + 2] << 8) | resp[i + 3]
+      var port := raw_port ^ (MAGIC_COOKIE >> 16) if xored else raw_port  # XOR with 0x2112
+      var ck := [0x21, 0x12, 0xA4, 0x42]
+      var o := []
+      for k in 4:
+         o.append((resp[i + 4 + k] ^ ck[k]) if xored else resp[i + 4 + k])
+      return {"success": true, "ip": "%d.%d.%d.%d" % o, "port": port}

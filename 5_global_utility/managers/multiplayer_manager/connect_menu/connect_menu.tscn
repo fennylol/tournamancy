@@ -45,6 +45,7 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 10.0
 
 [node name="scan_settings_and_labels" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=945446299]
+visible = false
 layout_mode = 2
 
 [node name="scan_settings_labels" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels" unique_id=566111537]
