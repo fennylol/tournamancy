@@ -44,142 +44,72 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 10.0
 
-[node name="scan_settings_and_labels" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=945446299]
-visible = false
+[node name="WAN_vs_LAN_box" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=1386407957]
 layout_mode = 2
 
-[node name="scan_settings_labels" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels" unique_id=566111537]
-layout_mode = 2
-
-[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_labels" unique_id=41268365]
+[node name="global_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/WAN_vs_LAN_box" unique_id=712101999]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="MinPortLabel" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_labels" unique_id=1987312846]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 20.0
-text = "Min Port"
-horizontal_alignment = 1
-
-[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_labels" unique_id=696460335]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="MaxPortLabel" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_labels" unique_id=287327717]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 20.0
-text = "Max Port"
-horizontal_alignment = 1
-
-[node name="spacer3" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_labels" unique_id=1419644576]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="RateLabel" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_labels" unique_id=546218560]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 20.0
-text = "Packets / sec"
-horizontal_alignment = 1
-
-[node name="spacer4" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_labels" unique_id=1747996841]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="scan_settings_box" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels" unique_id=1521308383]
-layout_mode = 2
-
-[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_box" unique_id=1395034319]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="min_port_box" type="LineEdit" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_box" unique_id=1713862083]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 20.0
-placeholder_text = "49152"
-
-[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_box" unique_id=543729972]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="max_port_box" type="LineEdit" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_box" unique_id=1792579935]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 20.0
-placeholder_text = "65534"
-
-[node name="spacer3" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_box" unique_id=1816857984]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="rate_box" type="LineEdit" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_box" unique_id=15356186]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 20.0
-placeholder_text = "3000"
-
-[node name="spacer4" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/scan_settings_box" unique_id=927976903]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="save_button_box" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels" unique_id=709217792]
-layout_mode = 2
-
-[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/save_button_box" unique_id=2072113787]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="save_settings_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/save_button_box" unique_id=1894147329]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 62.0
-text = "save settings
+disabled = true
+text = "Play Globally
 "
 
-[node name="spacer4" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/scan_settings_and_labels/save_button_box" unique_id=1091841734]
+[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/WAN_vs_LAN_box" unique_id=1574151843]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="spacer3" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=1035059997]
-layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 3.0
+size_flags_stretch_ratio = 0.05
 
-[node name="wan_info" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=718756249]
-layout_mode = 2
-
-[node name="WAN_label" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/wan_info" unique_id=687741824]
-layout_mode = 2
-size_flags_horizontal = 6
-text = "PEE.POO.CUM.POO:WEINER"
-
-[node name="copy_wan_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/wan_info" unique_id=1307268099]
+[node name="local_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/WAN_vs_LAN_box" unique_id=1590002401]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.4
-text = "copy WAN"
+text = "Play Locally"
 
-[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=1066481421]
+[node name="spacer5" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=2072007868]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="lan_info" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=839900756]
+[node name="Host_vs_Client_box" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=795674627]
 layout_mode = 2
 
-[node name="LAN_label" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/lan_info" unique_id=1487800806]
+[node name="client_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/Host_vs_Client_box" unique_id=576900257]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Join
+"
+
+[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/Host_vs_Client_box" unique_id=2004787308]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+
+[node name="host_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/Host_vs_Client_box" unique_id=2011580050]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Host"
+
+[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=421277097]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.1
+
+[node name="IP_info" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=718756249]
+layout_mode = 2
+
+[node name="IP_label" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/IP_info" unique_id=687741824]
 layout_mode = 2
 size_flags_horizontal = 6
 text = "PEE.POO.CUM.POO:WEINER"
 
-[node name="copy_lan_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/lan_info" unique_id=2026856837]
+[node name="copy_IP_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/IP_info" unique_id=1307268099]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
-text = "copy LAN"
+text = "copy IP
+"
 
 [node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=458992889]
 layout_mode = 2
@@ -194,7 +124,7 @@ layout_mode = 2
 size_flags_horizontal = 6
 text = "80085"
 
-[node name="copy_id_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/id_info" unique_id=1712719287]
+[node name="copy_ID_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/id_info" unique_id=1712719287]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
@@ -203,7 +133,7 @@ text = "copy ID"
 [node name="spacer4" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=880933413]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 3.0
+size_flags_stretch_ratio = 6.0
 
 [node name="name_box" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=233220469]
 layout_mode = 2
@@ -213,8 +143,9 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 placeholder_text = "Your Name Here"
+max_length = 25
 
-[node name="change_name_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/name_box" unique_id=1781356594]
+[node name="set_name_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/name_box" unique_id=1781356594]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.5
