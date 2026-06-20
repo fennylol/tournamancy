@@ -7,7 +7,3 @@
 script = ExtResource("1_1ai7x")
 
 [node name="ConnectMenu" parent="." unique_id=13288426 instance=ExtResource("2_i4uy1")]
-
-[node name="ActiveConnections" type="Node" parent="." unique_id=1621328653]
-
-[node name="PendingConnections" type="Node" parent="." unique_id=1780307406]

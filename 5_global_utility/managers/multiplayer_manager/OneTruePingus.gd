@@ -1,5 +1,16 @@
 extends Node
 class_name OneTruePingus
+## utility class for managing and communicating with an arbitrary amount of 
+## multiplayer connections.[br][br]
+## see also: [br]
+## [OneTruePingus.AddressGopher][br]
+## [OneTruePingus.PingusPeer]
+## [codeblock]
+## WORK LEFT TO DO:
+## 1. enable LAN/WAN cross connections
+## 2. remove Herobrine
+## [/codeblock]
+
 # ========= #
 # constants #
 # ========= #
@@ -7,39 +18,46 @@ class_name OneTruePingus
 enum  DataTypes    {CONTROL = 0xC0}
 ## the current state of the connection to each peer
 enum  PingusStates {NOT_STARTED, INFORMING, CONNECTED}
-## the type of pingus being sent/recieved.
+## the type of pingus being sent/recieved. used internally
 enum  PingusTypes  {INFORM = 0x1EF0, KEEPALIVE = 0x8EE9, DATA = 0xDA7A}
-const TYPE_SIZE      : int   = 2
-const ID_SIZE        : int   = 4
-# header layout: [pkt_type u16][sender NetworkID u32][target NetworkID u32].
-# target 0 means "anyone" (before the peer's ID is known).
-const HEADER_SIZE    : int   = TYPE_SIZE + ID_SIZE + ID_SIZE
-const DATA_TYPE_SIZE : int   = 1
-const RETRY_TIME     : float = 2.5
-const MAX_RETRIES    : int   = 5
-const KEEP_ALIVE_TIME: float = 5.0
-const TWO_GENERALS   : int   = 0x26E1
+## size in bytes of a [member NetworkID]. see [constant HEADER_SIZE]
+const NETWORK_ID_SIZE : int   = 4
+## size in bytes of a [OneTruePingus.PingusPeer]'s network port
+const PORT_SIZE       : int   = 2
+## size in bytes of user defined data types. see [method send_data] and [signal recieved_data]
+const DATA_TYPE_SIZE  : int   = 1
+## size in bytes of the internally defined and used [enum PingusTypes]. 
+const PINGUS_TYPE_SIZE: int   = 2
+## header layout: [lb]pkt [enum PingusType] u16[rb][lb]sender's [member NetworkID]
+## u32[rb][lb]target's [member NetworkID] u32[rb][br] target 0 means "anyone" 
+## (before the peer's ID is known).
+const HEADER_SIZE     : int   = PINGUS_TYPE_SIZE + NETWORK_ID_SIZE + NETWORK_ID_SIZE
+const _RETRY_TIME     : float = 2.5
+const _MAX_RETRIES    : int   = 5
+const _KEEP_ALIVE_TIME: float = 5.0
+const _TIMEOUT_TIME   : float = 60.0
+const _TWO_GENERALS   : int   = 0x26E1
 # ========= #
 # variables #
 # ========= #
 ## all connected [OneTruePingus.PingusPeer]s
-var Peers       : Array[PingusPeer] = []
+var Peers      : Array[PingusPeer] = []
 ## the external facing address on our router
-var ExternAddr  : String            = "":
+var ExternAddr : String            = "":
    set(new_addr):
       var rx = RegEx.new()
       rx.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
       if rx.search(new_addr): ExternAddr = new_addr
 ## the external facing port on our router
-var ExternPort  : int               = -1:
+var ExternPort : int               = -1:
    set(new_port):
       var rx = RegEx.new()
       rx.compile("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
       if rx.search(str(new_port)): ExternPort = new_port
 ## a unique ID to differentiate our traffic on the network
-var NetworkID   : int               = 0
-## the local address we are sending from [b]READONLY[/b]
-var LocalAddr   : String            = "":
+var NetworkID  : int               = 0
+## the local address we are sending from. [b]READONLY[/b]
+var LocalAddr  : String            = "":
    set(new_val): LocalAddr = new_val
    get():
       for address in IP.get_local_addresses():
@@ -47,20 +65,26 @@ var LocalAddr   : String            = "":
             LocalAddr = address
             return address
       return "PEE.POO.CUM.POO:WEINER" 
-## the local port we are sending from [b]READONLY[/b]
-var LocalPort   : int               = 0:
+## the local port we are sending from. [b]READONLY[/b]
+var LocalPort  : int               = 0:
    set(new_val): LocalPort = new_val
    get(): 
       LocalPort = _Udp.get_local_port()
       return _Udp.get_local_port()
-var _Udp        : PacketPeerUDP     = PacketPeerUDP.new()
-var _SprayRate  : int               = 100
-var _retry_count: int               = 0
+var _Udp       : PacketPeerUDP     = PacketPeerUDP.new()
+var _SprayRate : int               = 100
+var _RetryCount: int               = 0
 # ======= #
 # signals #
 # ======= #
+## emitted when a packet or control signal is recieved. if it is an internal control 
+## signal, [param data_type] will be [enum DataTypes].CONTROL and [param data] 
+## will be a [String]. in all other cases, [b][param data_type] should be an enum
+## value defined by the application using OneTruePingus[/b][br]see [constant DATA_TYPE_SIZE]
+## and [constant HEADER_SIZE]
 signal recieved_data(sender_id: int, data_type: int, data: PackedByteArray)
-signal connection_established(sender_id: int)
+## emitted when a [OneTruePingus.PingusPeer] reaches the [enum PingusStates].CONNECTED status
+signal connection_established(sender_id: int, address: String, port: int)
 # ===== #
 # setup #
 # ===== #
@@ -82,10 +106,10 @@ func _discover_address() -> void:
    ag.info_fetching_complete.connect(
       func(result: AddressGopher.InfoFetchingResults, address: String = "", port: int = 0):
          var retry_on_fail: Callable = func(err_str: String):
-            _retry_count += 1
-            if _retry_count < MAX_RETRIES:
+            _RetryCount += 1
+            if _RetryCount < _MAX_RETRIES:
                _emit_control(err_str + " Retrying...")
-               await get_tree().create_timer(RETRY_TIME).timeout
+               await get_tree().create_timer(_RETRY_TIME).timeout
                ag.attempt_info_fetch()
             else:
                _emit_control(err_str + " Aborting...")
@@ -94,7 +118,6 @@ func _discover_address() -> void:
                ExternAddr = address
                ExternPort = port
                _emit_control("External address: " + ExternAddr + ":" + str(ExternPort))
-               ag.queue_free()
             AddressGopher.InfoFetchingResults.BAD_SERVER_LIST_RESULT  : retry_on_fail.call("BAD_SERVER_LIST_RESULT")
             AddressGopher.InfoFetchingResults.BAD_SERVER_LIST_RESPONSE: retry_on_fail.call("BAD_SERVER_LIST_RESPONSE")
             AddressGopher.InfoFetchingResults.BAD_SERVER_LIST_DATA    : retry_on_fail.call("BAD_SERVER_LIST_DATA")
@@ -107,9 +130,12 @@ func _discover_address() -> void:
 # =============== #
 # actual function #
 # =============== #
+## get our own IP:Port combo as a [String]. defaults to WAN. set [param external]
+## false to get the LAN values. 
 func get_addr_port(external: bool = true) -> String:
    if external: return ExternAddr + ":" + str(ExternPort)
    else: return LocalAddr + ":" + str(LocalPort)
+## add a IP:Port to target communications with. 
 func add_peer(target_addr: String, target_port: int, target_id: int = 0) -> void:
    if target_id != 0 and target_id == NetworkID: return
    for old_peer in Peers:
@@ -131,8 +157,8 @@ func _process(delta: float) -> void:
       # decode and validate packet
       if pkt.size() < HEADER_SIZE: _emit_control("ERROR: undersized packet"); continue
       var pkt_type : int = pkt.decode_u16(0)
-      var sender_id: int = pkt.decode_u32(TYPE_SIZE)
-      var target_id: int = pkt.decode_u32(TYPE_SIZE + ID_SIZE)
+      var sender_id: int = pkt.decode_u32(PINGUS_TYPE_SIZE)
+      var target_id: int = pkt.decode_u32(PINGUS_TYPE_SIZE + NETWORK_ID_SIZE)
       if (from_addr == ExternAddr and from_port == ExternPort) or (from_addr == LocalAddr and from_port == LocalPort) or (sender_id == NetworkID): continue
       if target_id != 0 and target_id != NetworkID: continue
       # locate peer
@@ -143,12 +169,12 @@ func _process(delta: float) -> void:
       match peer.State:
          PingusStates.INFORMING:
             if pkt_type != PingusTypes.INFORM: _emit_control("ERROR: incorrect packet type while informing"); continue
-            if pkt.size() < HEADER_SIZE + 2: _emit_control("ERROR: INFORM packet too small for port"); continue
+            if pkt.size() < HEADER_SIZE + PORT_SIZE: _emit_control("ERROR: INFORM packet too small for port"); continue
             peer.State = PingusStates.CONNECTED
             peer.TimeSincePkt = 0.0
             _emit_control("Established connection to " + str(sender_id) + " (" + from_addr + ":" + str(from_port) + ")", sender_id)
             _inform_peer(peer, delta)
-            connection_established.emit(sender_id)
+            connection_established.emit(sender_id, from_addr, from_port)
          PingusStates.CONNECTED:
             if from_addr != peer.Addr or from_port != peer.Port: _emit_control("ERROR: packet from unidentified source"); continue
             if sender_id != peer.NetworkID or (target_id != 0 and target_id != NetworkID): _emit_control("ERROR: packet signed by unidentified sender"); continue
@@ -156,7 +182,7 @@ func _process(delta: float) -> void:
                PingusTypes.KEEPALIVE: _emit_control(str(sender_id) + " (" + peer.Addr + ":" + str(peer.Port) + ") is keeping connection alive", sender_id)
                PingusTypes.INFORM:
                   _emit_control(str(sender_id) + " (" + peer.Addr + ":" + str(peer.Port) + ") re-confirmed connection", sender_id)
-                  if pkt.size() <= HEADER_SIZE + 2:
+                  if pkt.size() <= HEADER_SIZE + PORT_SIZE:
                      _inform_peer(peer, delta, true)
                      _emit_control(str(sender_id) + " (" + peer.Addr + ":" + str(peer.Port) + ") is experiencing a two-generals problem", sender_id)
                PingusTypes.DATA:
@@ -166,13 +192,17 @@ func _process(delta: float) -> void:
                _: _emit_control("ERROR: incorrect packet type while connected")
    
    # inform peers and keep connections alive
-   for peer in Peers:
+   for peer:PingusPeer in Peers:
+      peer.TimeSincePkt += delta
       match peer.State:
-         PingusStates.INFORMING: _inform_peer(peer, delta)
+         PingusStates.INFORMING:
+            _inform_peer(peer, delta)
+            if peer.TimeSincePkt >= _TIMEOUT_TIME:
+               Peers.erase(peer)
+               _emit_control("Attempt to establish connection to: " + peer.Addr + ":" + str(peer.Port) + " has timed out")
          PingusStates.CONNECTED:
-            peer.TimeSincePkt += delta
-            if peer.TimeSincePkt >= KEEP_ALIVE_TIME:
-               peer.TimeSincePkt -= KEEP_ALIVE_TIME
+            if peer.TimeSincePkt >= _KEEP_ALIVE_TIME:
+               peer.TimeSincePkt -= _KEEP_ALIVE_TIME
                _keepalive_peer(peer)
 func _find_peer(from_addr: String, from_port: int, sender_id: int) -> PingusPeer:
    if sender_id != 0:
@@ -201,8 +231,8 @@ func _make_header(pkt_type: PingusTypes, peer: PingusPeer) -> PackedByteArray:
    var hdr := PackedByteArray()
    hdr.resize(HEADER_SIZE)
    hdr.encode_u16(0, pkt_type)
-   hdr.encode_u32(TYPE_SIZE, NetworkID)
-   hdr.encode_u32(TYPE_SIZE + ID_SIZE, peer.NetworkID)
+   hdr.encode_u32(PINGUS_TYPE_SIZE, NetworkID)
+   hdr.encode_u32(PINGUS_TYPE_SIZE + NETWORK_ID_SIZE, peer.NetworkID)
    return hdr
 func _emit_control(msg: String, sender_id: int = 0) -> void:
    recieved_data.emit(sender_id if sender_id else NetworkID, DataTypes.CONTROL, msg.to_utf8_buffer())
@@ -213,9 +243,9 @@ func _inform_peer(peer: PingusPeer, delta: float, two_generals: bool = false) ->
    while count > 0:
       count -= 1
       var pkt := _make_header(PingusTypes.INFORM, peer)
-      pkt.resize(HEADER_SIZE + 2)
+      pkt.resize(HEADER_SIZE + PORT_SIZE)
       pkt.encode_u16(HEADER_SIZE, peer.Port)
-      if two_generals: pkt.append(TWO_GENERALS)
+      if two_generals: pkt.append(_TWO_GENERALS)
       var send_err = _Udp.put_packet(pkt)
       if send_err != OK: _emit_control("ERROR: failed to send inform to " + peer.Addr + ":" + str(peer.Port))
    _emit_control("Informing " + peer.Addr + " at port: " + str(peer.Port))
@@ -226,41 +256,54 @@ func _keepalive_peer(peer: PingusPeer) -> void:
    if send_err != OK: _emit_control("ERROR: failed to send keepalive to " + peer.Addr + ":" + str(peer.Port))
    else: _emit_control("Preventing timeout with " + peer.Addr + ":" + str(peer.Port))
 
-## [codeblock]
-## # ======================= #
-## # small data structure to #
-## # store info about a peer #
-## # ======================= #
-## [/codeblock]
+## data structure to store info about a peer. 
 class PingusPeer:
-   var Addr        : String = ""
-   var Port        : int    = -1
-   var NetworkID   : int    = 0
-   var TimeSincePkt: float  = 0.0
-   var State       : PingusStates = PingusStates.NOT_STARTED
+   ## the IP address the [OneTruePingus] uses to connect to the peer. 
+   var Addr         : String = ""
+   ## the Port the [OneTruePingus] uses to connect to this peer
+   var Port         : int    = -1
+   ## the network ID of the peer. see [member OneTruePingus.NetworkID]
+   var NetworkID    : int    = 0
+   ## time elapsed since last packet. see [member OneTruePingus._KEEP_ALIVE_TIME] and [member OneTruePingus._TIMEOUT_TIME] (yeah those are both hidden properties i know lmao
+   var TimeSincePkt : float  = 0.0
+   ## the state of the connection between the [OneTruePingus] and the peer.
+   var State  : PingusStates = PingusStates.NOT_STARTED
    func _init(addr: String, port: int, id: int) -> void:
       Addr      = addr
       Port      = port
       NetworkID = id
-## [codeblock]
-## # ============================= #
-## # medium utility class to fetch #
-## # external facing IP/port combo #
-## # ============================= #
-## [/codeblock]
+## utility class to fetch external facing IP/port combo.[br]
+## underpinned by [url=https://github.com/pradt2/always-online-stun.git]pradt2's github[/url]. many thanks to them![br][br]
+## [i]*writted by Claude Opus 4.8, so it might be straight dookie idk. i didn't feel like dealing with the complexities of the STUN protocol. sue me...[/i]
 class AddressGopher extends Node:
-   enum InfoFetchingResults { OK, BAD_SERVER_LIST_RESULT, BAD_SERVER_LIST_RESPONSE, BAD_SERVER_LIST_DATA, BAD_STUN_RESULT, BAD_STUN_RESPONSE, BAD_STUN_DATA }
+   ## SERVER_LIST errors are involved with fetching the sever list from [url=https://github.com/pradt2/always-online-stun.git]pradt2's github[/url].[br]
+   ## STUN errors are involved with contacting the actual STUN server.
+   enum InfoFetchingResults {OK, BAD_SERVER_LIST_RESULT, BAD_SERVER_LIST_RESPONSE, BAD_SERVER_LIST_DATA, BAD_STUN_RESULT, BAD_STUN_RESPONSE, BAD_STUN_DATA }
+   ## the route by which the info will return. ensure you connect  a handler to 
+   ## this signal before adding the AddressGopher to the tree because this 
+   ## [b]***will blow its own shit smooth off the moment it sends a [member InfoFetchingResults.OK]***[/b]
    signal info_fetching_complete(result: InfoFetchingResults, ip: String, port: int)
+   ## [url=https://github.com/pradt2/always-online-stun.git]pradt2's github[/url] 
+   ## from which we fetch a list of STUN servers
+   const SERVER_LIST_URL   : String = "https://raw.githubusercontent.com/pradt2/always-online-stun/master/valid_hosts.txt"
+   const _MAGIC_COOKIE     : int    = 0x2112A442
+   ## see [member CustomStunUrl]
+   const DEFAULT_STUN_PORT : int    = 3478
+   ## the address of a specific STUN server to use instead of a random one fetched
+   ## from [url=https://github.com/pradt2/always-online-stun.git]pradt2's github[/url].
+   ## if no port is specified in the string, [constant DEFAULT_STUN_PORT] will be
+   ## used instead.[br][br]see [method attempt_info_fetch]
+   var   CustomStunUrl     : String = ""
 
-   const SERVER_LIST_URL  : String = "https://raw.githubusercontent.com/pradt2/always-online-stun/master/valid_hosts.txt"
-   const MAGIC_COOKIE     : int    = 0x2112A442
-   const DEFAULT_STUN_PORT: int    = 3478
-   var   _custom_stun_url  : String = ""
-
-   func _init(custom_stun_server_addr: String = "") -> void: _custom_stun_url = custom_stun_server_addr
+   func _init(custom_stun_server_addr: String = "") -> void: CustomStunUrl = custom_stun_server_addr
    func _ready() -> void: attempt_info_fetch()
+   ## typically, we will contact [url=https://github.com/pradt2/always-online-stun.git]pradt2's github[/url]
+   ## for a list of active STUN servers, pick one at random, and ping it to discover
+   ## our IP:Port.[br]
+   ## in the unlikely event that github ever goes down, or you want to target a
+   ## specific STUN server, simply set [member CustomStunUrl] to a valid STUN server.
    func attempt_info_fetch() -> void:
-      var stun_server_url: String = _custom_stun_url
+      var stun_server_url: String = CustomStunUrl
       if not stun_server_url: stun_server_url = await _fetch_stun_server_addr_from_github_repo()
       if not stun_server_url: return
 
@@ -268,7 +311,6 @@ class AddressGopher extends Node:
       var host: String = parts[0]
       var port: int    = int(parts[1]) if parts.size() > 1 else DEFAULT_STUN_PORT
       _stun_request(host, port)
-
    func _fetch_stun_server_addr_from_github_repo() -> String:
       var http := HTTPRequest.new()
       add_child(http)
@@ -291,7 +333,6 @@ class AddressGopher extends Node:
 
       var entry: String = server_list[randi() % server_list.size()].strip_edges()
       return entry
-
    func _stun_request(host: String, port: int, timeout := 3.0) -> void:
       var ip: String = host
       if not host.is_valid_ip_address(): ip = IP.resolve_hostname(host, IP.TYPE_IPV4)
@@ -314,22 +355,20 @@ class AddressGopher extends Node:
             if not parsed.success:
                info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_DATA); return
             info_fetching_complete.emit(InfoFetchingResults.OK, parsed.ip, parsed.port)
-            return
+            self.queue_free()
          await get_tree().create_timer(0.05).timeout
          elapsed += 0.05
 
       udp.close()
       info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_RESPONSE)
-
    func _build_binding_request(txn: PackedByteArray) -> PackedByteArray:
       var buf := StreamPeerBuffer.new()
       buf.big_endian = true
       buf.put_u16(0x0001)
       buf.put_u16(0x0000)
-      buf.put_u32(MAGIC_COOKIE)
+      buf.put_u32(_MAGIC_COOKIE)
       buf.put_data(txn)
       return buf.data_array
-
    func _parse_stun_response(resp: PackedByteArray) -> Dictionary:
       var fail := {"success": false, "ip": "", "port": 0}
       if resp.size() < 20: return fail
@@ -340,7 +379,7 @@ class AddressGopher extends Node:
       var msg_type := buf.get_u16()
       var _msg_len := buf.get_u16()
       var cookie   := buf.get_u32()
-      if cookie != MAGIC_COOKIE or msg_type != 0x0101:
+      if cookie != _MAGIC_COOKIE or msg_type != 0x0101:
          return fail
 
       var pos := 20
@@ -354,12 +393,11 @@ class AddressGopher extends Node:
          pos = val + attr_len
          if attr_len % 4 != 0: pos += 4 - (attr_len % 4)
       return fail
-
    func _decode_addr(resp: PackedByteArray, i: int, xored: bool) -> Dictionary:
       var family := resp[i + 1]
       if family != 0x01: return {"success": false, "ip": "", "port": 0}
-      var raw_port := (resp[i + 2] << 8) | resp[i + 3]
-      var port := raw_port ^ (MAGIC_COOKIE >> 16) if xored else raw_port
+      var raw_port := (resp[i + PORT_SIZE] << 8) | resp[i + 3]
+      var port := raw_port ^ (_MAGIC_COOKIE >> 16) if xored else raw_port
       var ck := [0x21, 0x12, 0xA4, 0x42]
       var o := []
       for k in 4:

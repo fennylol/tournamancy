@@ -28,6 +28,7 @@ func _ready() -> void:
    _ConnectionMenu.network_type_changed.connect(_on_network_type_changed)
    _ConnectionMenu.hosting_type_changed.connect(func(_client: bool): pass)
    
+   _OTP.set_name("MultiplayerCoupler")
    add_child(_OTP)
 
 # =============== #
@@ -38,8 +39,13 @@ func _on_connect_button_pressed(target_address: String) -> void:
    if parts.size() < 2: return
    _OTP.add_peer(parts[0], parts[1].to_int())
    _refresh_peer_list()
-func _on_connection_established(network_id: int) -> void:
+func _on_connection_established(network_id: int, peer_address: String, peer_port: int) -> void:
    connection_established.emit(network_id)
+   _send_connection_data(network_id, peer_address, peer_port)
+   for peer in _OTP.Peers:
+      if peer.NetworkID == network_id: continue
+      if peer.State != OneTruePingus.PingusStates.CONNECTED: continue
+      _send_connection_data(peer.NetworkID, peer.Addr, peer.Port)
    _refresh_peer_list()
    _send_nametag_data()
 func _on_ready_button_pressed() -> void:
@@ -58,25 +64,46 @@ func passthrough_player_enabled_changed(new_val: bool) -> void:
 # ============ #
 # data routing #
 # ============ #
-enum DataTypes { TransformData = 0x20, NameTagData = 0x15 }
+enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD, NameTagData = 0x15 }
 
 func _recieve_data(sender_id: int, data_type: int, data: PackedByteArray) -> void:
    match data_type:
-      DataTypes.TransformData: transform_data.emit(sender_id, data)
-      DataTypes.NameTagData  : _recieve_name_data(sender_id, data)
+      DataTypes.TransformData : transform_data.emit(sender_id, data)
+      DataTypes.NameTagData   : _recieve_name_data(sender_id, data)
+      DataTypes.ConnectionData: _recieve_connection_data(data)
       OneTruePingus.DataTypes.CONTROL:
          if DEBUG_PRINT_CONTROL_MESSAGES: print(data.get_string_from_utf8())
          if _OTP.ExternAddr != "" and _ConnectionMenu.GLOBAL_BUTTON.disabled:
             _ConnectionMenu.set_ip_label(_OTP.get_addr_port(true))
          _refresh_peer_list()
 
-func _recieve_name_data(network_id: int, data: PackedByteArray) -> void:
-   _NameTags[network_id] = data.get_string_from_utf8()
-   name_data.emit(network_id, data)
+func _recieve_name_data(sender_id: int, data: PackedByteArray) -> void:
+   _NameTags[sender_id] = data.get_string_from_utf8()
+   name_data.emit(sender_id, data)
    _refresh_peer_list()
+
+func _recieve_connection_data(data: PackedByteArray) -> void:
+   var peer_id = data.decode_u32(0)
+   var peer_port = data.decode_u16(OneTruePingus.ID_SIZE)
+   var peer_address = data.slice(OneTruePingus.ID_SIZE + OneTruePingus.PORT_SIZE).get_string_from_utf8()
+   
+   if (peer_id == _OTP.NetworkID) \
+   or (peer_address == _OTP.ExternAddr and peer_port == _OTP.ExternPort) \
+   or (peer_address == _OTP.LocalAddr and peer_port == _OTP.LocalPort):
+      return 
+   
+   _OTP.add_peer(peer_address, peer_port, peer_id)
 
 func send_player_transform_data(data: PackedByteArray) -> void:
    _OTP.send_data(DataTypes.TransformData, data)
+
+func _send_connection_data(network_id: int, peer_address: String, peer_port: int) -> void:
+   var data: PackedByteArray = []
+   data.resize(OneTruePingus.ID_SIZE + OneTruePingus.PORT_SIZE)
+   data.encode_u32(0, network_id)
+   data.encode_u16(OneTruePingus.ID_SIZE, peer_port)
+   data.append_array(peer_address.to_utf8_buffer())
+   _OTP.send_data(DataTypes.ConnectionData, data)
 
 func _send_nametag_data() -> void:
    _OTP.send_data(DataTypes.NameTagData, NameTag.to_utf8_buffer())
