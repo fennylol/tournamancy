@@ -13,7 +13,7 @@ var _OTP         : OneTruePingus = OneTruePingus.new()
 var _NameTags    : Dictionary    = {}
 #var _InternalAddr: String        = ""
 
-var DEBUG_PRINT_CONTROL_MESSAGES: bool = true
+var DEBUG_PRINT_CONTROL_MESSAGES: bool = false
 
 func _ready() -> void:
    NameTag = str(_OTP.NetworkID)
@@ -84,8 +84,8 @@ func _recieve_name_data(sender_id: int, data: PackedByteArray) -> void:
 
 func _recieve_connection_data(data: PackedByteArray) -> void:
    var peer_id = data.decode_u32(0)
-   var peer_port = data.decode_u16(OneTruePingus.ID_SIZE)
-   var peer_address = data.slice(OneTruePingus.ID_SIZE + OneTruePingus.PORT_SIZE).get_string_from_utf8()
+   var peer_port = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
+   var peer_address = data.slice(OneTruePingus.NETWORK_ID_SIZE + OneTruePingus.PORT_SIZE).get_string_from_utf8()
    
    if (peer_id == _OTP.NetworkID) \
    or (peer_address == _OTP.ExternAddr and peer_port == _OTP.ExternPort) \
@@ -99,9 +99,9 @@ func send_player_transform_data(data: PackedByteArray) -> void:
 
 func _send_connection_data(network_id: int, peer_address: String, peer_port: int) -> void:
    var data: PackedByteArray = []
-   data.resize(OneTruePingus.ID_SIZE + OneTruePingus.PORT_SIZE)
+   data.resize(OneTruePingus.NETWORK_ID_SIZE + OneTruePingus.PORT_SIZE)
    data.encode_u32(0, network_id)
-   data.encode_u16(OneTruePingus.ID_SIZE, peer_port)
+   data.encode_u16(OneTruePingus.NETWORK_ID_SIZE, peer_port)
    data.append_array(peer_address.to_utf8_buffer())
    _OTP.send_data(DataTypes.ConnectionData, data)
 
