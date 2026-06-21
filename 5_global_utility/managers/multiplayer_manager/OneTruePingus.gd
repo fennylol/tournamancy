@@ -32,7 +32,7 @@ const PINGUS_TYPE_SIZE: int   = 2
 ## u32[rb][lb]target's [member NetworkID] u32[rb][br] target 0 means "anyone" 
 ## (before the peer's ID is known).
 const HEADER_SIZE     : int   = PINGUS_TYPE_SIZE + NETWORK_ID_SIZE + NETWORK_ID_SIZE
-const _RETRY_TIME     : float = 2.5
+const _RETRY_TIME     : float = 0.5
 const _MAX_RETRIES    : int   = 5
 const _KEEP_ALIVE_TIME: float = 5.0
 const _TIMEOUT_TIME   : float = 60.0
@@ -46,7 +46,7 @@ var Peers      : Array[PingusPeer] = []
 var ExternAddr : String            = "":
    set(new_addr):
       var rx = RegEx.new()
-      rx.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
+      rx.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|PEE.POO.CUM.POO")
       if rx.search(new_addr): ExternAddr = new_addr
 ## the external facing port on our router
 var ExternPort : int               = -1:
@@ -64,16 +64,17 @@ var LocalAddr  : String            = "":
          if address.begins_with("192.168"):
             LocalAddr = address
             return address
-      return "PEE.POO.CUM.POO:WEINER" 
+      return "PEE.POO.CUM.POO" 
 ## the local port we are sending from. [b]READONLY[/b]
 var LocalPort  : int               = 0:
    set(new_val): LocalPort = new_val
    get(): 
       LocalPort = _Udp.get_local_port()
       return _Udp.get_local_port()
-var _Udp       : PacketPeerUDP     = PacketPeerUDP.new()
-var _SprayRate : int               = 100
-var _RetryCount: int               = 0
+var _Udp            : PacketPeerUDP     = PacketPeerUDP.new()
+var _SprayRate      : int               = 100
+var _RetryCount     : int               = 0
+var _FetchingAddress: bool              = false
 # ======= #
 # signals #
 # ======= #
@@ -101,7 +102,8 @@ func _discover_network_id() -> void:
       seed((Time.get_unix_time_from_system()*100000) as int)
       NetworkID = randi()
 func _discover_address() -> void:
-   var ag := AddressGopher.new()
+   _FetchingAddress = true
+   var ag := AddressGopher.new(_Udp)
 
    ag.info_fetching_complete.connect(
       func(result: AddressGopher.InfoFetchingResults, address: String = "", port: int = 0):
@@ -112,9 +114,11 @@ func _discover_address() -> void:
                await get_tree().create_timer(_RETRY_TIME).timeout
                ag.attempt_info_fetch()
             else:
+               _FetchingAddress = false
                _emit_control(err_str + " Aborting...")
          match result:
             AddressGopher.InfoFetchingResults.OK:
+               _FetchingAddress = false
                ExternAddr = address
                ExternPort = port
                _emit_control("External address: " + ExternAddr + ":" + str(ExternPort))
@@ -133,8 +137,8 @@ func _discover_address() -> void:
 ## get our own IP:Port combo as a [String]. defaults to WAN. set [param external]
 ## false to get the LAN values. 
 func get_addr_port(external: bool = true) -> String:
-   if external: return ExternAddr + ":" + str(ExternPort)
-   else: return LocalAddr + ":" + str(LocalPort)
+   if external: return ExternAddr + ":" + (str(ExternPort) if ExternAddr != "PEE.POO.CUM.POO" else "WEINER" )
+   else: return LocalAddr + ":" + (str(LocalPort) if LocalAddr != "PEE.POO.CUM.POO" else "WEINER" )
 ## add a IP:Port to target communications with. 
 func add_peer(target_addr: String, target_port: int, target_id: int = 0) -> void:
    if target_id != 0 and target_id == NetworkID: return
@@ -147,9 +151,9 @@ func add_peer(target_addr: String, target_port: int, target_id: int = 0) -> void
    _emit_control("Attempting to connect to " + target_addr + ":" + str(target_port))
 func _process(delta: float) -> void:
    if ExternAddr == "" or ExternPort == -1 or NetworkID == 0: return
-   
+
    # handle incoming packets
-   while _Udp.get_available_packet_count() > 0:
+   while not _FetchingAddress and _Udp.get_available_packet_count() > 0:
       var pkt       := _Udp.get_packet()
       var from_addr  = _Udp.get_packet_ip()
       var from_port  = _Udp.get_packet_port()
@@ -293,9 +297,12 @@ class AddressGopher extends Node:
    ## from [url=https://github.com/pradt2/always-online-stun.git]pradt2's github[/url].
    ## if no port is specified in the string, [constant DEFAULT_STUN_PORT] will be
    ## used instead.[br][br]see [method attempt_info_fetch]
-   var   CustomStunUrl     : String = ""
+   var   CustomStunUrl     : String          = ""
+   var   _SharedUdp        : PacketPeerUDP   = null
 
-   func _init(custom_stun_server_addr: String = "") -> void: CustomStunUrl = custom_stun_server_addr
+   func _init(shared_udp: PacketPeerUDP, custom_stun_server_addr: String = "", ) -> void:
+      _SharedUdp    = shared_udp
+      CustomStunUrl = custom_stun_server_addr
    func _ready() -> void: attempt_info_fetch()
    ## typically, we will contact [url=https://github.com/pradt2/always-online-stun.git]pradt2's github[/url]
    ## for a list of active STUN servers, pick one at random, and ping it to discover
@@ -338,28 +345,29 @@ class AddressGopher extends Node:
       if not host.is_valid_ip_address(): ip = IP.resolve_hostname(host, IP.TYPE_IPV4)
       if ip.is_empty(): info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_RESULT); return
 
-      var udp := PacketPeerUDP.new()
-      if udp.connect_to_host(ip, port) != OK: info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_RESULT); return
+      _SharedUdp.set_dest_address(ip, port)
 
       var txn := PackedByteArray()
       for i in 12: txn.append(randi() & 0xFF)
 
-      udp.put_packet(_build_binding_request(txn))
+      _SharedUdp.put_packet(_build_binding_request(txn))
 
       var elapsed := 0.0
       while elapsed < timeout:
-         if udp.get_available_packet_count() > 0:
-            var packet := udp.get_packet()
-            udp.close()
+         if _SharedUdp.get_available_packet_count() > 0:
+            var packet   := _SharedUdp.get_packet()
+            var pkt_ip    = _SharedUdp.get_packet_ip()
+            var pkt_port  = _SharedUdp.get_packet_port()
+            if pkt_ip != ip or pkt_port != port: continue
             var parsed := _parse_stun_response(packet)
             if not parsed.success:
                info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_DATA); return
             info_fetching_complete.emit(InfoFetchingResults.OK, parsed.ip, parsed.port)
             self.queue_free()
+            return
          await get_tree().create_timer(0.05).timeout
          elapsed += 0.05
 
-      udp.close()
       info_fetching_complete.emit(InfoFetchingResults.BAD_STUN_RESPONSE)
    func _build_binding_request(txn: PackedByteArray) -> PackedByteArray:
       var buf := StreamPeerBuffer.new()

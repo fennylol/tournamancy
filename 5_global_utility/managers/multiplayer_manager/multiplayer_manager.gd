@@ -13,7 +13,7 @@ var _OTP         : OneTruePingus = OneTruePingus.new()
 var _NameTags    : Dictionary    = {}
 #var _InternalAddr: String        = ""
 
-var DEBUG_PRINT_CONTROL_MESSAGES: bool = false
+var DEBUG_PRINT_CONTROL_MESSAGES: bool = true
 
 func _ready() -> void:
    NameTag = str(_OTP.NetworkID)
@@ -56,6 +56,9 @@ func _on_name_changed(new_name: String) -> void:
    _send_nametag_data()
 func _on_network_type_changed(global: bool):
    _ConnectionMenu.set_ip_label(_OTP.get_addr_port(global))
+   if not global: 
+      _OTP._discover_address()
+      _OTP.ExternAddr = "PEE.POO.CUM.POO"
 func _refresh_peer_list() -> void:
    _ConnectionMenu.update_peers(_OTP.Peers, _NameTags)
 func passthrough_player_enabled_changed(new_val: bool) -> void:
