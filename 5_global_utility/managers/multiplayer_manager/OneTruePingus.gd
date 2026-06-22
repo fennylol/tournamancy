@@ -89,17 +89,16 @@ signal connection_established(sender_id: int, address: String, port: int)
 # ===== #
 # setup #
 # ===== #
-func _ready() -> void:
-   var bind_err = _Udp.bind(0)
-   if bind_err != OK: _emit_control("ERROR: OneTruePingus failed to bind UDP socket"); return
 func _init(external_address: String = "", network_id: int = 0) -> void:
    NetworkID = network_id
    ExternAddr = external_address
+   var bind_err = _Udp.bind(0)
+   if bind_err != OK: _emit_control("ERROR: OneTruePingus failed to bind UDP socket"); return
    if NetworkID  == 0: _discover_network_id()
    if ExternAddr == "": _discover_address()
 func _discover_network_id() -> void:
    while NetworkID == 0:
-      seed((Time.get_unix_time_from_system()*100000) as int)
+      seed(((Time.get_unix_time_from_system()*100000)+_Udp.get_local_port()) as int)
       NetworkID = randi()
 func _discover_address() -> void:
    _FetchingAddress = true

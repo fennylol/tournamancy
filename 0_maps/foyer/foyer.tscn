@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://dijyime6b78x1"]
 
 [ext_resource type="PackedScene" uid="uid://bn2hnjsbj6jjw" path="res://0_maps/rough_city_01/rought_city_01.tscn" id="2_3tyep"]
-[ext_resource type="Texture2D" uid="uid://nlhy3ogq5qc5" path="res://_RAWS/icon.png" id="2_df7h0"]
 [ext_resource type="PackedScene" uid="uid://c5ar3hknkofok" path="res://_RAWS/pillar.glb" id="2_xvh3c"]
 [ext_resource type="PackedScene" uid="uid://dfo252iy5r2oq" path="res://0_maps/assets/interactables/class_button/class_button.tscn" id="3_sdsrs"]
 
@@ -18,17 +17,6 @@ sky = SubResource("Sky_xvh3c")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_jhjmb"]
-size = Vector3(100, 1, 100)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3tyep"]
-albedo_texture = ExtResource("2_df7h0")
-uv1_scale = Vector3(3, 2, 2.5)
-texture_filter = 0
-
-[sub_resource type="BoxMesh" id="BoxMesh_ttyqa"]
-size = Vector3(100, 1, 100)
-
 [node name="Foyer" type="Node3D" unique_id=55400169]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1571649318]
@@ -39,38 +27,27 @@ shadow_enabled = true
 environment = SubResource("Environment_2vu8a")
 
 [node name="RoughtCity01" parent="." unique_id=1341565703 instance=ExtResource("2_3tyep")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -49.03843, -0.5, 20.88987)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -49.038, 0, 20.89)
 
-[node name="floor" type="StaticBody3D" parent="." unique_id=728224889]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+[node name="pillar" parent="." unique_id=822652854 instance=ExtResource("2_xvh3c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2.5)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="floor" unique_id=1955162416]
-shape = SubResource("BoxShape3D_jhjmb")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="floor" unique_id=1856813969]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.090964, 0, -14.471226)
-material_override = SubResource("StandardMaterial3D_3tyep")
-mesh = SubResource("BoxMesh_ttyqa")
-
-[node name="pillar" parent="floor" unique_id=822652854 instance=ExtResource("2_xvh3c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.5, -2.5)
-
-[node name="ClassButton" parent="floor/pillar" unique_id=274360327 instance=ExtResource("3_sdsrs")]
+[node name="ClassButton" parent="pillar" unique_id=274360327 instance=ExtResource("3_sdsrs")]
 transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
 ClassID = 1
 button_color = Color(0.62398005, 0.66371423, 0.99636203, 1)
 
-[node name="pillar2" parent="floor" unique_id=1238312467 instance=ExtResource("2_xvh3c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -2.5)
+[node name="pillar2" parent="." unique_id=1238312467 instance=ExtResource("2_xvh3c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.5)
 
-[node name="ClassButton" parent="floor/pillar2" unique_id=49028904 instance=ExtResource("3_sdsrs")]
+[node name="ClassButton" parent="pillar2" unique_id=49028904 instance=ExtResource("3_sdsrs")]
 transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
 ClassID = 3
 button_color = Color(0.5058824, 1, 0.53333336, 1)
 
-[node name="pillar3" parent="floor" unique_id=918547285 instance=ExtResource("2_xvh3c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.5, -2.5)
+[node name="pillar3" parent="." unique_id=918547285 instance=ExtResource("2_xvh3c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2.5)
 
-[node name="ClassButton" parent="floor/pillar3" unique_id=1290390003 instance=ExtResource("3_sdsrs")]
+[node name="ClassButton" parent="pillar3" unique_id=1290390003 instance=ExtResource("3_sdsrs")]
 transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
 button_color = Color(0.28549445, 0.74813414, 0.9999998, 1)

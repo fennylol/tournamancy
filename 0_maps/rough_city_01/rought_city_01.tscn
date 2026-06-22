@@ -1,5 +1,10 @@
 [gd_scene format=4 uid="uid://bn2hnjsbj6jjw"]
 
+[ext_resource type="Texture2D" uid="uid://nlhy3ogq5qc5" path="res://_RAWS/icon.png" id="1_swffk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wi6f8"]
+albedo_texture = ExtResource("1_swffk")
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ack6o"]
 resource_name = "Material"
 cull_mode = 2
@@ -8864,6 +8869,7 @@ points = PackedVector3Array(-1.844575, 4.279539, 1.4794686, -3.1939292, -4.51191
 [node name="RoughtCity01" type="Node3D" unique_id=1341565703]
 
 [node name="baseplate" type="MeshInstance3D" parent="." unique_id=2084094383]
+material_override = SubResource("StandardMaterial3D_wi6f8")
 mesh = SubResource("ArrayMesh_so7wb")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="baseplate" unique_id=2061866534]

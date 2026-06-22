@@ -79,12 +79,6 @@ func _recieve_data(sender_id: int, data_type: int, data: PackedByteArray) -> voi
          if _OTP.ExternAddr != "" and _ConnectionMenu.GLOBAL_BUTTON.disabled:
             _ConnectionMenu.set_ip_label(_OTP.get_addr_port(true))
          _refresh_peer_list()
-
-func _recieve_name_data(sender_id: int, data: PackedByteArray) -> void:
-   _NameTags[sender_id] = data.get_string_from_utf8()
-   name_data.emit(sender_id, data)
-   _refresh_peer_list()
-
 func _recieve_connection_data(data: PackedByteArray) -> void:
    var peer_id = data.decode_u32(0)
    var peer_port = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
@@ -96,10 +90,13 @@ func _recieve_connection_data(data: PackedByteArray) -> void:
       return 
    
    _OTP.add_peer(peer_address, peer_port, peer_id)
+func _recieve_name_data(sender_id: int, data: PackedByteArray) -> void:
+   _NameTags[sender_id] = data.get_string_from_utf8()
+   name_data.emit(sender_id, data)
+   _refresh_peer_list()
 
 func send_player_transform_data(data: PackedByteArray) -> void:
    _OTP.send_data(DataTypes.TransformData, data)
-
 func _send_connection_data(network_id: int, peer_address: String, peer_port: int) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + OneTruePingus.PORT_SIZE)
@@ -107,6 +104,5 @@ func _send_connection_data(network_id: int, peer_address: String, peer_port: int
    data.encode_u16(OneTruePingus.NETWORK_ID_SIZE, peer_port)
    data.append_array(peer_address.to_utf8_buffer())
    _OTP.send_data(DataTypes.ConnectionData, data)
-
 func _send_nametag_data() -> void:
    _OTP.send_data(DataTypes.NameTagData, NameTag.to_utf8_buffer())
