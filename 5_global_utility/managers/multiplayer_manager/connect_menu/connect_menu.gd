@@ -1,17 +1,18 @@
 extends HBoxContainer
 class_name ConnectMenu
 
+@onready var GLOBAL_BUTTON  : Button   = $VBoxContainer/HBoxContainer/YourInfo/WAN_vs_LAN_box/global_button
+@onready var LOCAL_BUTTON   : Button   = $VBoxContainer/HBoxContainer/YourInfo/WAN_vs_LAN_box/local_button
+@onready var JOIN_BUTTON    : Button   = $VBoxContainer/HBoxContainer/YourInfo/Host_vs_Client_box/client_button
+@onready var HOST_BUTTON    : Button   = $VBoxContainer/HBoxContainer/YourInfo/Host_vs_Client_box/host_button
 @onready var ID_LABEL       : Label    = $VBoxContainer/HBoxContainer/YourInfo/id_info/ID_label
 @onready var COPY_ID_BUTTON : Button   = $VBoxContainer/HBoxContainer/YourInfo/id_info/copy_ID_button
 @onready var IP_LABEL       : Label    = $VBoxContainer/HBoxContainer/YourInfo/IP_info/IP_label
 @onready var COPY_IP_BUTTON : Button   = $VBoxContainer/HBoxContainer/YourInfo/IP_info/copy_IP_button
 @onready var NAME_TAG_BOX   : LineEdit = $VBoxContainer/HBoxContainer/YourInfo/name_box/name_box
 @onready var SET_NAME_BUTTON: Button   = $VBoxContainer/HBoxContainer/YourInfo/name_box/set_name_button
-@onready var GLOBAL_BUTTON  : Button   = $VBoxContainer/HBoxContainer/YourInfo/WAN_vs_LAN_box/global_button
-@onready var LOCAL_BUTTON   : Button   = $VBoxContainer/HBoxContainer/YourInfo/WAN_vs_LAN_box/local_button
-@onready var JOIN_BUTTON    : Button   = $VBoxContainer/HBoxContainer/YourInfo/Host_vs_Client_box/client_button
-@onready var HOST_BUTTON    : Button   = $VBoxContainer/HBoxContainer/YourInfo/Host_vs_Client_box/host_button
 
+@onready var QUIT_BUTTON    : Button   = $VBoxContainer/HBoxContainer/TheirInfo/quit_button
 @onready var PEER_LIST      : TextEdit = $VBoxContainer/HBoxContainer/TheirInfo/peer_list
 @onready var TARGET_IP_BOX  : LineEdit = $VBoxContainer/HBoxContainer/TheirInfo/target_ip_box/target_IP_box
 @onready var CONNECT_BUTTON : Button   = $VBoxContainer/HBoxContainer/TheirInfo/target_ip_box/connect_button
@@ -21,6 +22,7 @@ signal network_type_changed(global: bool)
 signal hosting_type_changed(client: bool)
 signal connect_button_pressed(Address: String)
 signal ready_button_pressed()
+signal quit_button_pressed()
 signal name_changed(new_name: String)
 
 func _ready() -> void:
@@ -32,6 +34,7 @@ func _ready() -> void:
    CONNECT_BUTTON.pressed.connect(_on_connect_button_pressed)
    SET_NAME_BUTTON.pressed.connect(_on_set_name_button_pressed)
    READY_BUTTON.pressed.connect(ready_button_pressed.emit)
+   QUIT_BUTTON.pressed.connect(quit_button_pressed.emit)
    
    COPY_ID_BUTTON.pressed.connect(func(): DisplayServer.clipboard_set(ID_LABEL.text.strip_edges()))
    COPY_IP_BUTTON.pressed.connect(func(): DisplayServer.clipboard_set(IP_LABEL.text.strip_edges()))
@@ -58,6 +61,7 @@ func _on_hosting_type_changed(client: bool) -> void:
    hosting_type_changed.emit(client)
    JOIN_BUTTON.disabled = client
    HOST_BUTTON.disabled = not client
+   QUIT_BUTTON.text = ("quit" if client else "close") + " lobby"
 # ============= #
 # label setters #
 # ============= #
@@ -70,6 +74,7 @@ func set_ip_label(input_text: String) -> void:
 # other utility #
 # ============= #
 func update_peers(peers: Array, name_tags: Dictionary = {}) -> void:
+   QUIT_BUTTON.disabled = peers.is_empty()
    var lines: PackedStringArray = []
    for peer in peers:
       if peer is not OneTruePingus.PingusPeer: continue

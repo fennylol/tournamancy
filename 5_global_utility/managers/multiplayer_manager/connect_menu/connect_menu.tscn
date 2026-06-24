@@ -160,6 +160,18 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 10.0
 
+[node name="quit_button" type="Button" parent="VBoxContainer/HBoxContainer/TheirInfo" unique_id=1503336351]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.3
+disabled = true
+text = "exit lobby"
+
+[node name="spacer7" type="Control" parent="VBoxContainer/HBoxContainer/TheirInfo" unique_id=1633925559]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.1
+
 [node name="peer_list" type="TextEdit" parent="VBoxContainer/HBoxContainer/TheirInfo" unique_id=161763713]
 layout_mode = 2
 size_flags_vertical = 3

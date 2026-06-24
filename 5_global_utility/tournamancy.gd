@@ -11,6 +11,7 @@ enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD, NameTagData = 0x15
 func _ready() -> void:
    InputManager.init_inputs()
    MPM.connection_established.connect(_on_mpm_connection_established)
+   MPM.peer_disconnected.connect(_on_mpm_peer_discconected)
    MPM.ready_button_pressed.connect(_on_mpm_ready_button_pressed)
    MPM.transform_data.connect(_on_mpm_transform_data)
    MPM.name_data.connect(_on_mpm_name_data)
@@ -25,6 +26,10 @@ func _on_mpm_connection_established(network_id: int) -> void:
    dummy.set_name("dummy_" + str(network_id))
    add_child(dummy)
    _dummies[network_id] = dummy
+
+func _on_mpm_peer_discconected(network_id: int) -> void:
+   if _dummies.has(network_id):
+      _dummies[network_id].queue_free()
 
 func _on_mpm_transform_data(network_id: int, data: PackedByteArray) -> void:
    if _dummies.has(network_id):

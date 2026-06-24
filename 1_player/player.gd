@@ -4,6 +4,9 @@ class_name Player
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 const GRAVITY = 9.8
+const TRANSFORM_DATA_SIZE: int = (4*9)+1
+const HAND_IMG : Texture2D = preload("res://4_ui/hud/Lhand.png")
+const POINT_IMG: Texture2D = preload("res://4_ui/hud/Lpoint.png")
 
 signal enabled_changed(new_val:bool)
 
@@ -22,11 +25,6 @@ var enabled: bool = false:
 @onready var Lhand   := $Camera3D/Lhand
 @onready var Rhand   := $Camera3D/Rhand
 
-const HandImg : Texture2D = preload("res://4_ui/hud/Lhand.png")
-const PointImg: Texture2D = preload("res://4_ui/hud/Lpoint.png")
-#const RhandIMG : Texture2D = preload("res://4_ui/hud/Rhand.png")
-#const RpointIMG: Texture2D = preload("res://4_ui/hud/Rpoint.png")
-
 var SpellBook: Grimoire = Grimoire.new()
 
 # =================== #
@@ -41,23 +39,23 @@ func _process(delta):
 
    # change hand textures
    if Input.is_action_just_pressed("interact") and enabled: 
-      Lhand.texture = PointImg
+      Lhand.texture = POINT_IMG
    elif Input.is_action_just_released("interact") or not enabled: 
-      Lhand.texture = HandImg
+      Lhand.texture = HAND_IMG
 
    if Input.is_action_just_pressed("active_spell_0") and enabled:
-      Lhand.texture = PointImg
+      Lhand.texture = POINT_IMG
       if SpellBook.ActiveSpells[0]:
          SpellBook.ActiveSpells[0]._on_activate(self)
    elif Input.is_action_just_released("active_spell_0") or not enabled: 
-      Lhand.texture = HandImg
+      Lhand.texture = HAND_IMG
    
    if Input.is_action_just_pressed("active_spell_1") and enabled:
-      Rhand.texture = PointImg
+      Rhand.texture = POINT_IMG
       if SpellBook.ActiveSpells[1]:
          SpellBook.ActiveSpells[1]._on_activate(self)      
    elif Input.is_action_just_released("active_spell_1") or not enabled: 
-      Rhand.texture = HandImg 
+      Rhand.texture = HAND_IMG 
    SpellBook.process_end(delta, self)
 
 func _unhandled_input(event):
@@ -101,7 +99,7 @@ func _physics_process(delta):
 
 func generate_transform_data() -> PackedByteArray:
    var packed_data := PackedByteArray()
-   packed_data.resize((4*9)+1)
+   packed_data.resize(TRANSFORM_DATA_SIZE)
    
    packed_data.encode_float(0,  position.x)
    packed_data.encode_float(4,  position.y) 
@@ -114,8 +112,8 @@ func generate_transform_data() -> PackedByteArray:
    packed_data.encode_float(32, velocity.z)
    
    var flags := 0
-   if Lhand.texture == HandImg: flags |= 1 << 0
-   if Rhand.texture == HandImg: flags |= 1 << 1
+   if Lhand.texture == HAND_IMG: flags |= 1 << 0
+   if Rhand.texture == HAND_IMG: flags |= 1 << 1
    packed_data.encode_u8(36, flags)
    
    return packed_data

@@ -4,14 +4,15 @@ class_name MultiplayerManager
 @onready var _ConnectionMenu: ConnectMenu = $ConnectMenu
 
 signal ready_button_pressed()
+signal peer_disconnected(network_id: int)
 signal connection_established(network_id: int)
 signal transform_data(network_id: int, data: PackedByteArray)
 signal name_data(network_id: int, data: PackedByteArray)
 
-var NameTag      : String        = ""
-var _OTP         : OneTruePingus = OneTruePingus.new()
-var _NameTags    : Dictionary    = {}
-#var _InternalAddr: String        = ""
+var NameTag  : String        = ""
+var _OTP     : OneTruePingus = OneTruePingus.new()
+var _NameTags: Dictionary    = {}
+var _Hosting : bool          = false
 
 var DEBUG_PRINT_CONTROL_MESSAGES: bool = true
 
@@ -26,11 +27,14 @@ func _ready() -> void:
    _ConnectionMenu.connect_button_pressed.connect(_on_connect_button_pressed)
    _ConnectionMenu.ready_button_pressed.connect(_on_ready_button_pressed)
    _ConnectionMenu.network_type_changed.connect(_on_network_type_changed)
-   _ConnectionMenu.hosting_type_changed.connect(func(_client: bool): pass)
+   _ConnectionMenu.hosting_type_changed.connect(_on_hosting_type_changed)
+   _ConnectionMenu.quit_button_pressed.connect(_on_disconnect_button_pressed)
    
    _OTP.set_name("MultiplayerCoupler")
    add_child(_OTP)
-
+func _notification(what: int) -> void:
+   if what == NOTIFICATION_WM_CLOSE_REQUEST:
+      _send_disconnection_data()
 # =============== #
 # signal handling #
 # =============== #
@@ -38,6 +42,12 @@ func _on_connect_button_pressed(target_address: String) -> void:
    var parts := target_address.rsplit(":", true, 1)
    if parts.size() < 2: return
    _OTP.add_peer(parts[0], parts[1].to_int())
+   _refresh_peer_list()
+func _on_disconnect_button_pressed() -> void:
+   _send_disconnection_data()
+   for peer:OneTruePingus.PingusPeer in _OTP.Peers:
+      peer_disconnected.emit(peer.NetworkID)
+      _OTP.Peers.erase(peer)
    _refresh_peer_list()
 func _on_connection_established(network_id: int, peer_address: String, peer_port: int) -> void:
    connection_established.emit(network_id)
@@ -54,12 +64,18 @@ func _on_ready_button_pressed() -> void:
 func _on_name_changed(new_name: String) -> void:
    NameTag = new_name
    _send_nametag_data()
-func _on_network_type_changed(global: bool):
+func _on_network_type_changed(global: bool) -> void:
    _ConnectionMenu.set_ip_label(_OTP.get_addr_port(global))
    if not global: 
       _OTP._discover_address()
       _OTP.ExternAddr = "PEE.POO.CUM.POO"
+func _on_hosting_type_changed(client: bool) -> void:
+   _Hosting = not client
 func _refresh_peer_list() -> void:
+   for peer:OneTruePingus.PingusPeer in _OTP.Peers:
+      if peer.KeepAliveNum*OneTruePingus._KEEP_ALIVE_TIME >= OneTruePingus._TIMEOUT_TIME:
+         peer_disconnected.emit(peer.NetworkID)
+         _OTP.Peers.erase(peer)
    _ConnectionMenu.update_peers(_OTP.Peers, _NameTags)
 func passthrough_player_enabled_changed(new_val: bool) -> void:
    _ConnectionMenu.visible = not new_val
@@ -67,13 +83,24 @@ func passthrough_player_enabled_changed(new_val: bool) -> void:
 # ============ #
 # data routing #
 # ============ #
-enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD, NameTagData = 0x15 }
+enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD, DisconnectionData = 0xDD, NameTagData = 0x15 }
+var MinSizes: Dictionary = {
+   DataTypes.TransformData    : Player.TRANSFORM_DATA_SIZE,
+   DataTypes.ConnectionData   : OneTruePingus.NETWORK_ID_SIZE + OneTruePingus.PORT_SIZE,
+   DataTypes.DisconnectionData: OneTruePingus.NETWORK_ID_SIZE,
+   DataTypes.NameTagData      : 0
+}
 
 func _recieve_data(sender_id: int, data_type: int, data: PackedByteArray) -> void:
+   #if data_type != OneTruePingus.DataTypes.CONTROL and data.size() < MinSizes[data_type]: 
+      #if DEBUG_PRINT_CONTROL_MESSAGES:
+         #print("ERROR: undersized data of type %s from %d" % [DataTypes.find_key(data_type), sender_id])
+      #return
    match data_type:
-      DataTypes.TransformData : transform_data.emit(sender_id, data)
-      DataTypes.NameTagData   : _recieve_name_data(sender_id, data)
-      DataTypes.ConnectionData: _recieve_connection_data(data)
+      DataTypes.TransformData    : transform_data.emit(sender_id, data)
+      DataTypes.ConnectionData   : _recieve_connection_data(data)
+      DataTypes.DisconnectionData: _recieve_disconnection_data(data)
+      DataTypes.NameTagData      : _recieve_name_data(sender_id, data)
       OneTruePingus.DataTypes.CONTROL:
          if DEBUG_PRINT_CONTROL_MESSAGES: print(data.get_string_from_utf8())
          if _OTP.ExternAddr != "" and _ConnectionMenu.GLOBAL_BUTTON.disabled:
@@ -90,6 +117,13 @@ func _recieve_connection_data(data: PackedByteArray) -> void:
       return 
    
    _OTP.add_peer(peer_address, peer_port, peer_id)
+func _recieve_disconnection_data(data: PackedByteArray) -> void:
+   var network_id: int = data.decode_u32(0)
+   for peer:OneTruePingus.PingusPeer in _OTP.Peers:
+      if peer.NetworkID == network_id: 
+         _OTP.Peers.erase(peer)
+         peer_disconnected.emit(peer.NetworkID)
+   _refresh_peer_list()
 func _recieve_name_data(sender_id: int, data: PackedByteArray) -> void:
    _NameTags[sender_id] = data.get_string_from_utf8()
    name_data.emit(sender_id, data)
@@ -105,4 +139,14 @@ func _send_connection_data(network_id: int, peer_address: String, peer_port: int
    data.append_array(peer_address.to_utf8_buffer())
    _OTP.send_data(DataTypes.ConnectionData, data)
 func _send_nametag_data() -> void:
+   #var data: PackedByteArray = []
+   #data.resize(OneTruePingus.NETWORK_ID_SIZE)
+   #data.encode_u32(0, disconnecting_id)
    _OTP.send_data(DataTypes.NameTagData, NameTag.to_utf8_buffer())
+func _send_disconnection_data(disconnecting_id: int = _OTP.NetworkID) -> void:
+   var data: PackedByteArray = []
+   data.resize(OneTruePingus.NETWORK_ID_SIZE)
+   data.encode_u32(0, disconnecting_id)
+   _OTP.send_data(DataTypes.DisconnectionData, data)
+   
+   
