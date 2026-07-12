@@ -18,33 +18,38 @@ height = 0.001
 floor_max_angle = 1.0471976
 script = ExtResource("1_8s5v1")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1427003306]
+[node name="Soul" type="CollisionShape3D" parent="." unique_id=1427003306]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_25okf")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=563248551]
+[node name="Body" type="MeshInstance3D" parent="." unique_id=563248551]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_41u22")
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1504992795]
+[node name="Eyes" type="Camera3D" parent="." unique_id=1504992795]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
-[node name="RayCast3D" type="RayCast3D" parent="Camera3D" unique_id=314699103]
+[node name="RayCast3D" type="RayCast3D" parent="Eyes" unique_id=314699103]
 target_position = Vector3(0, 0, -2.5)
 collision_mask = 2
 collide_with_areas = true
 
-[node name="Lhand" type="Sprite3D" parent="Camera3D" unique_id=1657256075]
+[node name="Lhand" type="Sprite3D" parent="Eyes" unique_id=1657256075]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -0.4, -0.2, -0.425)
 pixel_size = 0.001
 texture = ExtResource("2_qeeko")
 
-[node name="Rhand" type="Sprite3D" parent="Camera3D" unique_id=1345139767]
+[node name="Rhand" type="Sprite3D" parent="Eyes" unique_id=1345139767]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0.4, -0.2, -0.425)
 flip_h = true
 pixel_size = 0.001
 texture = ExtResource("2_qeeko")
 
-[node name="crosshair" type="MeshInstance3D" parent="Camera3D" unique_id=864323297]
+[node name="crosshair" type="MeshInstance3D" parent="Eyes" unique_id=864323297]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.34009406)
 mesh = SubResource("CylinderMesh_qeeko")
+
+[node name="Ears" type="AudioListener3D" parent="." unique_id=297933939]
+current = true
+
+[node name="SubSpells" type="Node3D" parent="." unique_id=631217568]

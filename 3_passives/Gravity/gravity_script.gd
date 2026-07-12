@@ -14,5 +14,5 @@ func _get_stat_contributions() -> Dictionary:
 
 func _on_process_begin(_delta: float, _player: Player) -> void: pass
 func _on_process_end(_delta: float, _player: Player) -> void: pass
-func _on_equip() -> void: pass
-func _on_unequip() -> void: pass
+func _on_equip(_player: Player) -> void: pass
+func _on_unequip(_player: Player) -> void: pass

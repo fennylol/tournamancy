@@ -31,7 +31,6 @@ func _physics_process(delta: float) -> void:
    Eyes.rotation.x = clamp(_net_rot.x, -PI/2, PI/2)
    
    velocity = _net_vel
-
 func _on_transform_data(data: PackedByteArray) -> void:
    _net_pos = Vector3(data.decode_float(0),  data.decode_float(4),  data.decode_float(8))
    _net_rot = Vector3(data.decode_float(12), data.decode_float(16), data.decode_float(20))
@@ -43,7 +42,8 @@ func _on_transform_data(data: PackedByteArray) -> void:
    
    _has_net_state = true
    _time_since_packet = 0.0
-
-func _on_nametag_data(data: PackedByteArray) -> void:
-   NameTag.text = data.get_string_from_utf8()
-   
+func _on_nametag_data(new_name: String) -> void:
+   NameTag.text = new_name
+func _on_subspell_equip_data(_spell_id: int, _is_active: bool) -> void: pass
+func _on_subspell_erase_data(_spell_id: int, _is_active: bool) -> void: pass
+func _on_subspell_state_data(_spell_id: int, _is_active: bool, _spell_state: int) -> void: pass

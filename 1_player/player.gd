@@ -20,10 +20,11 @@ var enabled: bool = false:
          Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 @export var Sensitivity = 0.5
 
-@onready var Camera  := $Camera3D
-@onready var LookDir := $Camera3D/RayCast3D
-@onready var Lhand   := $Camera3D/Lhand
-@onready var Rhand   := $Camera3D/Rhand
+@onready var CAMERA    := $Eyes
+@onready var LOOK_DIR  := $Eyes/RayCast3D
+@onready var L_HAND    := $Eyes/Lhand
+@onready var R_HAND    := $Eyes/Rhand
+@onready var SUBSPELLS := $SubSpells
 
 var SpellBook: Grimoire = Grimoire.new()
 
@@ -39,32 +40,31 @@ func _process(delta):
 
    # change hand textures
    if Input.is_action_just_pressed("interact") and enabled: 
-      Lhand.texture = POINT_IMG
+      L_HAND.texture = POINT_IMG
    elif Input.is_action_just_released("interact") or not enabled: 
-      Lhand.texture = HAND_IMG
+      L_HAND.texture = HAND_IMG
 
    if Input.is_action_just_pressed("active_spell_0") and enabled:
-      Lhand.texture = POINT_IMG
+      L_HAND.texture = POINT_IMG
       if SpellBook.ActiveSpells[0]:
          SpellBook.ActiveSpells[0]._on_activate(self)
    elif Input.is_action_just_released("active_spell_0") or not enabled: 
-      Lhand.texture = HAND_IMG
+      L_HAND.texture = HAND_IMG
    
    if Input.is_action_just_pressed("active_spell_1") and enabled:
-      Rhand.texture = POINT_IMG
+      R_HAND.texture = POINT_IMG
       if SpellBook.ActiveSpells[1]:
          SpellBook.ActiveSpells[1]._on_activate(self)      
    elif Input.is_action_just_released("active_spell_1") or not enabled: 
-      Rhand.texture = HAND_IMG 
+      R_HAND.texture = HAND_IMG 
    SpellBook.process_end(delta, self)
 
 func _unhandled_input(event):
    # handle mouse
    if event is InputEventMouseMotion and enabled:
       rotate_y(-event.relative.x * .005 * Sensitivity)
-      Camera.rotate_x(-event.relative.y * .005 * Sensitivity)
-      Camera.rotation.x = clamp(Camera.rotation.x, -PI/2, PI/2)
-
+      CAMERA.rotate_x(-event.relative.y * .005 * Sensitivity)
+      CAMERA.rotation.x = clamp(CAMERA.rotation.x, -PI/2, PI/2)
 
 # =============== #
 # simple movement #
@@ -91,8 +91,8 @@ func _physics_process(delta):
 
    # use interactables
    if Input.is_action_pressed("interact") and enabled:
-      if LookDir.is_colliding():
-         var hit = LookDir.get_collider()
+      if LOOK_DIR.is_colliding():
+         var hit = LOOK_DIR.get_collider()
          if hit is Interactable:
             hit._on_interact(self)
    move_and_slide()
@@ -104,7 +104,7 @@ func generate_transform_data() -> PackedByteArray:
    packed_data.encode_float(0,  position.x)
    packed_data.encode_float(4,  position.y) 
    packed_data.encode_float(8,  position.z)
-   packed_data.encode_float(12, Camera.rotation.x)
+   packed_data.encode_float(12, CAMERA.rotation.x)
    packed_data.encode_float(16, rotation.y) 
    packed_data.encode_float(20, rotation.z)
    packed_data.encode_float(24, velocity.x)
@@ -112,8 +112,17 @@ func generate_transform_data() -> PackedByteArray:
    packed_data.encode_float(32, velocity.z)
    
    var flags := 0
-   if Lhand.texture == HAND_IMG: flags |= 1 << 0
-   if Rhand.texture == HAND_IMG: flags |= 1 << 1
+   if L_HAND.texture == HAND_IMG: flags |= 1 << 0
+   if R_HAND.texture == HAND_IMG: flags |= 1 << 1
    packed_data.encode_u8(36, flags)
    
    return packed_data
+
+# TODO: dopesnt really work
+func add_subspell(constructor: Callable) -> Node:
+   var result = constructor.call()
+   if result is Node: 
+      SUBSPELLS.add_child(result)
+      return result
+   else: return null
+   

@@ -1,10 +1,8 @@
 class_name Grimoire
 
 var ActiveSlots: int:
-   set(slots):
-      ActiveSpells.resize(slots)
-   get():
-      return ActiveSpells.size()
+   set(slots): ActiveSpells.resize(slots)
+   get(): return ActiveSpells.size()
 var ActiveSpells: Array[ActiveSpell] = []
 var PassiveSpells: Array[PassiveSpell] = []
 var StatModifiers: Dictionary = {}
