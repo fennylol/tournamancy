@@ -102,7 +102,7 @@ static func get_active_spell_data(id: ActiveSpellIDs) -> Dictionary:
 
 static func is_valid_active_spell(data: Dictionary) -> bool: 
    for field:String in SpellFields:
-      if not data.keys().has(field): return false
+      if not data.keys().has(SpellFields.get(field)): return false
    return true
    
 static func get_passive_spell_data(id: PassiveSpellIDs) -> Dictionary: 
@@ -111,5 +111,5 @@ static func get_passive_spell_data(id: PassiveSpellIDs) -> Dictionary:
 
 static func is_valid_passive_spell(data: Dictionary) -> bool:
    for field:String in SpellFields: 
-      if not data.keys().has(field): return false
+      if not data.keys().has(SpellFields.get(field)): return false
    return true
