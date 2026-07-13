@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://cgtqkg01jix6k"]
+
+[ext_resource type="Texture2D" uid="uid://4nw5ucsm4u6h" path="res://4_ui/HUD_2/health_icons.png" id="1_c6hmx"]
+[ext_resource type="Script" uid="uid://dqgxxsrikei0i" path="res://4_ui/HUD_2/health_display.gd" id="1_juo7i"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3br5d"]
+font_size = 32
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_juo7i"]
+texture = ExtResource("1_c6hmx")
+texture_region_size = Vector2i(48, 48)
+0:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+1:2/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+2:4/0 = 0
+3:5/0 = 0
+3:6/0 = 0
+4:6/0 = 0
+4:7/0 = 0
+4:8/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+5:1/0 = 0
+4:1/0 = 0
+3:1/0 = 0
+2:1/0 = 0
+0:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+5:3/0 = 0
+4:3/0 = 0
+3:3/0 = 0
+0:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+5:5/0 = 0
+4:5/0 = 0
+2:5/0 = 0
+1:5/0 = 0
+0:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+5:6/0 = 0
+5:7/0 = 0
+3:7/0 = 0
+2:7/0 = 0
+1:7/0 = 0
+0:7/0 = 0
+0:8/0 = 0
+1:8/0 = 0
+2:8/0 = 0
+3:8/0 = 0
+5:8/0 = 0
+5:9/0 = 0
+4:9/0 = 0
+3:9/0 = 0
+2:9/0 = 0
+1:9/0 = 0
+0:9/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_3br5d"]
+tile_size = Vector2i(48, 48)
+sources/1 = SubResource("TileSetAtlasSource_juo7i")
+
+[node name="HealthDisplay" type="Node2D" unique_id=1042360686]
+script = ExtResource("1_juo7i")
+
+[node name="Control" type="Control" parent="." unique_id=1923362511]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -20.0
+offset_bottom = -20.0
+grow_vertical = 0
+
+[node name="HealthText" type="Label" parent="Control" unique_id=673325612]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -23.0
+offset_right = 28.0
+grow_vertical = 0
+text = "20.0"
+label_settings = SubResource("LabelSettings_3br5d")
+vertical_alignment = 2
+
+[node name="Color_1" type="TileMapLayer" parent="." unique_id=445643435]
+modulate = Color(1, 0, 0, 1)
+position = Vector2(0, -24)
+tile_map_data = PackedByteArray(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 3, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1, 0, 4, 0, 0, 0, 0, 0)
+tile_set = SubResource("TileSet_3br5d")

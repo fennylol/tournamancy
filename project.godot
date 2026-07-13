@@ -16,6 +16,11 @@ run/main_scene="uid://bamfpbtds4sbn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="uid://nlhy3ogq5qc5"
 
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+
 [layer_names]
 
 3d_physics/layer_2="interactables"

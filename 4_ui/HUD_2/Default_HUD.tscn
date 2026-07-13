@@ -1,0 +1,517 @@
+[gd_scene format=3 uid="uid://cpsbgkgmeqg12"]
+
+[ext_resource type="Texture2D" uid="uid://cv7j5obg5mwwk" path="res://4_ui/HUD_2/main_ui_sheet32.png" id="1_hcdvk"]
+[ext_resource type="PackedScene" uid="uid://cgtqkg01jix6k" path="res://4_ui/HUD_2/HealthDisplay.tscn" id="2_p352i"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p352i"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(128, 160, 32, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uiadr"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(160, 160, 32, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qrm2a"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(192, 96, 672, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3br5d"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(192, 0, 672, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hcdvk"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(320, 192, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dy57i"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(192, 192, 128, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_txkeg"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(0, 96, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_le8qi"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(0, 64, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_unhv4"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(0, 192, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bdkfc"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(0, 128, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3cth3"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(32, 192, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8byn8"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(32, 128, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nac5e"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(0, 32, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5x6o7"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(0, 0, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qasb8"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(64, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jkgq1"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(64, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sosq4"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(128, 32, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0wvvs"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(128, 0, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f0h42"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(128, 96, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_85iag"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(128, 64, 64, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tt46e"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(64, 64, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_68qxo"]
+atlas = ExtResource("1_hcdvk")
+region = Rect2(64, 0, 64, 64)
+
+[node name="DefaultHud" type="Control" unique_id=1610244138]
+process_mode = 4
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PassiveBox" type="Control" parent="." unique_id=871817357]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
+
+[node name="L_bar" type="TextureRect" parent="PassiveBox" unique_id=447089406]
+layout_mode = 0
+offset_left = -334.0
+offset_right = -302.0
+offset_bottom = 96.0
+texture = SubResource("AtlasTexture_p352i")
+stretch_mode = 2
+
+[node name="R_bar" type="TextureRect" parent="PassiveBox" unique_id=1271535258]
+layout_mode = 0
+offset_left = 304.0
+offset_right = 336.0
+offset_bottom = 96.0
+texture = SubResource("AtlasTexture_uiadr")
+stretch_mode = 2
+
+[node name="color" type="TextureRect" parent="PassiveBox" unique_id=1772383068]
+modulate = Color(1, 1, 1, 0.5019608)
+layout_mode = 0
+offset_left = -336.0
+offset_right = 336.0
+offset_bottom = 96.0
+texture = SubResource("AtlasTexture_qrm2a")
+stretch_mode = 2
+
+[node name="lines" type="TextureRect" parent="PassiveBox" unique_id=2093941132]
+layout_mode = 0
+offset_left = -336.0
+offset_right = 336.0
+offset_bottom = 96.0
+texture = SubResource("AtlasTexture_3br5d")
+stretch_mode = 2
+
+[node name="Actives" type="Control" parent="." unique_id=1973357727]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -32.0
+offset_top = -32.0
+offset_right = -32.0
+offset_bottom = -32.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="color" type="TextureRect" parent="Actives" unique_id=1151525795]
+modulate = Color(1, 1, 1, 0.5019608)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -64.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = SubResource("AtlasTexture_hcdvk")
+
+[node name="lines" type="TextureRect" parent="Actives" unique_id=155434740]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -64.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = SubResource("AtlasTexture_dy57i")
+
+[node name="HealthPoints" type="Control" parent="." unique_id=415167611]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 96.0
+offset_top = -64.0
+offset_right = 96.0
+offset_bottom = -64.0
+grow_vertical = 0
+
+[node name="HealthDisplay" parent="HealthPoints" unique_id=1042360686 instance=ExtResource("2_p352i")]
+health_value = Array[float]([0.2, 0.0, 0.0, 0.0])
+
+[node name="CONTROLS_keyboard" type="Control" parent="." unique_id=620453350]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="C_KY_PassiveBox" type="Control" parent="CONTROLS_keyboard" unique_id=980771440]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 96.0
+offset_bottom = 96.0
+grow_horizontal = 2
+
+[node name="color" type="TextureRect" parent="CONTROLS_keyboard/C_KY_PassiveBox" unique_id=1115569173]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -16.0
+offset_right = 32.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_txkeg")
+
+[node name="lines" type="TextureRect" parent="CONTROLS_keyboard/C_KY_PassiveBox" unique_id=911497861]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -16.0
+offset_right = 32.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_le8qi")
+
+[node name="C_KY_LeftActive" type="Control" parent="CONTROLS_keyboard" unique_id=403239815]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -48.0
+offset_right = -128.0
+offset_bottom = -48.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="color" type="TextureRect" parent="CONTROLS_keyboard/C_KY_LeftActive" unique_id=659964607]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -16.0
+offset_right = 16.0
+offset_bottom = 64.0
+grow_horizontal = 2
+texture = SubResource("AtlasTexture_unhv4")
+
+[node name="lines" type="TextureRect" parent="CONTROLS_keyboard/C_KY_LeftActive" unique_id=1694153733]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -16.0
+offset_right = 16.0
+offset_bottom = 64.0
+grow_horizontal = 2
+texture = SubResource("AtlasTexture_bdkfc")
+
+[node name="C_KY_RightActive" type="Control" parent="CONTROLS_keyboard" unique_id=1937821286]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -64.0
+offset_top = -48.0
+offset_right = -64.0
+offset_bottom = -48.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="color" type="TextureRect" parent="CONTROLS_keyboard/C_KY_RightActive" unique_id=458122025]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -16.0
+offset_right = 16.0
+offset_bottom = 64.0
+grow_horizontal = 2
+texture = SubResource("AtlasTexture_3cth3")
+
+[node name="lines" type="TextureRect" parent="CONTROLS_keyboard/C_KY_RightActive" unique_id=1787837378]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -16.0
+offset_right = 16.0
+offset_bottom = 64.0
+grow_horizontal = 2
+texture = SubResource("AtlasTexture_8byn8")
+
+[node name="C_KY_Health" type="Control" parent="CONTROLS_keyboard" unique_id=1748132063]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = -64.0
+grow_vertical = 0
+
+[node name="color" type="TextureRect" parent="CONTROLS_keyboard/C_KY_Health" unique_id=1732335431]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -16.0
+offset_right = 32.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_nac5e")
+
+[node name="lines" type="TextureRect" parent="CONTROLS_keyboard/C_KY_Health" unique_id=387871007]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -16.0
+offset_right = 32.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_5x6o7")
+
+[node name="CONTROLS_controler" type="Control" parent="." unique_id=639421035]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="C_CT_PassiveBox" type="Control" parent="CONTROLS_controler" unique_id=419875000]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 96.0
+offset_bottom = 96.0
+grow_horizontal = 2
+
+[node name="color" type="TextureRect" parent="CONTROLS_controler/C_CT_PassiveBox" unique_id=1320602569]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_qasb8")
+
+[node name="lines" type="TextureRect" parent="CONTROLS_controler/C_CT_PassiveBox" unique_id=944785018]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -16.0
+offset_right = 32.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_jkgq1")
+
+[node name="C_CT_LeftActive" type="Control" parent="CONTROLS_controler" unique_id=1933138804]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -48.0
+offset_right = -128.0
+offset_bottom = -48.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="color" type="TextureRect" parent="CONTROLS_controler/C_CT_LeftActive" unique_id=448679563]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+texture = SubResource("AtlasTexture_sosq4")
+
+[node name="lines" type="TextureRect" parent="CONTROLS_controler/C_CT_LeftActive" unique_id=727558626]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+texture = SubResource("AtlasTexture_0wvvs")
+
+[node name="C_CT_RightActive" type="Control" parent="CONTROLS_controler" unique_id=1596903551]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -64.0
+offset_top = -48.0
+offset_right = -64.0
+offset_bottom = -48.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="color" type="TextureRect" parent="CONTROLS_controler/C_CT_RightActive" unique_id=1668312040]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+texture = SubResource("AtlasTexture_f0h42")
+
+[node name="lines" type="TextureRect" parent="CONTROLS_controler/C_CT_RightActive" unique_id=2097514545]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+texture = SubResource("AtlasTexture_85iag")
+
+[node name="C_CT_Health" type="Control" parent="CONTROLS_controler" unique_id=1915904354]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 64.0
+offset_top = -64.0
+offset_right = 64.0
+offset_bottom = -64.0
+grow_vertical = 0
+
+[node name="color" type="TextureRect" parent="CONTROLS_controler/C_CT_Health" unique_id=92647283]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tt46e")
+
+[node name="lines" type="TextureRect" parent="CONTROLS_controler/C_CT_Health" unique_id=1622742579]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("AtlasTexture_68qxo")
