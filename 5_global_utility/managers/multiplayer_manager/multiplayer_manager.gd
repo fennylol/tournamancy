@@ -35,7 +35,7 @@ func _ready() -> void:
    add_child(_OTP)
 func _notification(what: int) -> void:
    if what == NOTIFICATION_WM_CLOSE_REQUEST:
-      _send_disconnection_data()
+     _send_disconnection_data()
 # =============== #
 # signal handling #
 # =============== #
@@ -47,16 +47,16 @@ func _on_connect_button_pressed(target_address: String) -> void:
 func _on_disconnect_button_pressed() -> void:
    _send_disconnection_data()
    for peer:OneTruePingus.PingusPeer in _OTP.Peers:
-      peer_disconnected.emit(peer.NetworkID)
-      _OTP.Peers.erase(peer)
+     peer_disconnected.emit(peer.NetworkID)
+     _OTP.Peers.erase(peer)
    _refresh_peer_list()
 func _on_connection_established(network_id: int, peer_address: String, peer_port: int) -> void:
    connection_established.emit(network_id)
    _send_connection_data(network_id, peer_address, peer_port)
    for peer in _OTP.Peers:
-      if peer.NetworkID == network_id: continue
-      if peer.State != OneTruePingus.PingusStates.CONNECTED: continue
-      _send_connection_data(peer.NetworkID, peer.Addr, peer.Port)
+     if peer.NetworkID == network_id: continue
+     if peer.State != OneTruePingus.PingusStates.CONNECTED: continue
+     _send_connection_data(peer.NetworkID, peer.Addr, peer.Port)
    _refresh_peer_list()
    _send_nametag_data()
 func _on_ready_button_pressed() -> void:
@@ -68,15 +68,15 @@ func _on_name_changed(new_name: String) -> void:
 func _on_network_type_changed(global: bool) -> void:
    _ConnectionMenu.set_ip_label(_OTP.get_addr_port(global))
    if not global: 
-      _OTP._discover_address()
-      _OTP.ExternAddr = "PEE.POO.CUM.POO"
+     _OTP._discover_address()
+     _OTP.ExternAddr = "PEE.POO.CUM.POO"
 func _on_hosting_type_changed(client: bool) -> void:
    _Hosting = not client
 func _refresh_peer_list() -> void:
    for peer:OneTruePingus.PingusPeer in _OTP.Peers:
-      if peer.KeepAliveNum*OneTruePingus._KEEP_ALIVE_TIME >= OneTruePingus._TIMEOUT_TIME:
-         peer_disconnected.emit(peer.NetworkID)
-         _OTP.Peers.erase(peer)
+     if peer.KeepAliveNum*OneTruePingus._KEEP_ALIVE_TIME >= OneTruePingus._TIMEOUT_TIME:
+       peer_disconnected.emit(peer.NetworkID)
+       _OTP.Peers.erase(peer)
    _ConnectionMenu.update_peers(_OTP.Peers, _NameTags)
 func passthrough_player_enabled_changed(new_val: bool) -> void:
    _ConnectionMenu.visible = not new_val
@@ -102,23 +102,23 @@ enum DataTypes {
 
 func _recieve_data(_sender_id: int, data_type: int, data: PackedByteArray) -> void:
    #if data_type != OneTruePingus.DataTypes.CONTROL and data.size() < MinSizes[data_type]: 
-      #if DEBUG_PRINT_CONTROL_MESSAGES:
-         #print("ERROR: undersized data of type %s from %d" % [DataTypes.find_key(data_type), sender_id])
-      #return
+     #if DEBUG_PRINT_CONTROL_MESSAGES:
+       #print("ERROR: undersized data of type %s from %d" % [DataTypes.find_key(data_type), sender_id])
+     #return
    match data_type:
-      DataTypes.TransformData    : _recieve_transform_data     (data)
-      DataTypes.DamageData       : _recieve_damage_data        (data)
-      DataTypes.ConnectionData   : _recieve_connection_data    (data)
-      DataTypes.DisconnectionData: _recieve_disconnection_data (data)
-      DataTypes.NameTagData      : _recieve_name_data          (data)
-      DataTypes.SubSpellEquip    : _recieve_subspell_equip_data(data)
-      DataTypes.SubSpellErase    : _recieve_subspell_erase_data(data)
-      DataTypes.SubSpellState    : _recieve_subspell_state_data(data)
-      OneTruePingus.DataTypes.CONTROL:
-         if DEBUG_PRINT_CONTROL_MESSAGES: print(data.get_string_from_utf8())
-         if _OTP.ExternAddr != "" and _ConnectionMenu.GLOBAL_BUTTON.disabled:
-            _ConnectionMenu.set_ip_label(_OTP.get_addr_port(true))
-         _refresh_peer_list()
+     DataTypes.TransformData    : _recieve_transform_data     (data)
+     DataTypes.DamageData       : _recieve_damage_data        (data)
+     DataTypes.ConnectionData   : _recieve_connection_data    (data)
+     DataTypes.DisconnectionData: _recieve_disconnection_data (data)
+     DataTypes.NameTagData      : _recieve_name_data          (data)
+     DataTypes.SubSpellEquip    : _recieve_subspell_equip_data(data)
+     DataTypes.SubSpellErase    : _recieve_subspell_erase_data(data)
+     DataTypes.SubSpellState    : _recieve_subspell_state_data(data)
+     OneTruePingus.DataTypes.CONTROL:
+       if DEBUG_PRINT_CONTROL_MESSAGES: print(data.get_string_from_utf8())
+       if _OTP.ExternAddr != "" and _ConnectionMenu.GLOBAL_BUTTON.disabled:
+         _ConnectionMenu.set_ip_label(_OTP.get_addr_port(true))
+       _refresh_peer_list()
 
 func _recieve_transform_data     (data: PackedByteArray) -> void:
    var peer_id: int = data.decode_u32(0)
@@ -134,15 +134,15 @@ func _recieve_connection_data    (data: PackedByteArray)                 -> void
    if (peer_id == _OTP.NetworkID) \
    or (peer_address == _OTP.ExternAddr and peer_port == _OTP.ExternPort) \
    or (peer_address == _OTP.LocalAddr and peer_port == _OTP.LocalPort):
-      return 
+     return 
    
    _OTP.add_peer(peer_address, peer_port, peer_id)
 func _recieve_disconnection_data (data: PackedByteArray)                 -> void:
    var peer_id: int = data.decode_u32(0)
    for peer:OneTruePingus.PingusPeer in _OTP.Peers:
-      if peer.NetworkID == peer_id: 
-         _OTP.Peers.erase(peer)
-         peer_disconnected.emit(peer.NetworkID)
+     if peer.NetworkID == peer_id: 
+       _OTP.Peers.erase(peer)
+       peer_disconnected.emit(peer.NetworkID)
    _refresh_peer_list()
 func _recieve_name_data          (data: PackedByteArray) -> void:
    var peer_id: int = data.decode_u32(0)

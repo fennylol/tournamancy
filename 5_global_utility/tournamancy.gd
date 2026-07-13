@@ -26,12 +26,12 @@ func _on_mpm_connection_established(network_id: int) -> void:
    _dummies[network_id] = dummy
 func _on_mpm_peer_discconected     (network_id: int) -> void:
    if _dummies.has(network_id):
-      _dummies[network_id].queue_free()
+     _dummies[network_id].queue_free()
 func _on_mpm_transform_data        (network_id: int, data: PackedByteArray) -> void:
    if _dummies.has(network_id):
-      _dummies[network_id]._on_transform_data(data)
+     _dummies[network_id]._on_transform_data(data)
 func _on_mpm_name_data             (network_id: int, new_name: String) -> void:
    if _dummies.has(network_id):
-      _dummies[network_id]._on_nametag_data(new_name)
+     _dummies[network_id]._on_nametag_data(new_name)
 func _on_mpm_ready_button_pressed() -> void:
    PlayerCharacter.enabled = true
