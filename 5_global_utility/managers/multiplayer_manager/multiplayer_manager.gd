@@ -8,7 +8,7 @@ signal peer_disconnected(network_id: int)
 signal connection_established(network_id: int)
 signal transform_data(network_id: int, data: PackedByteArray)
 signal name_data(network_id: int, new_name: String)
-signal subspell_data()
+signal effect_data()
 
 var NameTag  : String        = ""
 var _OTP     : OneTruePingus = OneTruePingus.new()
@@ -91,7 +91,7 @@ enum DataTypes {
    # connection state #
    ConnectionData = 0xCD, DisconnectionData = 0xDD, NameTagData = 0x15, 
    # inventory #
-   SubSpellEquip = 0xEC, SubSpellErase = 0x0C, SubSpellState = 0xC5
+   EffectEquip = 0xEC, EffectErase = 0x0C, EffectState = 0xC5
 }
 #var MinSizes: Dictionary = {
    #DataTypes.TransformData    : Player.TRANSFORM_DATA_SIZE,
@@ -111,9 +111,9 @@ func _recieve_data(_sender_id: int, data_type: int, data: PackedByteArray) -> vo
      DataTypes.ConnectionData   : _recieve_connection_data    (data)
      DataTypes.DisconnectionData: _recieve_disconnection_data (data)
      DataTypes.NameTagData      : _recieve_name_data          (data)
-     DataTypes.SubSpellEquip    : _recieve_subspell_equip_data(data)
-     DataTypes.SubSpellErase    : _recieve_subspell_erase_data(data)
-     DataTypes.SubSpellState    : _recieve_subspell_state_data(data)
+     DataTypes.EffectEquip    : _recieve_effect_equip_data(data)
+     DataTypes.EffectErase    : _recieve_effect_erase_data(data)
+     DataTypes.EffectState    : _recieve_effect_state_data(data)
      OneTruePingus.DataTypes.CONTROL:
        if DEBUG_PRINT_CONTROL_MESSAGES: print(data.get_string_from_utf8())
        if _OTP.ExternAddr != "" and _ConnectionMenu.GLOBAL_BUTTON.disabled:
@@ -124,7 +124,7 @@ func _recieve_transform_data     (data: PackedByteArray) -> void:
    var peer_id: int = data.decode_u32(0)
    var trans_data: PackedByteArray = data.slice(OneTruePingus.NETWORK_ID_SIZE)
    transform_data.emit(peer_id, trans_data)
-func _recieve_damage_data        (data: PackedByteArray)                 -> void:
+func _recieve_damage_data        (_data: PackedByteArray)                 -> void:
    print("DAMAGE DATA RECIEVED BUT NO HANDLER EXISTS")
 func _recieve_connection_data    (data: PackedByteArray)                 -> void:
    var peer_id = data.decode_u32(0)
@@ -150,11 +150,11 @@ func _recieve_name_data          (data: PackedByteArray) -> void:
    _NameTags[peer_id] = new_name
    name_data.emit(peer_id, new_name)
    _refresh_peer_list()
-func _recieve_subspell_equip_data(data: PackedByteArray)                 -> void:
-   print("EQUIP SUBSPELL DATA RECIEVED BUT NO HANDLER EXISTS")
-func _recieve_subspell_erase_data(data: PackedByteArray)                 -> void:
-   print("ERASE SUBSPELL DATA RECIEVED BUT NO HANDLER EXISTS")
-func _recieve_subspell_state_data(data: PackedByteArray)                 -> void:
+func _recieve_effect_equip_data(data: PackedByteArray)                 -> void:
+   print("EQUIP EFFECT DATA RECIEVED BUT NO HANDLER EXISTS")
+func _recieve_effect_erase_data(data: PackedByteArray)                 -> void:
+   print("ERASE EFFECT DATA RECIEVED BUT NO HANDLER EXISTS")
+func _recieve_effect_state_data(data: PackedByteArray)                 -> void:
    var network_id      : int = data.decode_u32(0) 
    var active_v_passive: int = data.decode_u8 (OneTruePingus.NETWORK_ID_SIZE)
    var spell_id        : int = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE + SpellData.ACTIVE_V_PASSIVE_SIZE)
@@ -190,15 +190,15 @@ func _send_nametag_data(owner_id: int = _OTP.NetworkID) -> void:
    data.encode_u32(0, owner_id)
    data.append_array(NameTag.to_utf8_buffer())
    _OTP.send_data(DataTypes.NameTagData, data)
-func _send_subspell_equip_data(spell_id: int, is_active: bool) -> void:
-   print("EQUIP SUBSPELL DATA SNET BUT NO DATA REALLY EXISTS")
+func _send_effect_equip_data(spell_id: int, is_active: bool) -> void:
+   print("EQUIP EFFECT DATA SNET BUT NO DATA REALLY EXISTS")
    var data: PackedByteArray = []
    _OTP.send_data(DataTypes.DamageData, data)
-func _send_subspell_erase_data(spell_id: int, is_active: bool) -> void:
-   print("ERASE SUBSPELL DATA SNET BUT NO DATA REALLY EXISTS")
+func _send_effect_erase_data(spell_id: int, is_active: bool) -> void:
+   print("ERASE EFFECT DATA SNET BUT NO DATA REALLY EXISTS")
    var data: PackedByteArray = []
    _OTP.send_data(DataTypes.DamageData, data)
-func _send_subspell_state_data(spell_id: int, is_active: bool, spell_state: int) -> void:
-   print("SUBSPELL STATE DATA SNET BUT NO DATA REALLY EXISTS")
+func _send_effect_state_data(spell_id: int, is_active: bool, spell_state: int) -> void:
+   print("EFFECT STATE DATA SNET BUT NO DATA REALLY EXISTS")
    var data: PackedByteArray = []
-   _OTP.send_data(DataTypes.SubSpellState, data)
+   _OTP.send_data(DataTypes.EffectState, data)

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drxt277vv4iw"
-path="res://.godot/imported/perk_sheet_02.png-9c58fa1c5ba17e2c136d26c39ca133a4.ctex"
+uid="uid://o8tt11me6a7o"
+path="res://.godot/imported/passive_icons.png-6fd10b95a04118cde1060b4c94dd0b94.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://_RAWS/perk_sheet_02.png"
-dest_files=["res://.godot/imported/perk_sheet_02.png-9c58fa1c5ba17e2c136d26c39ca133a4.ctex"]
+source_file="res://_RAWS/passive_icons.png"
+dest_files=["res://.godot/imported/passive_icons.png-6fd10b95a04118cde1060b4c94dd0b94.ctex"]
 
 [params]
 

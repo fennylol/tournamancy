@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://kyema8twu3us"]
+
+[ext_resource type="Texture2D" uid="uid://6oj1hdwo6ry7" path="res://2_actives/Teleport/teleport_icon.png" id="1_5ltk7"]
+[ext_resource type="Script" uid="uid://b8gasvywxyxqa" path="res://4_ui/HUD_2/active_icon.gd" id="1_6l8x6"]
+
+[sub_resource type="Gradient" id="Gradient_5ltk7"]
+colors = PackedColorArray(0.5, 0.5, 0.5, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ooygk"]
+gradient = SubResource("Gradient_5ltk7")
+width = 45
+height = 45
+fill_from = Vector2(0, 1)
+fill_to = Vector2(0, 0)
+
+[node name="ActiveIcon" type="Node2D" unique_id=1207755928]
+script = ExtResource("1_6l8x6")
+
+[node name="Icon" type="Sprite2D" parent="." unique_id=1628415779]
+texture = ExtResource("1_5ltk7")
+
+[node name="Cooldown" type="TextureProgressBar" parent="." unique_id=1266465493]
+modulate = Color(1, 1, 1, 0.5019608)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -22.5
+offset_top = -22.5
+offset_right = 22.5
+offset_bottom = 22.5
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+step = 0.01
+value = 1.0
+fill_mode = 3
+texture_progress = SubResource("GradientTexture2D_ooygk")

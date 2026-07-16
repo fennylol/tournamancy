@@ -53,6 +53,6 @@ mesh = SubResource("CylinderMesh_qeeko")
 [node name="Ears" type="AudioListener3D" parent="." unique_id=297933939]
 current = true
 
-[node name="SubSpells" type="Node3D" parent="." unique_id=631217568]
+[node name="Effects" type="Node3D" parent="." unique_id=631217568]
 
 [node name="DefaultHud" parent="." unique_id=1610244138 instance=ExtResource("3_qeeko")]

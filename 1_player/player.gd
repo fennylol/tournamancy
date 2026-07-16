@@ -24,7 +24,7 @@ var enabled: bool = false:
 @onready var LOOK_DIR  := $Eyes/RayCast3D
 @onready var L_HAND    := $Eyes/Lhand
 @onready var R_HAND    := $Eyes/Rhand
-@onready var SUBSPELLS := $SubSpells
+@onready var EFFECTS   := $Effects
 
 var SpellBook: Grimoire = Grimoire.new()
 
@@ -119,10 +119,10 @@ func generate_transform_data() -> PackedByteArray:
    return packed_data
 
 # TODO: dopesnt really work
-func add_subspell(constructor: Callable) -> Node:
+func add_effect(constructor: Callable) -> Node:
    var result = constructor.call()
    if result is Node: 
-      SUBSPELLS.add_child(result)
+      EFFECTS.add_child(result)
       return result
    else: return null
    

@@ -2,6 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://cv7j5obg5mwwk" path="res://4_ui/HUD_2/main_ui_sheet32.png" id="1_hcdvk"]
 [ext_resource type="PackedScene" uid="uid://cgtqkg01jix6k" path="res://4_ui/HUD_2/HealthDisplay.tscn" id="2_p352i"]
+[ext_resource type="PackedScene" uid="uid://bpiwte6rdbm4m" path="res://4_ui/HUD_2/PassiveIcons.tscn" id="2_qrm2a"]
+[ext_resource type="PackedScene" uid="uid://kyema8twu3us" path="res://4_ui/HUD_2/ActiveIcon.tscn" id="2_uiadr"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_p352i"]
 atlas = ExtResource("1_hcdvk")
@@ -140,6 +142,10 @@ offset_bottom = 96.0
 texture = SubResource("AtlasTexture_3br5d")
 stretch_mode = 2
 
+[node name="PassiveIcons" parent="PassiveBox" unique_id=478264811 instance=ExtResource("2_qrm2a")]
+process_mode = 3
+position = Vector2(-304, 16)
+
 [node name="Actives" type="Control" parent="." unique_id=1973357727]
 layout_mode = 1
 anchors_preset = 3
@@ -180,6 +186,14 @@ offset_top = -64.0
 grow_horizontal = 0
 grow_vertical = 0
 texture = SubResource("AtlasTexture_dy57i")
+
+[node name="ActiveIcon(L)" parent="Actives" unique_id=1207755928 instance=ExtResource("2_uiadr")]
+process_mode = 3
+position = Vector2(-96, -32)
+
+[node name="ActiveIcon(R)" parent="Actives" unique_id=1644648155 instance=ExtResource("2_uiadr")]
+process_mode = 3
+position = Vector2(-32, -32)
 
 [node name="HealthPoints" type="Control" parent="." unique_id=415167611]
 layout_mode = 1
