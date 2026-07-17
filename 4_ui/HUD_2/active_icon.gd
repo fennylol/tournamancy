@@ -4,6 +4,7 @@ extends Node2D
 @onready var cooldown_bar : TextureProgressBar = $Cooldown
 
 func _process(delta: float) -> void:
+   ## DEMO ACTIVATING AN ACTIVE ABILITY
    if Input.is_physical_key_pressed(KEY_R): _reset_cooldown()
    ## TODO: MAKE THE COOLDOWN VISUALIZER PULL COOLDOWN INFORMATION FROM THE PLAYER, RATHER THAN DOING THE CALCULATIONS ITSELF
    if cooldown_bar.value > 0.0: cooldown_bar.value -= delta

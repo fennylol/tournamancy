@@ -50,12 +50,37 @@ const ActiveSpells: Dictionary = {
    
 }
 
-enum PassiveSpellIDs { Health,
-                       Damage,
-                       Speed, Jump, Gravity,
-                       JBLSpeaker }
+#enum PassiveSpellIDs { Heart,
+                       #Damage,
+                       #Speed, Jump, Gravity,
+                       #JBLSpeaker }
+enum PassiveSpellIDs {
+   Heart,
+   Armor,
+   Ward,
+   Overhealth,
+   Armor_Strength,
+   Ward_Strength,
+   Lifesteal,
+   Damage,
+   Attack_Range,
+   Cooldown,
+   Force,
+   Crit,
+   Luck,
+   Speed,
+   Sprint,
+   Jump,
+   Gravity,
+   Steadfastness,
+   Melee_Damage,
+   Melee_Range,
+   Melee_Force,
+   Melee_Cooldown,
+   JBLSpeaker
+   }
 const PassiveSpells: Dictionary = {
-   PassiveSpellIDs.Health : {
+   PassiveSpellIDs.Heart : {
       SpellFields.Name : "HealthSpell",
       SpellFields.IconPath : "res://3_passives/Health/health_icon.png",
       SpellFields.ScriptPath : "res://3_passives/Health/health_script.gd",

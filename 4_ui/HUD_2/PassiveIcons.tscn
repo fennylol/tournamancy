@@ -191,5 +191,4 @@ sources/0 = SubResource("TileSetAtlasSource_4p2c2")
 script = ExtResource("1_wg58l")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=752010673]
-tile_map_data = PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 tile_set = SubResource("TileSet_3br5d")
