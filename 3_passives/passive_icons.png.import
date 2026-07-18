@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://o8tt11me6a7o"
-path="res://.godot/imported/passive_icons.png-6fd10b95a04118cde1060b4c94dd0b94.ctex"
+path="res://.godot/imported/passive_icons.png-5e1cb241c4c7207040362e794c0c36bb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://_RAWS/passive_icons.png"
-dest_files=["res://.godot/imported/passive_icons.png-6fd10b95a04118cde1060b4c94dd0b94.ctex"]
+source_file="res://3_passives/passive_icons.png"
+dest_files=["res://.godot/imported/passive_icons.png-5e1cb241c4c7207040362e794c0c36bb.ctex"]
 
 [params]
 

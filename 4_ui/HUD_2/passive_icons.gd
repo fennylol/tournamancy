@@ -1,29 +1,10 @@
 extends Node2D
 
 @onready var icon_grid : TileMapLayer = $TileMapLayer
+@onready var icon_stack  : Node2D = $IconStack
+@onready var number_node : Node2D = $Numbers
 var passive_list : Dictionary[int,int] = {}
-   #SpellData.StatTypes.HEARTS         : 0,
-   #SpellData.StatTypes.ARMOR          : 0,
-   #SpellData.StatTypes.WARD           : 0,
-   #SpellData.StatTypes.OVERHEALTH     : 0,
-   #SpellData.StatTypes.ARMOR_STRENGTH : 0,
-   #SpellData.StatTypes.WARD_STRENGTH  : 0,
-   #SpellData.StatTypes.LIFESTEAL      : 0,
-   #SpellData.StatTypes.DAMAGE         : 0,
-   #SpellData.StatTypes.RANGE          : 0,
-   #SpellData.StatTypes.COOLDOWN       : 0,
-   #SpellData.StatTypes.FORCE          : 0,
-   #SpellData.StatTypes.CRIT           : 0,
-   #SpellData.StatTypes.LUCK           : 0,
-   #SpellData.StatTypes.SPEED          : 0,
-   #SpellData.StatTypes.SPRINT         : 0,
-   #SpellData.StatTypes.JUMP           : 0,
-   #SpellData.StatTypes.GRAVITY        : 0,
-   #SpellData.StatTypes.STEADFASTNESS  : 0,
-   #SpellData.StatTypes.MELEE_DAMAGE   : 0,
-   #SpellData.StatTypes.MELEE_RANGE    : 0,
-   #SpellData.StatTypes.MELEE_FORCE    : 0,
-   #SpellData.StatTypes.MELEE_COOLDOWN : 0
+var offset_size : int = 32
 var timer = 1.0
 
 func _process(delta: float) -> void:
@@ -44,12 +25,40 @@ func _import_passive_spells(list : Array[int], full_clear : bool = false):
    ## IMPORT PASSIVES BASED ON SPELL_ID
    ## KEEP TRACK OF HOW MANY OF EACH ARE EXTANT
    for i in range(list.size()):
-      print("list[i] = ", list[i])
-      print("Passive Spell 0 = ", SpellData.PassiveSpellIDs.get(0))
       if SpellData.PassiveSpells.has(list[i]):
          var new_entry = {list[i]:passive_list.get(list[i])+1} if passive_list.has(list[i]) else {list[i]:1}
-         print("new entry: ", new_entry)
          passive_list.merge(new_entry,true)
+   #clear_and_set_as_tilemaplayer()
+   clear_and_set_as_nodes()
+
+func clear_and_set_as_nodes():
+   ## CLEAR PREVIOUS ICONS AND NUMBERS
+   for child in icon_stack.get_children(): child.queue_free()
+   for child in number_node.get_children(): child.queue_free()
+   var icon_offset : Vector2i = Vector2i(64,32)
+   for i in range(passive_list.keys().size()):
+      ## CREATE NEW ICON
+      var new_icon = Sprite2D.new()
+      var new_texture = AtlasTexture.new()
+      new_texture.atlas = load(SpellData.PassiveSpells.get(passive_list.keys()[i]).get(SpellData.SpellFields.IconPath))
+      new_texture.region = SpellData.PassiveSpells.get(passive_list.keys()[i]).get(SpellData.SpellFields.IconRect)
+      new_icon.texture = new_texture
+      icon_stack.add_child(new_icon)
+      ## SET ICON LOCATION
+      new_icon.position = Vector2(icon_offset.x * i,floor(i/9))
+      ## CREATE NUMBER
+      var new_number = Label.new()
+      new_number.text = "x" + str(passive_list.get(passive_list.keys()[i]))
+      new_number.size = Vector2(32,32)
+      new_number.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+      new_number.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+      number_node.add_child(new_number)
+      ## PLACE NUMBER
+      new_number.position = Vector2((icon_offset.x * i)+16,(floor(i/9))-16)
+
+## DEPRECIATED
+## BUT PERHAPS STILL USEFUL FOR SHOWING MERGED SPELLS IN PRISMS
+func clear_and_set_as_tilemaplayer():
    ## CLEAR ICON GRID AND SET CELLS
    icon_grid.clear()
    var icon_offset : Vector2i = Vector2i.ZERO
@@ -86,4 +95,3 @@ func _import_passive_spells(list : Array[int], full_clear : bool = false):
             icon_amounts[j] -= 1
             icon_offset += Vector2i(1,0)
             if icon_offset.x > 18: icon_offset = Vector2i(0,icon_offset.y+1)
-   print(passive_list)

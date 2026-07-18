@@ -36,7 +36,7 @@ enum StatTypes {
    MELEE_COOLDOWN    # 22 Melee cooldown
 }
    
-enum SpellFields {Name, IconPath, ScriptPath, Effects, DummyEffects} # may at some point break this into PassiveSpellFields and ActiveSpellFields
+enum SpellFields {Name, IconPath, IconRect, ScriptPath, Effects, DummyEffects} # may at some point break this into PassiveSpellFields and ActiveSpellFields
 
 enum ActiveSpellIDs {Teleport, Fireball}
 const ActiveSpells: Dictionary = {
@@ -50,75 +50,204 @@ const ActiveSpells: Dictionary = {
    
 }
 
-#enum PassiveSpellIDs { Heart,
-                       #Damage,
-                       #Speed, Jump, Gravity,
-                       #JBLSpeaker }
 enum PassiveSpellIDs {
-   Heart,
-   Armor,
-   Ward,
-   Overhealth,
-   Armor_Strength,
-   Ward_Strength,
-   Lifesteal,
-   Damage,
-   Attack_Range,
-   Cooldown,
-   Force,
-   Crit,
-   Luck,
-   Speed,
-   Sprint,
-   Jump,
-   Gravity,
-   Steadfastness,
-   Melee_Damage,
-   Melee_Range,
-   Melee_Force,
-   Melee_Cooldown,
+   ## DEFENSE
+   Heart, Armor, Ward, Overhealth, Armor_Strength, Ward_Strength, Lifesteal,
+   ## OFFENSE
+   Damage, Attack_Range, Cooldown, Force, Crit, Luck,
+   ## MOVEMENT
+   Speed, Sprint, Jump, Gravity, Steadfastness,
+   ## MELEE
+   Melee_Damage, Melee_Range, Melee_Force, Melee_Cooldown,
+   ## OTHER
    JBLSpeaker
    }
 const PassiveSpells: Dictionary = {
    PassiveSpellIDs.Heart : {
-      SpellFields.Name : "HealthSpell",
-      SpellFields.IconPath : "res://3_passives/Health/health_icon.png",
+      SpellFields.Name : "Health",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,0,32,32),
       SpellFields.ScriptPath : "res://3_passives/Health/health_script.gd",
       SpellFields.Effects : [],
       SpellFields.DummyEffects : []
    },
-
+   PassiveSpellIDs.Armor : {
+      SpellFields.Name : "Armor",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,32,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Ward : {
+      SpellFields.Name : "Ward",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,64,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Overhealth : {
+      SpellFields.Name : "Overhealth",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,96,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Armor_Strength : {
+      SpellFields.Name : "Armor Strength",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,128,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Ward_Strength : {
+      SpellFields.Name : "Ward Strength",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,160,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Lifesteal : {
+      SpellFields.Name : "Lifesteal",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,192,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
    PassiveSpellIDs.Damage : {
-      SpellFields.Name : "DamageSpell",
-      SpellFields.IconPath : "res://3_passives/Damage/damage_icon.png",
+      SpellFields.Name : "Damage",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,224,32,32),
       SpellFields.ScriptPath : "res://3_passives/Damage/damage_script.gd",
       SpellFields.Effects : [],
       SpellFields.DummyEffects : []
-   },  
-
+   },
+   PassiveSpellIDs.Attack_Range : {
+      SpellFields.Name : "Range",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,256,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Cooldown : {
+      SpellFields.Name : "Cooldown",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,288,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Force : {
+      SpellFields.Name : "Force",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,320,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Crit : {
+      SpellFields.Name : "Critical",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,352,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Luck : {
+      SpellFields.Name : "Luck",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,384,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
    PassiveSpellIDs.Speed : {
-      SpellFields.Name : "SpeedSpell",
-      SpellFields.IconPath : "res://3_passives/Speed/speed_icon.png",
+      SpellFields.Name : "Speed",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,416,32,32),
       SpellFields.ScriptPath : "res://3_passives/Speed/speed_script.gd",
       SpellFields.Effects : [],
       SpellFields.DummyEffects : []
    },
-
+   PassiveSpellIDs.Sprint : {
+      SpellFields.Name : "Sprint",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,448,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Jump : {
+      SpellFields.Name : "Jump Height",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,480,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
    PassiveSpellIDs.Gravity : {
-      SpellFields.Name : "GravitySpell",
-      SpellFields.IconPath : "res://3_passives/Gravity/gravity_icon.png",
+      SpellFields.Name : "Gravity",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,512,32,32),
       SpellFields.ScriptPath : "res://3_passives/Gravity/gravity_script.gd",
       SpellFields.Effects : [],
       SpellFields.DummyEffects : []
    },
-
+   PassiveSpellIDs.Steadfastness : {
+      SpellFields.Name : "Steadfastness",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,544,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Melee_Damage : {
+      SpellFields.Name : "Melee Damage",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,576,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Melee_Range : {
+      SpellFields.Name : "Melee Range",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,608,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Melee_Force : {
+      SpellFields.Name : "Melee Force",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,640,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   PassiveSpellIDs.Melee_Cooldown : {
+      SpellFields.Name : "Melee Cooldown",
+      SpellFields.IconPath : "res://3_passives/passive_icons.png",
+      SpellFields.IconRect : Rect2(0,672,32,32),
+      SpellFields.ScriptPath : "",
+      SpellFields.Effects : [],
+      SpellFields.DummyEffects : []
+   },
+   
    PassiveSpellIDs.JBLSpeaker : {
       SpellFields.Name : "BigAssSpeaker",
       SpellFields.IconPath : "",
+      SpellFields.IconRect: Rect2(0,0,32,32),
       SpellFields.ScriptPath : "res://3_passives/JBL_Speaker/jbl_speaker_script.gd",
       SpellFields.Effects : [],
       SpellFields.DummyEffects : []
-   }
+   },
 }
 
 static func get_active_spell_data(id: ActiveSpellIDs) -> Dictionary: 

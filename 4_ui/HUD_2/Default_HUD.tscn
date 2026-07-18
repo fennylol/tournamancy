@@ -144,7 +144,7 @@ stretch_mode = 2
 
 [node name="PassiveIcons" parent="PassiveBox" unique_id=478264811 instance=ExtResource("2_qrm2a")]
 process_mode = 3
-position = Vector2(-304, 16)
+position = Vector2(-288, 32)
 
 [node name="Actives" type="Control" parent="." unique_id=1973357727]
 layout_mode = 1

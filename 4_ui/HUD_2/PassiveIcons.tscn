@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bpiwte6rdbm4m"]
 
 [ext_resource type="Script" uid="uid://crx7s1buy1tte" path="res://4_ui/HUD_2/passive_icons.gd" id="1_wg58l"]
-[ext_resource type="Texture2D" uid="uid://o8tt11me6a7o" path="res://_RAWS/passive_icons.png" id="2_wg58l"]
+[ext_resource type="Texture2D" uid="uid://o8tt11me6a7o" path="res://3_passives/passive_icons.png" id="2_wg58l"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4p2c2"]
 texture = ExtResource("2_wg58l")
@@ -191,4 +191,9 @@ sources/0 = SubResource("TileSetAtlasSource_4p2c2")
 script = ExtResource("1_wg58l")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=752010673]
+position = Vector2(-16, -16)
 tile_set = SubResource("TileSet_3br5d")
+
+[node name="IconStack" type="Node2D" parent="." unique_id=1413063127]
+
+[node name="Numbers" type="Node2D" parent="." unique_id=193400336]
