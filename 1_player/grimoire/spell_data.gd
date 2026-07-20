@@ -36,14 +36,16 @@ enum StatTypes {
    MELEE_COOLDOWN    # 22 Melee cooldown
 }
    
-enum SpellFields {Name, IconPath, IconRect, ScriptPath, Effects, DummyEffects} # may at some point break this into PassiveSpellFields and ActiveSpellFields
+enum SpellFields {Name, IconPath, IconRect, ScriptPath, Cooldown, Effects, DummyEffects} # may at some point break this into PassiveSpellFields and ActiveSpellFields
 
 enum ActiveSpellIDs {Teleport, Fireball}
 const ActiveSpells: Dictionary = {
    ActiveSpellIDs.Teleport : {
       SpellFields.Name : "Warpstone",
       SpellFields.IconPath : "res://2_actives/Teleport/teleport_icon.png",
+      SpellFields.IconRect : Rect2(0,0,32,32),
       SpellFields.ScriptPath : "res://2_actives/Teleport/teleport_script.gd",
+      SpellFields.Cooldown : 5.0,
       SpellFields.Effects : [],
       SpellFields.DummyEffects : []
    }

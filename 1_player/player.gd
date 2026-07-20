@@ -25,8 +25,16 @@ var enabled: bool = false:
 @onready var L_HAND    := $Eyes/Lhand
 @onready var R_HAND    := $Eyes/Rhand
 @onready var EFFECTS   := $Effects
+var HUD_LEFT_ACTIVE    : Node2D
+var HUD_RIGHT_ACTIVE   : Node2D
+var HUD_HEALTHBAR      : Node2D
 
 var SpellBook: Grimoire = Grimoire.new()
+
+func _ready() -> void:
+   HUD_LEFT_ACTIVE = $DefaultHud.find_child("Actives").find_child("ActiveIcon(L)")
+   HUD_RIGHT_ACTIVE = $DefaultHud.find_child("Actives").find_child("ActiveIcon(R)")
+   HUD_HEALTHBAR = $DefaultHud.find_child("HealthPoints").find_child("HealthDisplay")
 
 # =================== #
 # _process() handling #
@@ -46,17 +54,21 @@ func _process(delta):
 
    if Input.is_action_just_pressed("active_spell_0") and enabled:
       L_HAND.texture = POINT_IMG
+      HUD_LEFT_ACTIVE._hold()
       if SpellBook.ActiveSpells[0]:
          SpellBook.ActiveSpells[0]._on_activate(self)
    elif Input.is_action_just_released("active_spell_0") or not enabled: 
       L_HAND.texture = HAND_IMG
+      HUD_LEFT_ACTIVE._release()
    
    if Input.is_action_just_pressed("active_spell_1") and enabled:
       R_HAND.texture = POINT_IMG
+      HUD_RIGHT_ACTIVE._hold()
       if SpellBook.ActiveSpells[1]:
          SpellBook.ActiveSpells[1]._on_activate(self)      
    elif Input.is_action_just_released("active_spell_1") or not enabled: 
       R_HAND.texture = HAND_IMG 
+      HUD_RIGHT_ACTIVE._release()
    SpellBook.process_end(delta, self)
 
 func _unhandled_input(event):
@@ -126,3 +138,16 @@ func add_effect(constructor: Callable) -> Node:
       return result
    else: return null
    
+# ==================== #
+# just passin' through #
+# ==================== #
+
+func update_visuals():
+   if SpellBook.ActiveSpells[0]:
+      HUD_LEFT_ACTIVE._update_icon(SpellBook.ActiveSpells[0].SpellID)
+   else:
+      HUD_LEFT_ACTIVE._update_icon(-1)
+   if SpellBook.ActiveSpells[1]:
+      HUD_RIGHT_ACTIVE._update_icon(SpellBook.ActiveSpells[1].SpellID)
+   else:
+      HUD_RIGHT_ACTIVE._update_icon(-1)
