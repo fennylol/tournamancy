@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dijyime6b78x1"]
+[gd_scene format=4 uid="uid://dijyime6b78x1"]
 
 [ext_resource type="PackedScene" uid="uid://bn2hnjsbj6jjw" path="res://0_maps/rough_city_01/rought_city_01.tscn" id="2_3tyep"]
 [ext_resource type="PackedScene" uid="uid://c5ar3hknkofok" path="res://_RAWS/pillar.glb" id="2_xvh3c"]
@@ -16,6 +16,38 @@ background_mode = 2
 sky = SubResource("Sky_xvh3c")
 tonemap_mode = 2
 glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ttiif"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_cymnw"]
+_surfaces = [{
+"aabb": AABB(-0.25, -0.5, -0.25, 0.5, 1, 0.5),
+"format": 34896613377,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAACAAEAAwAEAAEABQAAAAIAAwAAAAUABAAGAAIABQACAAYAAwAHAAQAAwAFAAcABwAGAAQABwAFAAYA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAP//AAAAAP//AAAAAAAA/7///wAAAAAAAAAAAAD/////AAAAAP//AAD//wAA////v///AAD//wAAAAAAAA==")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_2vu8a"]
+resource_name = "pillar_Cube_001"
+_surfaces = [{
+"aabb": AABB(-0.25, -0.5, -0.25, 0.5, 1, 0.5),
+"attribute_data": PackedByteArray("/1////+f/7//n////1//v/9f/7//n/9//5//v/9f/3//X/9//5//P/+f/3//X/8//1//P/+fAAD/n/8//18AAP8f/3//X/8//1//f/8f/z//n/9//9//P//f/3//n/8/"),
+"format": 34896613399,
+"index_count": 36,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUA"),
+"material": SubResource("StandardMaterial3D_ttiif"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAP//VNUAAP//AABU1QAA/7///1TVAAAAAAAAVNUAAAAAAAD///////8AAP//AAD//wAA/////wAAAAD/////AAAAAFTV////v///VNX/////AABU1f//AAD//1TV//8AAP///78AAP+/////v////7////+/AAAAAP///78AAAAAAAD/v///AAD///+///8AAAAA/78AAAAA////v/////8AAP//AAD/v/////8AAP//AAD//////7//////VNVU1VTVVNVU1VTVVNVU1f+//7//v/+//7//v/+//7+qKqoqqiqqKqoqqiqqKqoq/////////////////////wAA/38AAP9/AAD/fwAA/3//f+Ow/3/jsP9/47D/f+Ow")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_cymnw")
 
 [node name="Foyer" type="Node3D" unique_id=55400169]
 
@@ -51,3 +83,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2.5)
 [node name="ClassButton" parent="pillar3" unique_id=1290390003 instance=ExtResource("3_sdsrs")]
 transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
 button_color = Color(0.28549445, 0.74813414, 0.9999998, 1)
+
+[node name="pillar4" type="Node3D" parent="." unique_id=1839087667]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -2.5)
+
+[node name="Cube" type="MeshInstance3D" parent="pillar4" unique_id=111607730]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("ArrayMesh_2vu8a")
+
+[node name="ClassButton" parent="pillar4" unique_id=1355134715 instance=ExtResource("3_sdsrs")]
+transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
+ClassID = 4
+button_color = Color(1, 0.5687833, 0.98551124, 1)

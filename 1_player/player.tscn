@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://btixegg8i4faq" path="res://1_player/player.gd" id="1_8s5v1"]
 [ext_resource type="Texture2D" uid="uid://ddq437x4g5mpf" path="res://4_ui/hud/Lhand.png" id="2_qeeko"]
 [ext_resource type="PackedScene" uid="uid://cpsbgkgmeqg12" path="res://4_ui/HUD_2/Default_HUD.tscn" id="3_qeeko"]
+[ext_resource type="Script" uid="uid://cuueb1u2pkixq" path="res://1_player/effectory/effectory.gd" id="4_lbqfs"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_25okf"]
 radius = 0.375
@@ -53,6 +54,9 @@ mesh = SubResource("CylinderMesh_qeeko")
 [node name="Ears" type="AudioListener3D" parent="." unique_id=297933939]
 current = true
 
-[node name="Effects" type="Node3D" parent="." unique_id=631217568]
-
 [node name="DefaultHud" parent="." unique_id=1610244138 instance=ExtResource("3_qeeko")]
+
+[node name="Effectory" type="Node3D" parent="." unique_id=339117573]
+script = ExtResource("4_lbqfs")
+IsDummy = false
+metadata/_custom_type_script = "uid://cuueb1u2pkixq"

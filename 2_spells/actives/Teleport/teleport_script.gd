@@ -1,12 +1,12 @@
-class_name TeleportSpell
 extends ActiveSpell
+class_name TeleportSpell
 
 var Distance: float = 5.0
 
 # set true cooldown
 func _init() -> void:
+   super(SpellData.ActiveSpellIDs.Teleport)
    Cooldown = 5.0
-   SpellID = SpellData.ActiveSpellIDs.Teleport
 
 func _on_activate(activator: Player) -> void:
    if _can_activate(activator.SpellBook.get_stat(SpellData.StatTypes.COOLDOWN)):

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bpiwte6rdbm4m"]
 
 [ext_resource type="Script" uid="uid://crx7s1buy1tte" path="res://4_ui/HUD_2/passive_icons.gd" id="1_wg58l"]
-[ext_resource type="Texture2D" uid="uid://o8tt11me6a7o" path="res://3_passives/passive_icons.png" id="2_wg58l"]
+[ext_resource type="Texture2D" uid="uid://o8tt11me6a7o" path="res://2_spells/passives/passive_icons.png" id="2_wg58l"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4p2c2"]
 texture = ExtResource("2_wg58l")

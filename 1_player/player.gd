@@ -8,33 +8,36 @@ const TRANSFORM_DATA_SIZE: int = (4*9)+1
 const HAND_IMG : Texture2D = preload("res://4_ui/hud/Lhand.png")
 const POINT_IMG: Texture2D = preload("res://4_ui/hud/Lpoint.png")
 
-signal enabled_changed(new_val:bool)
-
-var enabled: bool = false:
-   set(new_val):
-      enabled = new_val
-      enabled_changed.emit(new_val)
-      if enabled:
-         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-      else:
-         Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-@export var Sensitivity = 0.5
-
 @onready var CAMERA    := $Eyes
 @onready var LOOK_DIR  := $Eyes/RayCast3D
 @onready var L_HAND    := $Eyes/Lhand
 @onready var R_HAND    := $Eyes/Rhand
-@onready var EFFECTS   := $Effects
+@onready var EFFECTORY := $Effectory
+@onready var HUD       := $DefaultHud
 var HUD_LEFT_ACTIVE    : Node2D
 var HUD_RIGHT_ACTIVE   : Node2D
 var HUD_HEALTHBAR      : Node2D
 
+var Sensitivity = 0.5
 var SpellBook: Grimoire = Grimoire.new()
+var Enabled: bool = false:
+   set(new_val):
+      Enabled = new_val
+      enabled_changed.emit(new_val)
+      if Enabled:
+         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+      else:
+         Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+signal enabled_changed(new_val:bool)
+signal spell_equipped(spell_id: int, is_active: bool)
 
 func _ready() -> void:
-   HUD_LEFT_ACTIVE = $DefaultHud.find_child("Actives").find_child("ActiveIcon(L)")
-   HUD_RIGHT_ACTIVE = $DefaultHud.find_child("Actives").find_child("ActiveIcon(R)")
-   HUD_HEALTHBAR = $DefaultHud.find_child("HealthPoints").find_child("HealthDisplay")
+   HUD_LEFT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(L)")
+   HUD_RIGHT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(R)")
+   HUD_HEALTHBAR = HUD.find_child("HealthPoints").find_child("HealthDisplay")
+   SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
+   #SpellBook.spell_change_state.connect() # TODO: make this work.
 
 # =================== #
 # _process() handling #
@@ -44,36 +47,35 @@ func _process(delta):
    
    # mouse capture
    if Input.is_action_just_pressed("menu"):
-      enabled = !enabled
+      Enabled = !Enabled
 
    # change hand textures
-   if Input.is_action_just_pressed("interact") and enabled: 
+   if Input.is_action_just_pressed("interact") and Enabled: 
       L_HAND.texture = POINT_IMG
-   elif Input.is_action_just_released("interact") or not enabled: 
+   elif Input.is_action_just_released("interact") or not Enabled: 
       L_HAND.texture = HAND_IMG
 
-   if Input.is_action_just_pressed("active_spell_0") and enabled:
+   if Input.is_action_just_pressed("active_spell_0") and Enabled:
       L_HAND.texture = POINT_IMG
       HUD_LEFT_ACTIVE._hold()
       if SpellBook.ActiveSpells[0]:
          SpellBook.ActiveSpells[0]._on_activate(self)
-   elif Input.is_action_just_released("active_spell_0") or not enabled: 
+   elif Input.is_action_just_released("active_spell_0") or not Enabled: 
       L_HAND.texture = HAND_IMG
       HUD_LEFT_ACTIVE._release()
    
-   if Input.is_action_just_pressed("active_spell_1") and enabled:
+   if Input.is_action_just_pressed("active_spell_1") and Enabled:
       R_HAND.texture = POINT_IMG
       HUD_RIGHT_ACTIVE._hold()
       if SpellBook.ActiveSpells[1]:
          SpellBook.ActiveSpells[1]._on_activate(self)      
-   elif Input.is_action_just_released("active_spell_1") or not enabled: 
+   elif Input.is_action_just_released("active_spell_1") or not Enabled: 
       R_HAND.texture = HAND_IMG 
       HUD_RIGHT_ACTIVE._release()
    SpellBook.process_end(delta, self)
-
 func _unhandled_input(event):
    # handle mouse
-   if event is InputEventMouseMotion and enabled:
+   if event is InputEventMouseMotion and Enabled:
       rotate_y(-event.relative.x * .005 * Sensitivity)
       CAMERA.rotate_x(-event.relative.y * .005 * Sensitivity)
       CAMERA.rotation.x = clamp(CAMERA.rotation.x, -PI/2, PI/2)
@@ -88,13 +90,13 @@ func _physics_process(delta):
    
    # vertical movement
    if not is_on_floor(): velocity.y -= stat_influenced_gravity * delta
-   if Input.is_action_pressed("jump") and is_on_floor() and enabled: velocity.y = stat_influenced_jump
+   if Input.is_action_pressed("jump") and is_on_floor() and Enabled: velocity.y = stat_influenced_jump
    
    # horizontal movement
    var input_dir = Input.get_vector("left", "right", "up", "down")
    var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
    
-   if direction and enabled:
+   if direction and Enabled:
       velocity.x = direction.x * stat_influenced_speed
       velocity.z = direction.z * stat_influenced_speed
    else:
@@ -102,13 +104,12 @@ func _physics_process(delta):
       velocity.z = move_toward(velocity.z, 0, stat_influenced_speed)
 
    # use interactables
-   if Input.is_action_pressed("interact") and enabled:
+   if Input.is_action_pressed("interact") and Enabled:
       if LOOK_DIR.is_colliding():
          var hit = LOOK_DIR.get_collider()
          if hit is Interactable:
             hit._on_interact(self)
    move_and_slide()
-
 func generate_transform_data() -> PackedByteArray:
    var packed_data := PackedByteArray()
    packed_data.resize(TRANSFORM_DATA_SIZE)
@@ -130,18 +131,9 @@ func generate_transform_data() -> PackedByteArray:
    
    return packed_data
 
-# TODO: dopesnt really work
-func add_effect(constructor: Callable) -> Node:
-   var result = constructor.call()
-   if result is Node: 
-      EFFECTS.add_child(result)
-      return result
-   else: return null
-   
 # ==================== #
 # just passin' through #
 # ==================== #
-
 func update_visuals():
    if SpellBook.ActiveSpells[0]:
       HUD_LEFT_ACTIVE._update_icon(SpellBook.ActiveSpells[0].SpellID)
@@ -151,3 +143,10 @@ func update_visuals():
       HUD_RIGHT_ACTIVE._update_icon(SpellBook.ActiveSpells[1].SpellID)
    else:
       HUD_RIGHT_ACTIVE._update_icon(-1)
+func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
+   EFFECTORY.equip_effect(spell_id, is_active)
+   spell_equipped.emit(spell_id, is_active)
+func _on_grimoire_spell_erase(spell_id: int, is_active: bool) -> void: 
+   EFFECTORY.erase_effect(spell_id, is_active)
+func _change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
+   EFFECTORY.change_effect_state(spell_id, is_active, spell_state)

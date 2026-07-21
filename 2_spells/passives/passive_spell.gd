@@ -1,8 +1,11 @@
+extends Spell
 class_name PassiveSpell
 
 var Stacks: int = 1
 
-func _init(stacks: int = 1) -> void: Stacks = stacks
+func _init(stacks: int = 1, id: SpellData.PassiveSpellIDs = SpellData.PassiveSpellIDs.ERROR) -> void:
+   super(id)
+   Stacks = stacks
 
 func _get_stat_contributions() -> Dictionary: 
    printerr("ERROR: _get_stat_contributions() not overridden but called.")

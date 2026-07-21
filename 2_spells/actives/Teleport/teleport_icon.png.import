@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dkulseff6i6io"
-path="res://.godot/imported/damage_icon.png-56c9e5eb58d84ff112896762b7dab9dd.ctex"
+uid="uid://6oj1hdwo6ry7"
+path="res://.godot/imported/teleport_icon.png-a8d2bf915b5574fdcb380a858468c065.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://3_passives/Damage/damage_icon.png"
-dest_files=["res://.godot/imported/damage_icon.png-56c9e5eb58d84ff112896762b7dab9dd.ctex"]
+source_file="res://2_spells/actives/Teleport/teleport_icon.png"
+dest_files=["res://.godot/imported/teleport_icon.png-a8d2bf915b5574fdcb380a858468c065.ctex"]
 
 [params]
 

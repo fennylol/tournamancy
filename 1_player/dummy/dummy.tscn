@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://de5mdlfvbwnyk" path="res://1_player/dummy/dummy.gd" id="1_gb63j"]
 [ext_resource type="Texture2D" uid="uid://d2vsy0r2ip2ny" path="res://4_ui/hud/oppponent_hand.png" id="2_iiygx"]
-[ext_resource type="AudioStream" uid="uid://cjws2glvio6o5" path="res://1_player/sounds/yes_this_is_definitely_a_minimal_part.mp3" id="3_efvjk"]
 [ext_resource type="ArrayMesh" uid="uid://bvdxbsinb2suf" path="res://1_player/dummy/robes.tres" id="4_bkqh1"]
+[ext_resource type="Script" uid="uid://cuueb1u2pkixq" path="res://1_player/effectory/effectory.gd" id="5_iiygx"]
 
 [node name="Dummy" type="Node3D" unique_id=207561788]
 script = ExtResource("1_gb63j")
@@ -27,16 +27,10 @@ transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0.4, -0.2, -0.425)
 pixel_size = 0.001
 texture = ExtResource("2_iiygx")
 
-[node name="Mouth" type="AudioStreamPlayer3D" parent="." unique_id=1038947290]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3548285, -0.36192644)
-stream = ExtResource("3_efvjk")
-volume_db = 10.0
-unit_size = 1.0
-max_distance = 50.0
-parameters/looping = true
-
 [node name="Body" type="MeshInstance3D" parent="." unique_id=534799756]
 transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, 0, 0.5, 0)
 mesh = ExtResource("4_bkqh1")
 
-[node name="SubSpells" type="Node3D" parent="." unique_id=1929641964]
+[node name="Effectory" type="Node3D" parent="." unique_id=1728106557]
+script = ExtResource("5_iiygx")
+metadata/_custom_type_script = "uid://cuueb1u2pkixq"

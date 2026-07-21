@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cp23tetmrojec"]
+
+[ext_resource type="Script" uid="uid://5hhlvolbhxjk" path="res://2_spells/passives/JBL_Speaker/jbl_speaker_sound_effect.gd" id="1_607r2"]
+[ext_resource type="AudioStream" uid="uid://cjws2glvio6o5" path="res://1_player/sounds/yes_this_is_definitely_a_minimal_part.mp3" id="2_xlvjk"]
+
+[node name="JblSpeakerSoundEffect" type="Node3D" unique_id=588321482]
+script = ExtResource("1_607r2")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." unique_id=63316865]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.355, 0)
+stream = ExtResource("2_xlvjk")
+volume_db = 10.0
+unit_size = 1.0
+max_distance = 50.0
+parameters/looping = true

@@ -1,12 +1,15 @@
 extends PassiveSpell
 class_name JBLSpeakerSpell
 
-var BaseMult: float = 0.25
+enum States {PAUSED, PLAYING}
+
+func _init(stacks: int = 1) -> void: super(stacks, SpellData.PassiveSpellIDs.JBLSpeaker)
 
 func _get_stat_contributions() -> Dictionary: return {}
 
 func _on_process_begin(_delta: float, player: Player) -> void:
-   if player.velocity.length() >= 1: print("baba")
+   if player.velocity.length() >= 4.9: StateChanged.emit(States.PLAYING)
+   else: StateChanged.emit(States.PAUSED)
 func _on_process_end(_delta: float, _player: Player) -> void: pass
 func _on_equip(player: Player) -> void:
    player.add_item(SpellData.PassiveSpellIDs.JBLSpeaker)

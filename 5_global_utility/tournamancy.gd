@@ -15,7 +15,12 @@ func _ready() -> void:
    MPM.ready_button_pressed.connect(_on_mpm_ready_button_pressed)
    MPM.transform_data.connect(_on_mpm_transform_data)
    MPM.name_data.connect(_on_mpm_name_data)
+   MPM.effect_equipped_data.connect(_on_mpm_effect_equipped_data)
+   #PlayerCharacter.enabled_changed.connect(_on_player_enable_changed)
+   #PlayerCharacter.spell_equipped.connect(_on_player_spell_equipped)
    PlayerCharacter.enabled_changed.connect(MPM.passthrough_player_enabled_changed)
+   PlayerCharacter.spell_equipped.connect(MPM.send_effect_equip_data)
+   
 func _physics_process(_delta: float) -> void:
    MPM.send_player_transform_data(PlayerCharacter.generate_transform_data())
 
@@ -29,9 +34,18 @@ func _on_mpm_peer_discconected     (network_id: int) -> void:
      _dummies[network_id].queue_free()
 func _on_mpm_transform_data        (network_id: int, data: PackedByteArray) -> void:
    if _dummies.has(network_id):
-     _dummies[network_id]._on_transform_data(data)
+     _dummies[network_id].on_transform_data(data)
 func _on_mpm_name_data             (network_id: int, new_name: String) -> void:
    if _dummies.has(network_id):
-     _dummies[network_id]._on_nametag_data(new_name)
-func _on_mpm_ready_button_pressed() -> void:
-   PlayerCharacter.enabled = true
+     _dummies[network_id].on_nametag_data(new_name)
+func _on_mpm_ready_button_pressed  () -> void:
+   PlayerCharacter.Enabled = true
+func _on_mpm_effect_equipped_data  (network_id: int, spell_id: int, is_active: bool) -> void:
+   if _dummies.has(network_id):
+     _dummies[network_id].on_effect_equip_data(spell_id, is_active)
+
+
+#func _on_player_enable_changed(enabled: bool) -> void:
+   #MPM.passthrough_player_enabled_changed(enabled)
+#func _on_player_spell_equipped(spell_id: int, is_active: bool) -> void:
+   #MPM.send_effect_equip_data(spell_id, is_active)

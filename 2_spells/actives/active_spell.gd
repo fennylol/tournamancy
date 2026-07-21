@@ -1,3 +1,4 @@
+extends Spell
 class_name ActiveSpell
 
 var Cooldown: float = 0.0:
@@ -5,7 +6,8 @@ var Cooldown: float = 0.0:
       Cooldown = new_cd
       TimeSinceActivation = new_cd
 var TimeSinceActivation: float = 0.0
-var SpellID : SpellData.ActiveSpellIDs = -1
+
+func _init(id: SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR) -> void: super(id)
 
 func _on_process_begin(delta: float) -> void: TimeSinceActivation += delta
 func _can_activate(cooldown_reduction: float) -> bool: return TimeSinceActivation > Cooldown*cooldown_reduction

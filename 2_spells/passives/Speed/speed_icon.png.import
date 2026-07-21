@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cbte4ygi44lfo"
-path="res://.godot/imported/health_icon.png-d68055c605018fde0501f04d16166f2d.ctex"
+uid="uid://c384fejg7bhgh"
+path="res://.godot/imported/speed_icon.png-905ea7b8e7e491a26782c9018d6e8ace.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://3_passives/Health/health_icon.png"
-dest_files=["res://.godot/imported/health_icon.png-d68055c605018fde0501f04d16166f2d.ctex"]
+source_file="res://2_spells/passives/Speed/speed_icon.png"
+dest_files=["res://.godot/imported/speed_icon.png-905ea7b8e7e491a26782c9018d6e8ace.ctex"]
 
 [params]
 

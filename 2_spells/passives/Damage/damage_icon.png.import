@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://o8tt11me6a7o"
-path="res://.godot/imported/passive_icons.png-5e1cb241c4c7207040362e794c0c36bb.ctex"
+uid="uid://dkulseff6i6io"
+path="res://.godot/imported/damage_icon.png-51a62c58f8540ee1cefc315eeb55fb26.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://3_passives/passive_icons.png"
-dest_files=["res://.godot/imported/passive_icons.png-5e1cb241c4c7207040362e794c0c36bb.ctex"]
+source_file="res://2_spells/passives/Damage/damage_icon.png"
+dest_files=["res://.godot/imported/damage_icon.png-51a62c58f8540ee1cefc315eeb55fb26.ctex"]
 
 [params]
 

@@ -3,6 +3,8 @@ class_name GravitySpell
 
 var BaseMult: float = 0.25
 
+func _init(stacks: int = 1) -> void: super(stacks, SpellData.PassiveSpellIDs.Gravity)
+
 func _get_stat_contributions() -> Dictionary:
    var mod: float = 0
    if Stacks > 0:

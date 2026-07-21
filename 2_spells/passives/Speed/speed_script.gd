@@ -1,7 +1,9 @@
 extends PassiveSpell
-class_name DamageSpell
+class_name SpeedSpell
 
 var BaseMult: float = 0.25
+
+func _init(stacks: int = 1) -> void: super(stacks, SpellData.PassiveSpellIDs.Speed)
 
 func _get_stat_contributions() -> Dictionary:
    var mod: float = 0
@@ -10,7 +12,7 @@ func _get_stat_contributions() -> Dictionary:
    elif Stacks < 0:
       for i in range(absi(Stacks)): mod += (1.0-mod)*BaseMult
       mod = -mod
-   return { SpellData.StatTypes.DAMAGE: mod }
+   return { SpellData.StatTypes.SPEED: mod }
 
 func _on_process_begin(_delta: float, _player: Player) -> void: pass
 func _on_process_end(_delta: float, _player: Player) -> void: pass

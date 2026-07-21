@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dtoxyqm7tsoaa"
-path="res://.godot/imported/gravity_icon.png-15913a9dda0664de1f655e85980512f6.ctex"
+path="res://.godot/imported/gravity_icon.png-45925916a297d7dba17c96cc03c5a561.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://3_passives/Gravity/gravity_icon.png"
-dest_files=["res://.godot/imported/gravity_icon.png-15913a9dda0664de1f655e85980512f6.ctex"]
+source_file="res://2_spells/passives/Gravity/gravity_icon.png"
+dest_files=["res://.godot/imported/gravity_icon.png-45925916a297d7dba17c96cc03c5a561.ctex"]
 
 [params]
 

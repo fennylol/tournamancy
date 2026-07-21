@@ -28,9 +28,9 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Test_A : {
-      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.Teleport],
+      ClassFields.ACTIVES : [],
       ClassFields.PASSIVES: {
-         SpellData.PassiveSpellIDs.Speed : 5
+         SpellData.PassiveSpellIDs.JBLSpeaker : 1
       }
    },
 }

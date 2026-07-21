@@ -7,6 +7,10 @@ var ActiveSpells: Array[ActiveSpell] = []
 var PassiveSpells: Array[PassiveSpell] = []
 var StatModifiers: Dictionary = {}
 
+signal spell_equipped(spell_id: int, is_active: bool)
+#signal spell_erased(spell_id: int, is_active: bool)
+signal spell_change_state(spell_id: int, is_active: bool, new_state: int)
+
 func _init() -> void: ActiveSlots = 2
 
 # =================== #
@@ -47,23 +51,25 @@ func get_stat(id: SpellData.StatTypes) -> float:
 func add_passive(id: SpellData.PassiveSpellIDs, stacks: int) -> void:
    var data: Dictionary = SpellData.get_passive_spell_data(id)
    if SpellData.is_valid_passive_spell(data):
-      var spell = load(data[SpellData.SpellFields.ScriptPath]).new(stacks)
+      var spell: PassiveSpell = load(data[SpellData.SpellFields.ScriptPath]).new(stacks)
       PassiveSpells.append(spell)
-
+      spell.StateChanged.connect(func(new_state: int): spell_change_state.emit(id, false, new_state))
+      spell_equipped.emit(id, false)
 func add_active(id: SpellData.ActiveSpellIDs, slot: int) -> void:
    var data: Dictionary = SpellData.get_active_spell_data(id)
    if SpellData.is_valid_active_spell(data):
       var capped_slot: int = clampi(slot, 0, ActiveSlots)
       var spell: ActiveSpell = load(data[SpellData.SpellFields.ScriptPath]).new()
       ActiveSpells[capped_slot] = spell
-
+      spell.StateChanged.connect(func(new_state: int): spell_change_state.emit(id, false, new_state))
+      spell_equipped.emit(id, true)
 func clear_class() -> void:
    var trust_me_this_is_the_best_way_to_do_it: int = ActiveSlots
    ActiveSlots = 0
    ActiveSlots = trust_me_this_is_the_best_way_to_do_it
    PassiveSpells.clear()
+   #printerr("FENNY I GOT LAZY AND DIDNT WANT TO IMPLEMENT THIS YET but we need to clear the effects here.")
    StatModifiers = {}
-
 func adopt_class(id: ClassData.ClassIDs) -> void:
    clear_class()
    var class_data: Dictionary = ClassData.get_class_data(id)
