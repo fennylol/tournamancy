@@ -73,6 +73,10 @@ func _process(delta):
       R_HAND.texture = HAND_IMG 
       HUD_RIGHT_ACTIVE._release()
    SpellBook.process_end(delta, self)
+   
+   if SpellBook.ActiveSpells[0]: HUD_LEFT_ACTIVE.update_cooldown(SpellBook.ActiveSpells[0].get_cooldown())
+   if SpellBook.ActiveSpells[1]: HUD_RIGHT_ACTIVE.update_cooldown(SpellBook.ActiveSpells[1].get_cooldown())
+   
 func _unhandled_input(event):
    # handle mouse
    if event is InputEventMouseMotion and Enabled:
@@ -146,6 +150,8 @@ func update_visuals():
 func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.equip_effect(spell_id, is_active)
    spell_equipped.emit(spell_id, is_active)
+   if SpellBook.ActiveSpells[0]: SpellBook.ActiveSpells[0].identify_player(self)
+   if SpellBook.ActiveSpells[1]: SpellBook.ActiveSpells[1].identify_player(self)
 func _on_grimoire_spell_erase(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.erase_effect(spell_id, is_active)
 func _change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
