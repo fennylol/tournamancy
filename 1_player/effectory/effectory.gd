@@ -4,7 +4,7 @@ class_name Effectory
 @export var IsDummy: bool = true
 
 func equip_effect(spell_id: int, is_active: bool) -> void:
-   if _get_effect(spell_id, is_active):
+   if _get_effect_container(spell_id, is_active):
       return
    
    var container_node := Node3D.new()
@@ -20,11 +20,16 @@ func equip_effect(spell_id: int, is_active: bool) -> void:
    
    add_child(container_node)
 func erase_effect(spell_id: int, is_active: bool) -> void:
-   if not _get_effect(spell_id, is_active): return
-func change_effect_state(spell_id: int, is_active: bool, _spell_state: int) -> void:
-   if not _get_effect(spell_id, is_active): return
+   if not _get_effect_container(spell_id, is_active): return
+func change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
+   var effect_container: Node3D = _get_effect_container(spell_id, is_active)
+   if not effect_container: return
+   for child:Node3D in effect_container.get_children():
+      if not child is Effect: continue
+      child.change_state(spell_state)
+   
 
-func _get_effect(spell_id: int, is_active: bool) -> Node3D:
+func _get_effect_container(spell_id: int, is_active: bool) -> Node3D:
    var node_title: String = _get_effect_spell_name(spell_id, is_active)
    for child:Node3D in get_children():
       if child.name == node_title:

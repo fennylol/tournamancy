@@ -249,7 +249,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconPath : "",
       SpellFields.IconRect: Rect2(0,0,32,32),
       SpellFields.ScriptPath : "res://2_spells/passives/JBL_Speaker/jbl_speaker_script.gd",
-      SpellFields.Effects : [],
+      SpellFields.Effects : ["res://2_spells/passives/JBL_Speaker/JBLSpeakerSoundEffect.tscn"],
       SpellFields.DummyEffects : ["res://2_spells/passives/JBL_Speaker/JBLSpeakerSoundEffect.tscn"]
    },
 }
