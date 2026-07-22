@@ -16,6 +16,7 @@ const POINT_IMG: Texture2D = preload("res://4_ui/hud/Lpoint.png")
 @onready var HUD       := $DefaultHud
 var HUD_LEFT_ACTIVE    : Node2D
 var HUD_RIGHT_ACTIVE   : Node2D
+var HUD_PASSIVEBOX     : Node2D
 var HUD_HEALTHBAR      : Node2D
 
 var Sensitivity = 0.5
@@ -36,6 +37,7 @@ signal spell_change_state(spell_id: int, is_active: bool, new_state: int)
 func _ready() -> void:
    HUD_LEFT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(L)")
    HUD_RIGHT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(R)")
+   HUD_PASSIVEBOX = HUD.find_child("PassiveBox").find_child("PassiveIcons")
    HUD_HEALTHBAR = HUD.find_child("HealthPoints").find_child("HealthDisplay")
    SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
    SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state) # TODO: make this work.
@@ -139,15 +141,14 @@ func generate_transform_data() -> PackedByteArray:
 # ==================== #
 # just passin' through #
 # ==================== #
-func update_visuals():
-   if SpellBook.ActiveSpells[0]:
-      HUD_LEFT_ACTIVE._update_icon(SpellBook.ActiveSpells[0].SpellID)
-   else:
-      HUD_LEFT_ACTIVE._update_icon(-1)
-   if SpellBook.ActiveSpells[1]:
-      HUD_RIGHT_ACTIVE._update_icon(SpellBook.ActiveSpells[1].SpellID)
-   else:
-      HUD_RIGHT_ACTIVE._update_icon(-1)
+func update_HUD_icons():
+   ## ACTIVE SPELL ICONS
+   var active_spell_l = SpellBook.ActiveSpells[0].SpellID if SpellBook.ActiveSpells[0] else -1
+   var active_spell_r = SpellBook.ActiveSpells[1].SpellID if SpellBook.ActiveSpells[1] else -1
+   HUD_LEFT_ACTIVE._update_icon(active_spell_l)
+   HUD_RIGHT_ACTIVE._update_icon(active_spell_r)
+   ## PASSIVE SPELL ICONS
+   HUD_PASSIVEBOX.import_passive_spells(SpellBook.PassiveSpells, true)
 func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.equip_effect(spell_id, is_active)
    spell_equipped.emit(spell_id, is_active)

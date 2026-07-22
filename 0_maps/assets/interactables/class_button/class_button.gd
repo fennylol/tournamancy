@@ -7,4 +7,4 @@ class_name ClassButton
 func _on_interact(interacter: Player) -> void:
    super._on_interact(interacter)
    interacter.SpellBook.adopt_class(ClassID)
-   interacter.update_visuals()
+   interacter.update_HUD_icons()

@@ -15,7 +15,7 @@ const ClassRecipes: Dictionary = {
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.Speed : -5,
          SpellData.PassiveSpellIDs.Gravity : 10,
-         SpellData.PassiveSpellIDs.Damage : 5
+         #SpellData.PassiveSpellIDs.Damage : 5 //UNCOMMENT ONCE A SCRIPT IS ADDED
       }
    },
    
