@@ -161,9 +161,9 @@ func _recieve_effect_erase_data ( data: PackedByteArray) -> void:
    print("ERASE EFFECT DATA RECIEVED BUT NO HANDLER EXISTS")
 func _recieve_effect_state_data ( data: PackedByteArray) -> void:
    var network_id : int = data.decode_u32(0) 
-   var spell_id   : int = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE + SpellData.IS_ACTIVE_SIZE)
-   var is_active  : int = data.decode_u8 (OneTruePingus.NETWORK_ID_SIZE)
-   var spell_state: int = data.decode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.IS_ACTIVE_SIZE + SpellData.SPELL_ID_SIZE)
+   var spell_id   : int = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
+   var is_active  : int = data.decode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE)
+   var spell_state: int = data.decode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE)
    effect_state_data.emit(network_id, spell_id, is_active, spell_state)
 
 func send_player_transform_data(data: PackedByteArray, owner_id: int = _OTP.NetworkID) -> void:
