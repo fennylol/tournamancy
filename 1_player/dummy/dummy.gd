@@ -49,4 +49,5 @@ func on_nametag_data(new_name: String) -> void:
 func on_effect_equip_data(spell_id: int, is_active: bool) -> void:
    EFFECTS.equip_effect(spell_id, is_active)
 func on_effect_erase_data(spell_id: int, is_active: bool) -> void: EFFECTS.erase_effect(spell_id, is_active)
-func on_effect_state_data(spell_id: int, is_active: bool, spell_state: int) -> void: EFFECTS.change_effect_state(spell_id, is_active, spell_state)
+func on_effect_state_data(spell_id: int, is_active: bool, spell_state: int) -> void:
+   EFFECTS.change_effect_state(spell_id, is_active, spell_state)

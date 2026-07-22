@@ -1,6 +1,7 @@
 extends Effect
 
-enum States {NotPlaying, Playing}
+@onready var SPEAKER := $AudioStreamPlayer3D
 
-func change_state(new_state: States) -> void:
-   print("new_state: ", States.find_key(new_state))
+func change_state(new_state: JBLSpeakerSpell.States) -> void:
+   print("new_state: ", JBLSpeakerSpell.States.find_key(new_state))
+   SPEAKER.playing = new_state

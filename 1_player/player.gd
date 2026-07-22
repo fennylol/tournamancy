@@ -31,13 +31,14 @@ var Enabled: bool = false:
 
 signal enabled_changed(new_val:bool)
 signal spell_equipped(spell_id: int, is_active: bool)
+signal spell_change_state(spell_id: int, is_active: bool, new_state: int)
 
 func _ready() -> void:
    HUD_LEFT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(L)")
    HUD_RIGHT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(R)")
    HUD_HEALTHBAR = HUD.find_child("HealthPoints").find_child("HealthDisplay")
    SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
-   #SpellBook.spell_change_state.connect() # TODO: make this work.
+   SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state) # TODO: make this work.
 
 # =================== #
 # _process() handling #
@@ -154,5 +155,6 @@ func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void:
    if SpellBook.ActiveSpells[1]: SpellBook.ActiveSpells[1].identify_player(self)
 func _on_grimoire_spell_erase(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.erase_effect(spell_id, is_active)
-func _change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
+func _on_grimoire_change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
    EFFECTORY.change_effect_state(spell_id, is_active, spell_state)
+   spell_change_state.emit(spell_id, is_active, spell_state)

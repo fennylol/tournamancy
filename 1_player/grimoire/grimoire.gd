@@ -33,8 +33,8 @@ func process_end(delta: float, player: Player) -> void:
 # =============== #
 func calculate_stats() -> Dictionary:
    var stat_dict: Dictionary = {}
-   for Spell:PassiveSpell in PassiveSpells:
-      var spell_stats := Spell._get_stat_contributions()
+   for spell:PassiveSpell in PassiveSpells:
+      var spell_stats := spell._get_stat_contributions()
       for stat:SpellData.StatTypes in spell_stats.keys():
          if spell_stats[stat] is int or spell_stats[stat] is float:
             if not stat_dict.keys().has(stat): stat_dict[stat] = 1

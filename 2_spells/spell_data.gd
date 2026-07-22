@@ -1,6 +1,6 @@
 class_name SpellData
 
-const ACTIVE_V_PASSIVE_SIZE: int = 1
+const IS_ACTIVE_SIZE: int = 1
 const SPELL_ID_SIZE: int = 2
 const SPELL_STATE_SIZE: int = 1
 
@@ -249,10 +249,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconPath : "",
       SpellFields.IconRect: Rect2(0,0,32,32),
       SpellFields.ScriptPath : "res://2_spells/passives/JBL_Speaker/jbl_speaker_script.gd",
-      SpellFields.Effects : [
-         "res://0_maps/assets/interactables/class_button/class_button.tscn",
-         "res://2_spells/passives/JBL_Speaker/JBLSpeakerSoundEffect.tscn",
-      ],
+      SpellFields.Effects : [],
       SpellFields.DummyEffects : ["res://2_spells/passives/JBL_Speaker/JBLSpeakerSoundEffect.tscn"]
    },
 }
