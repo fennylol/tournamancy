@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://ddq437x4g5mpf" path="res://4_ui/hud/Lhand.png" id="2_qeeko"]
 [ext_resource type="PackedScene" uid="uid://cpsbgkgmeqg12" path="res://4_ui/HUD_2/Default_HUD.tscn" id="3_qeeko"]
 [ext_resource type="Script" uid="uid://cuueb1u2pkixq" path="res://1_player/effectory/effectory.gd" id="4_lbqfs"]
+[ext_resource type="PackedScene" uid="uid://b2f6ccnpk7mrl" path="res://1_player/components/healthbar.tscn" id="5_s87op"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_25okf"]
 radius = 0.375
@@ -60,3 +61,6 @@ current = true
 script = ExtResource("4_lbqfs")
 IsDummy = false
 metadata/_custom_type_script = "uid://cuueb1u2pkixq"
+
+[node name="Healthbar" parent="." unique_id=743405701 node_paths=PackedStringArray("player") instance=ExtResource("5_s87op")]
+player = NodePath("..")

@@ -24,7 +24,10 @@ func _update_icon(id : int = -1):
       icon.texture = ImageTexture.new()
       cooldown_bar.max_value = 0.0
    else:
-      icon.texture = load(SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.IconPath))
+      var new_texture = AtlasTexture.new()
+      new_texture.atlas = load(SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.IconPath))
+      new_texture.region = SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.IconRect)
+      icon.texture = new_texture
       cooldown_bar.max_value = SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.Cooldown)
 
 func update_cooldown(time_since_activation : float): cooldown_bar.value = clamp(cooldown_bar.max_value - time_since_activation , 0.0 , cooldown_bar.max_value)

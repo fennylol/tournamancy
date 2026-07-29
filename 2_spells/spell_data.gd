@@ -42,8 +42,8 @@ enum ActiveSpellIDs {Teleport, Fireball, ERROR = -1}
 const ActiveSpells: Dictionary = {
    ActiveSpellIDs.Teleport : {
       SpellFields.Name : "Warpstone",
-      SpellFields.IconPath : "res://2_spells/actives/Teleport/teleport_icon.png",
-      SpellFields.IconRect : Rect2(0,0,32,32),
+      SpellFields.IconPath : "res://2_spells/actives/misc_active_icons.png",
+      SpellFields.IconRect : Rect2(32,32,32,32),
       SpellFields.ScriptPath : "res://2_spells/actives/Teleport/teleport_script.gd",
       SpellFields.Cooldown : 5.0,
       SpellFields.Effects : [],
@@ -246,8 +246,8 @@ const PassiveSpells: Dictionary = {
    
    PassiveSpellIDs.JBLSpeaker : {
       SpellFields.Name : "BigAssSpeaker",
-      SpellFields.IconPath : "",
-      SpellFields.IconRect: Rect2(0,0,32,32),
+      SpellFields.IconPath : "res://2_spells/actives/misc_active_icons.png",
+      SpellFields.IconRect: Rect2(96,32,32,32),
       SpellFields.ScriptPath : "res://2_spells/passives/JBL_Speaker/jbl_speaker_script.gd",
       SpellFields.Effects : [],
       SpellFields.DummyEffects : ["res://2_spells/passives/JBL_Speaker/JBLSpeakerSoundEffect.tscn"]
