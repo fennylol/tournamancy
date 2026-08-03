@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bfjodamrt0c65"]
 
 [ext_resource type="Script" uid="uid://de5mdlfvbwnyk" path="res://1_player/dummy/dummy.gd" id="1_gb63j"]
+[ext_resource type="PackedScene" uid="uid://b104tuac4uwp4" path="res://1_player/character_body/wizard_body.tscn" id="2_efvjk"]
 [ext_resource type="Texture2D" uid="uid://d2vsy0r2ip2ny" path="res://4_ui/hud/oppponent_hand.png" id="2_iiygx"]
 [ext_resource type="ArrayMesh" uid="uid://bvdxbsinb2suf" path="res://1_player/dummy/robes.tres" id="4_bkqh1"]
 [ext_resource type="Script" uid="uid://cuueb1u2pkixq" path="res://1_player/effectory/effectory.gd" id="5_iiygx"]
@@ -9,9 +10,12 @@
 script = ExtResource("1_gb63j")
 
 [node name="NameTag" type="Label3D" parent="." unique_id=1907059803]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0653403, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 billboard = 1
 text = "Dummy"
+
+[node name="WizardBody" parent="." unique_id=980499684 instance=ExtResource("2_efvjk")]
+visible = false
 
 [node name="Eyes" type="Node3D" parent="." unique_id=908928374]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -0.1)

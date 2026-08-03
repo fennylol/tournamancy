@@ -1,11 +1,13 @@
 extends Node3D
 class_name Dummy
 
-@onready var EYES   : Node3D   = $Eyes
-@onready var L_HAND : Sprite3D = $Eyes/Lhand
-@onready var R_HAND : Sprite3D = $Eyes/Rhand
-@onready var NAMETAG: Label3D  = $NameTag
-@onready var EFFECTS: Node3D   = $Effectory
+@onready var EYES    : Node3D     = $Eyes
+@onready var L_HAND  : Sprite3D   = $Eyes/Lhand
+@onready var R_HAND  : Sprite3D   = $Eyes/Rhand
+
+@onready var BODY    : WizardBody = $WizardBody
+@onready var NAMETAG : Label3D    = $NameTag
+@onready var EFFECTS : Node3D     = $Effectory
 
 const HAND_IMG : Texture2D = preload("res://4_ui/hud/oppponent_hand.png")
 const POINT_IMG: Texture2D = preload("res://4_ui/hud/oppponent_point.png")

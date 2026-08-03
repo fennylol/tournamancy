@@ -1,11 +1,12 @@
 [gd_resource type="ArrayMesh" format=4 uid="uid://bvdxbsinb2suf"]
 
-[ext_resource type="Texture2D" uid="uid://cv48rw72075qr" path="res://1_player/dummy/bandit_body.png" id="1_vtncr"]
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_h8t1w"]
+load_path = "res://.godot/imported/bandit_body.png-cca645c625d335abf31949831f0742f3.s3tc.ctex"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8paag"]
 resource_name = "body"
 cull_mode = 2
-albedo_texture = ExtResource("1_vtncr")
+albedo_texture = SubResource("CompressedTexture2D_h8t1w")
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_f6at8"]
 _surfaces = [{
