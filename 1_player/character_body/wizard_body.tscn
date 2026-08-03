@@ -439,7 +439,7 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.2
 mesh = SubResource("ArrayMesh_gpnkx")
 
 [node name="_RIGHTARM" type="Node3D" parent="_TORSO" unique_id=1289517520]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.32499993, 0)
+transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 1, 0.25, 0.32499993, 0)
 
 [node name="ARM_R" type="MeshInstance3D" parent="_TORSO/_RIGHTARM" unique_id=750361760]
 transform = Transform3D(0.8650651, -0.50165975, 3.9128048e-07, 0.50165975, 0.86506504, 8.173075e-08, -3.7948408e-07, 1.2558723e-07, 1, -0.03382492, 0.040963173, -1.8898625e-08)

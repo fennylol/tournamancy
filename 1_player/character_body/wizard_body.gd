@@ -1,32 +1,55 @@
 extends Node3D
 class_name WizardBody
 
-@onready var TORSO : MeshInstance3D = $_TORSO
-@onready var HEAD : MeshInstance3D = $_TORSO/_HEAD
-@onready var ARM_L : MeshInstance3D = $_TORSO/_LEFTARM
-@onready var ARM_R : MeshInstance3D = $_TORSO/_RIGHTARM
-@onready var LEGS : MeshInstance3D = $_LEGS
-@onready var FEET: MeshInstance3D = $_FEET
+@onready var TORSO : Node3D = $_TORSO
+@onready var HEAD : Node3D = $_TORSO/_HEAD
+@onready var ARM_L : Node3D = $_TORSO/_LEFTARM
+@onready var ARM_R : Node3D = $_TORSO/_RIGHTARM
+@onready var LEGS : Node3D = $_LEGS
+@onready var FEET: Node3D = $_FEET
 
-const MAX_HEAD_TURN : float = 55.0
-const MAX_BODY_TURN : float = 35.0
+const MAX_HEAD_YAW    : float = 0.96    # 55 deg
+const MIN_HEAD_YAW    : float = -0.96   #-55 deg
+const MAX_TORSO_YAW   : float = 0.61    # 35 deg
+const MIN_TORSO_YAW   : float = -0.61   #-35 deg
+const MAX_HEAD_PITCH  : float = 0.87266 # 50 deg
+const MIN_HEAD_PITCH  : float = -0.349  #-20 deg
+const MAX_TORSO_PITCH : float = 0.349   # 20 deg
+const MIN_TORSO_PITCH : float = -0.349  #-20 deg
+
+var previous_rotation : Vector3
+var previous_position : Vector3
 var legs_animate_direction := Vector3.ZERO
+var legs_animate_clock : float = 0.0
+var legs_animate_speed : float = 1.0
 
-## FACING DIRECTION
-func face_head(dir : float = 0.0):
-   HEAD.rotation.y = dir
-func face_torso(dir : float = 0.0):
-   TORSO.rotation.y = dir
+## Points the body in a particular direction, taking into account YAW (euler-y) and PITCH (euler-x). Ignores ROLL (euler-z).
+func update_facing_direction(pointing : Vector3):
+   if pointing == previous_rotation: return
+   var rotation_delta = pointing - previous_rotation
+   ## UPDATE YAW 
+   if HEAD.rotation.y + rotation_delta.y == clamp(HEAD.rotation.y + rotation_delta.y , MIN_HEAD_YAW, MAX_HEAD_YAW): HEAD.rotation.y += rotation_delta.y
+   elif TORSO.rotation.y + rotation_delta.y == clamp(TORSO.rotation.y + rotation_delta.y , MIN_TORSO_YAW, MAX_TORSO_YAW): TORSO.rotation.y += rotation_delta.y
+   else: self.rotation.y += rotation_delta.y
+   ## UPDATE PITCH
+   var remaining_pitch : float = pointing.x
+   HEAD.rotation.x = clamp(pointing.x, MIN_HEAD_PITCH, MAX_HEAD_PITCH)
+   remaining_pitch -= HEAD.rotation.x
+   if abs(remaining_pitch) > 0.0:
+      TORSO.rotation.x = clamp(remaining_pitch, MIN_TORSO_PITCH, MAX_TORSO_PITCH)
+      remaining_pitch -= TORSO.rotation.x
+   ## UPDATE "PREVIOUS" FOR NEXT FRAME
+   previous_rotation = pointing
 
-## POINT WITH ARMS
-func point_with_left(dir : float = 0.0):
-   ARM_L.rotation.x = dir
-func point_with_right(dir : float = 0.0):
-   ARM_R.rotation.x = dir
-func reset_arms():
-   point_with_left(0)
-   point_with_right(0)
+## ANIMATE WALKING
+func set_walk_direction(current_pos : Vector3, target_pos : Vector3):
+   if previous_position == current_pos: legs_animate_direction = Vector3.ZERO; return
+   var direction : Vector3 = ( current_pos - target_pos ).normalized()
+   legs_animate_direction = Vector3.FORWARD
+
+func point_with_left(dir : float = 0.0): ARM_L.rotation.x = dir
+func point_with_right(dir : float = 0.0): ARM_R.rotation.x = dir
 
 # animation range: 6-10 deg
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
    pass

@@ -12,6 +12,8 @@ const POINT_IMG: Texture2D = preload("res://4_ui/hud/Lpoint.png")
 @onready var LOOK_DIR  := $Eyes/RayCast3D
 @onready var L_HAND    := $Eyes/Lhand
 @onready var R_HAND    := $Eyes/Rhand
+@onready var LEFT_ARM  := $Eyes/LEFTARM
+@onready var RIGHT_ARM := $Eyes/RIGHTARM
 @onready var EFFECTORY := $Effectory
 @onready var HUD       := $DefaultHud
 var HUD_LEFT_ACTIVE    : Node2D
@@ -41,7 +43,7 @@ func _ready() -> void:
    HUD_HEALTHBAR = HUD.find_child("HealthPoints").find_child("HealthDisplay")
    SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
    SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state) # TODO: make this work.
-
+   
 # =================== #
 # _process() handling #
 # =================== #
@@ -60,20 +62,24 @@ func _process(delta):
 
    if Input.is_action_just_pressed("active_spell_0") and Enabled:
       L_HAND.texture = POINT_IMG
+      LEFT_ARM.rotation.x = -80.0
       HUD_LEFT_ACTIVE._hold()
       if SpellBook.ActiveSpells[0]:
          SpellBook.ActiveSpells[0]._on_activate(self)
    elif Input.is_action_just_released("active_spell_0") or not Enabled: 
       L_HAND.texture = HAND_IMG
+      LEFT_ARM.rotation.x = 0.0
       HUD_LEFT_ACTIVE._release()
    
    if Input.is_action_just_pressed("active_spell_1") and Enabled:
       R_HAND.texture = POINT_IMG
+      RIGHT_ARM.rotation.x = -80.0
       HUD_RIGHT_ACTIVE._hold()
       if SpellBook.ActiveSpells[1]:
          SpellBook.ActiveSpells[1]._on_activate(self)      
    elif Input.is_action_just_released("active_spell_1") or not Enabled: 
       R_HAND.texture = HAND_IMG 
+      RIGHT_ARM.rotation.x = 0.0
       HUD_RIGHT_ACTIVE._release()
    SpellBook.process_end(delta, self)
    

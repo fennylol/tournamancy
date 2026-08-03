@@ -15,10 +15,10 @@ billboard = 1
 text = "Dummy"
 
 [node name="WizardBody" parent="." unique_id=980499684 instance=ExtResource("2_efvjk")]
-visible = false
 
 [node name="Eyes" type="Node3D" parent="." unique_id=908928374]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -0.1)
+visible = false
 
 [node name="Lhand" type="Sprite3D" parent="Eyes" unique_id=1099244049]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -0.4, -0.2, -0.425)
@@ -33,6 +33,7 @@ texture = ExtResource("2_iiygx")
 
 [node name="Body" type="MeshInstance3D" parent="." unique_id=534799756]
 transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, 0, 0.5, 0)
+visible = false
 mesh = ExtResource("4_bkqh1")
 
 [node name="Effectory" type="Node3D" parent="." unique_id=1728106557]

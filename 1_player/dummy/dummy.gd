@@ -29,9 +29,10 @@ func _physics_process(delta: float) -> void:
 
    var t := 1.0 - exp(-20.0 * delta)
    position = position.lerp(_net_pos, t)
-   quaternion = quaternion.slerp(Quaternion.from_euler(Vector3(0, _net_rot.y, _net_rot.z)), t)
-   
-   EYES.rotation.x = clamp(_net_rot.x, -PI/2, PI/2)
+   if position != _net_pos: BODY.set_walk_direction(position, _net_pos)
+   BODY.update_facing_direction(_net_rot)
+   #quaternion = quaternion.slerp(Quaternion.from_euler(Vector3(0, _net_rot.y, _net_rot.z)), t)
+   #EYES.rotation.x = clamp(_net_rot.x, -PI/2, PI/2)
    
    velocity = _net_vel
 func on_transform_data(data: PackedByteArray) -> void:
@@ -40,8 +41,12 @@ func on_transform_data(data: PackedByteArray) -> void:
    _net_vel = Vector3(data.decode_float(24), data.decode_float(28), data.decode_float(32))
    
    var flags := data.decode_u8(36)
-   L_HAND.texture = HAND_IMG if flags & (1 << 0) else POINT_IMG
-   R_HAND.texture = HAND_IMG if flags & (1 << 1) else POINT_IMG
+   #L_HAND.texture = HAND_IMG if flags & (1 << 0) else POINT_IMG
+   #R_HAND.texture = HAND_IMG if flags & (1 << 1) else POINT_IMG
+   var lefthand_dir = 0 if flags & (1 << 0) else 90
+   var righthand_dir = 0 if flags & (1 << 1) else 90
+   BODY.point_with_left(lefthand_dir)
+   BODY.point_with_right(righthand_dir)
    
    _has_net_state = true
    _time_since_packet = 0.0
