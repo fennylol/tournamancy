@@ -19,7 +19,7 @@ const POINT_IMG: Texture2D = preload("res://4_ui/hud/Lpoint.png")
 var HUD_LEFT_ACTIVE    : Node2D
 var HUD_RIGHT_ACTIVE   : Node2D
 var HUD_PASSIVEBOX     : Node2D
-var HUD_HEALTHBAR      : Node2D
+var HUD_HEALTHBAR      : HealthDisplay
 
 var Sensitivity = 0.5
 var SpellBook: Grimoire = Grimoire.new()

@@ -1,9 +1,12 @@
 extends Node2D
+class_name HealthDisplay
 
 ## An array of exactly four (4) float values, representing [color=red][b]Hearts[/b][/color], [color=orange][b]Armor[/b][/color], [color=cyan][b]Wards[/b][/color], and [color=purple][b]Overhealth[/b][/color] respectively.[br]Additional elements in the array will likely break the system (or they will just be ignored).
-@export var health_value : Array[float] = [ 12.0 , 12.0 , 12.0 , 12.0 ]
+@export var health_value : Array[float] = [ 20.0 , 0.0 , 0.0 , 0.0 ]
 ## The number of health points represented by a single icon.[br]A value of [b]4[/b] means that 4.0 hit points show as 1 heart, 8.0 hit points show as 2 hearts, etc.[br]The current system supports fractional hearts in quarter increments.[br]A value of [b]4[/b] means that 1.0 hit point is represented by 1/4th of a heart, 2.0 hit points is 1/2 of a heart, etc
 @export var points_per_icon : float = 4.0
+## How many decimal places the text field displaying remaining health should round to.
+@export var text_decimal_places : int = 2
 @onready var health_text     = $Control/HealthText
 var icon_map_array : Array[TileMapLayer] = []
 enum {HEARTS, ARMOR, WARD, OVERHEALTH}
@@ -11,7 +14,6 @@ var min_quarter : float = 0.125
 var min_half    : float = 0.375
 var min_3fourth : float = 0.625
 var min_full    : float = 0.875
-var text_decimal_places = 2
 
 func _ready():
    icon_map_array = [ $HEARTS, $ARMOR, $WARD, $OVERHEALTH ]
@@ -23,14 +25,8 @@ func _ready():
    min_3fourth = step_size * 5
    min_full    = step_size * 7
 
-func _process(_delta):
-   ## DEMO TAKING DAMAGE
-   if Input.is_physical_key_pressed(KEY_0): _update_display([-0.1], true)
-   if Input.is_physical_key_pressed(KEY_1): _update_display([0, -0.1], true)
-   if Input.is_physical_key_pressed(KEY_2): _update_display([0, 0, -0.1], true)
-   if Input.is_physical_key_pressed(KEY_3): _update_display([0, 0, 0, -0.1], true)
-
-func _update_display(value : Array[float], add : bool = false):
+## Called to update the icons and text field to represent a new value. Accepts an array of four floats (representng [color=red][b]Hearts[/b][/color], [color=orange][b]Armor[/b][/color], [color=cyan][b]Wards[/b][/color], and [color=purple][b]Overhealth[/b][/color] respectively), and sets the display to that amount of each.[br] if "add" is set to [b]true[/b], the four float values are instead added to their respective current values.
+func update_display(value : Array[float], add : bool = false) -> void:
    ## DIFFERENTIATE BETWEEN SET AND ADD
    if add:
       for i in range(value.size()):
@@ -84,4 +80,11 @@ func _update_display(value : Array[float], add : bool = false):
    if sum > 0 and ( sum / points_per_icon ) < min_quarter:
       var icon_to_show = OVERHEALTH if health_value.max() == health_value[3] else WARD if health_value.max() == health_value[2] else ARMOR if health_value.max() == health_value[1] else HEARTS
       icon_map_array[icon_to_show].set_cell(Vector2i(0,0),1,Vector2i(randi_range(0,1),(icon_to_show*2)+1))
-   
+
+## Returns an int representing how many icons are currently needed to display the whole value. Partial icons are counted as full icons.[br]For example, a health value of 21 under ordinary settings would be represented by five full hearts and 1 quarter-heart, so the function will return 6.
+func get_bar_size() -> int:
+   var bar_size : float = 0
+   for i in health_value:
+      bar_size += i
+   var bar_size_int = int( ceil( float ( bar_size / points_per_icon ) ) )
+   return bar_size_int

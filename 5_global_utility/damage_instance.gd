@@ -19,7 +19,23 @@ var type : DamageType
 var force : float
 
 ## There are eight damage types, each of which starts with a different letter.[br][b][color=orange]Impact[/color][/b] "default" hammers, bats, bullets.[br][b][color=white]Sharp[/color][/b] blades.[br][b][color=purple]Energy[/color][/b] classic magic rays, light-based attacks, etc.[br][b][color=red]Fire[/color][/b] fire.[br][b][color=cyan]Cold[/color][/b] cold.[br][b][color=yellow]Zap[/color][/b] electricity, shock.[br][b][color=brown]Rot[/color][/b] poison, acid, necrosis, other “evil”-types.[br][b][color=green]Natural[/color][/b] bleeding, suffocation, etc.
-enum DamageType {IMPACT, SHARP, ENERGY, FIRE, COLD, ZAP, ROT, NATURAL}
+enum DamageType {
+   ## The default attack type. This includes objects such as hammers, bats, and bullets.
+   IMPACT,
+   ## Bladed weapons which slash or pierce. Swords, arrows, and claws.
+   SHARP,
+   ## Classic magic rays and light-based attacks.
+   ENERGY,
+   ## Hot attacks, including fire itself as well as boiling oil, steam, or red-hot metal.
+   FIRE,
+   ## Cold attacks.
+   COLD,
+   ## Electricity-based attacks such as lightning, static shocks, and electromagnetic pulses.
+   ZAP,
+   ## Poison, acid, necrosis, and other "evil" attacks.
+   ROT,
+   ## Damage done as a result of depriving the body. Bleeding, suffocation, etc.
+   NATURAL}
 
 func _init(_obj_from : Node3D = Node3D.new(), _obj_owner : Node3D = Node3D.new(), _obj_to : Node3D = Node3D.new(), _location_source : Vector3 = Vector3.ZERO, _location_receipt : Vector3 = Vector3.ZERO, _amount : float = 0.0, _type : DamageType = DamageType.IMPACT, _force : float = 0.0) -> void:
    obj_from = _obj_from

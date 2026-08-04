@@ -20,8 +20,6 @@ const MIN_TORSO_PITCH : float = -0.349  #-20 deg
 var previous_rotation : Vector3
 var previous_position : Vector3
 var legs_animate_direction := Vector3.ZERO
-var legs_animate_clock : float = 0.0
-var legs_animate_speed : float = 1.0
 
 ## Points the body in a particular direction, taking into account YAW (euler-y) and PITCH (euler-x). Ignores ROLL (euler-z).
 func update_facing_direction(pointing : Vector3):
@@ -41,14 +39,22 @@ func update_facing_direction(pointing : Vector3):
    ## UPDATE "PREVIOUS" FOR NEXT FRAME
    previous_rotation = pointing
 
-## ANIMATE WALKING
-func set_walk_direction(current_pos : Vector3, target_pos : Vector3):
-   if previous_position == current_pos: legs_animate_direction = Vector3.ZERO; return
-   var direction : Vector3 = ( current_pos - target_pos ).normalized()
-   legs_animate_direction = Vector3.FORWARD
+## ANIMATE WALKING (FUTURE)
+func set_walk_direction(_current_pos : Vector3, _target_pos : Vector3):
+   pass
+   #if previous_position == current_pos: legs_animate_direction = Vector3.ZERO; return
+   #var direction : Vector3 = ( current_pos - target_pos ).normalized()
+   #legs_animate_direction = Vector3.FORWARD
 
+## Points the wizard's [b]left[/b] hand to a particular euler angle.[br]dir=0 (default) points the hand straight down.[br]dir=90 points the hand forward.
 func point_with_left(dir : float = 0.0): ARM_L.rotation.x = dir
+## Points the wizard's [b]right[/b] hand to a particular euler angle.[br]dir=0 (default) points the hand straight down.[br]dir=90 points the hand forward.
 func point_with_right(dir : float = 0.0): ARM_R.rotation.x = dir
+
+## CHARACTER CUSTOMIZATION (FUTURE)
+func update_robe_color(_c : Color): pass
+## CHARACTER CUSTOMIZATION (FUTURE)
+func update_hat_color(_c : Color): pass
 
 # animation range: 6-10 deg
 func _process(_delta: float) -> void:
