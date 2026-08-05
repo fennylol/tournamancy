@@ -1,9 +1,29 @@
 extends CharacterBody3D
 class_name Player
 
-const SPEED = 5.0
-const JUMP_VELOCITY = 4.5
-const GRAVITY = 9.8
+const BASE_HEARTS : float = 0
+const BASE_ARMOR : float = 0
+const BASE_WARD : float = 0
+const BASE_OVERHEALTH : float = 0
+const BASE_ARMOR_STRENGTH : float = 0
+const BASE_WARD_STRENGTH : float = 0
+const BASE_LIFESTEAL : float = 0
+const BASE_DAMAGE : float = 0
+const BASE_RANGE : float = 0
+const BASE_COOLDOWN : float = 0
+const BASE_FORCE : float = 0
+const BASE_CRIT : float = 0
+const BASE_LUCK : float = 0
+const BASE_SPEED : float = 5.0
+const BASE_SPRINT : float = 0
+const BASE_JUMP : float = 4.5
+const BASE_GRAVITY : float = 9.8
+const BASE_STEADFASTNESS : float = 0
+const BASE_MELEE_DAMAGE : float = 0
+const BASE_MELEE_RANGE : float = 0
+const BASE_MELEE_FORCE : float = 0
+const BASE_MELEE_COOLDOWN : float = 0
+
 const TRANSFORM_DATA_SIZE: int = (4*9)+1
 const HAND_IMG : Texture2D = preload("res://4_ui/hud/Lhand.png")
 const POINT_IMG: Texture2D = preload("res://4_ui/hud/Lpoint.png")
@@ -48,18 +68,26 @@ func _ready() -> void:
 # _process() handling #
 # =================== #
 func _process(delta):
-   SpellBook.process_begin(delta, self)
    
-   # mouse capture
+   ## MOUSE CAPTURE
    if Input.is_action_just_pressed("menu"):
       Enabled = !Enabled
-
-   # change hand textures
+   
+   if Enabled: SpellBook.process_begin(delta, self)
+   
+   ## JOYPAD CAMERA MOVEMENT
+   var cam_horizontal : float = Input.get_axis("camera_left","camera_right")
+   var cam_vertical   : float = Input.get_axis("camera_down", "camera_up")
+   self.rotation.y += cam_horizontal * Sensitivity * 0.08
+   CAMERA.rotation.x += cam_vertical * Sensitivity * 0.05
+   CAMERA.rotation.x = clamp(CAMERA.rotation.x, -PI/2, PI/2)
+   
+   ## CHANGE HAND TEXTURES
    if Input.is_action_just_pressed("interact") and Enabled: 
       L_HAND.texture = POINT_IMG
    elif Input.is_action_just_released("interact") or not Enabled: 
       L_HAND.texture = HAND_IMG
-
+   
    if Input.is_action_just_pressed("active_spell_0") and Enabled:
       L_HAND.texture = POINT_IMG
       LEFT_ARM.rotation.x = -80.0
@@ -81,11 +109,12 @@ func _process(delta):
       R_HAND.texture = HAND_IMG 
       RIGHT_ARM.rotation.x = 0.0
       HUD_RIGHT_ACTIVE._release()
-   SpellBook.process_end(delta, self)
+   
+   if Enabled: SpellBook.process_end(delta, self)
    
    if SpellBook.ActiveSpells[0]: HUD_LEFT_ACTIVE.update_cooldown(SpellBook.ActiveSpells[0].get_cooldown())
    if SpellBook.ActiveSpells[1]: HUD_RIGHT_ACTIVE.update_cooldown(SpellBook.ActiveSpells[1].get_cooldown())
-   
+
 func _unhandled_input(event):
    # handle mouse
    if event is InputEventMouseMotion and Enabled:
@@ -97,24 +126,20 @@ func _unhandled_input(event):
 # simple movement #
 # =============== #
 func _physics_process(delta):
-   var stat_influenced_speed   = SPEED         * SpellBook.get_stat(SpellData.StatTypes.SPEED)
-   var stat_influenced_gravity = GRAVITY       * SpellBook.get_stat(SpellData.StatTypes.GRAVITY)
-   var stat_influenced_jump    = JUMP_VELOCITY * SpellBook.get_stat(SpellData.StatTypes.JUMP)
-   
-   # vertical movement
-   if not is_on_floor(): velocity.y -= stat_influenced_gravity * delta
-   if Input.is_action_pressed("jump") and is_on_floor() and Enabled: velocity.y = stat_influenced_jump
+    # vertical movement
+   if not is_on_floor(): velocity.y -= get_influenced_stat(SpellData.StatTypes.GRAVITY) * delta
+   if Input.is_action_pressed("jump") and is_on_floor() and Enabled: velocity.y = get_influenced_stat(SpellData.StatTypes.JUMP)
    
    # horizontal movement
    var input_dir = Input.get_vector("left", "right", "up", "down")
    var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
    
    if direction and Enabled:
-      velocity.x = direction.x * stat_influenced_speed
-      velocity.z = direction.z * stat_influenced_speed
+      velocity.x = direction.x * get_influenced_stat(SpellData.StatTypes.SPEED)
+      velocity.z = direction.z * get_influenced_stat(SpellData.StatTypes.SPEED)
    else:
-      velocity.x = move_toward(velocity.x, 0, stat_influenced_speed)
-      velocity.z = move_toward(velocity.z, 0, stat_influenced_speed)
+      velocity.x = move_toward(velocity.x, 0, get_influenced_stat(SpellData.StatTypes.SPEED))
+      velocity.z = move_toward(velocity.z, 0, get_influenced_stat(SpellData.StatTypes.SPEED))
 
    # use interactables
    if Input.is_action_pressed("interact") and Enabled:
@@ -143,6 +168,35 @@ func generate_transform_data() -> PackedByteArray:
    packed_data.encode_u8(36, flags)
    
    return packed_data
+
+## Takes a given [param SpellData.StatTypes] value and returns a [b]float[/b] based on the player's base stat plus any stat contributions from actives and passives.[br][br]By default, an influenced stat is simply [code]BASESTAT * CONTRIBUTION[/code], but more complicated functions are possible (SEE [member GRAVITY]).
+func get_influenced_stat(stat : SpellData.StatTypes) -> float:
+   var influenced_stat : float
+   match stat:
+      SpellData.StatTypes.HEARTS:         influenced_stat = BASE_HEARTS         * SpellBook.get_stat(SpellData.StatTypes.HEARTS)
+      SpellData.StatTypes.ARMOR:          influenced_stat = BASE_ARMOR          * SpellBook.get_stat(SpellData.StatTypes.ARMOR)
+      SpellData.StatTypes.WARD:           influenced_stat = BASE_WARD           * SpellBook.get_stat(SpellData.StatTypes.WARD)
+      SpellData.StatTypes.OVERHEALTH:     influenced_stat = BASE_OVERHEALTH     * SpellBook.get_stat(SpellData.StatTypes.OVERHEALTH)
+      SpellData.StatTypes.ARMOR_STRENGTH: influenced_stat = BASE_ARMOR_STRENGTH * SpellBook.get_stat(SpellData.StatTypes.ARMOR_STRENGTH)
+      SpellData.StatTypes.WARD_STRENGTH:  influenced_stat = BASE_WARD_STRENGTH  * SpellBook.get_stat(SpellData.StatTypes.WARD_STRENGTH)
+      SpellData.StatTypes.LIFESTEAL:      influenced_stat = BASE_LIFESTEAL      * SpellBook.get_stat(SpellData.StatTypes.LIFESTEAL)
+      SpellData.StatTypes.DAMAGE:         influenced_stat = BASE_DAMAGE         * SpellBook.get_stat(SpellData.StatTypes.DAMAGE)
+      SpellData.StatTypes.RANGE:          influenced_stat = BASE_RANGE          * SpellBook.get_stat(SpellData.StatTypes.RANGE)
+      SpellData.StatTypes.COOLDOWN:       influenced_stat = BASE_COOLDOWN       * SpellBook.get_stat(SpellData.StatTypes.COOLDOWN)
+      SpellData.StatTypes.FORCE:          influenced_stat = BASE_FORCE          * SpellBook.get_stat(SpellData.StatTypes.FORCE)
+      SpellData.StatTypes.CRIT:           influenced_stat = BASE_CRIT           * SpellBook.get_stat(SpellData.StatTypes.CRIT)
+      SpellData.StatTypes.LUCK:           influenced_stat = BASE_LUCK           * SpellBook.get_stat(SpellData.StatTypes.LUCK)
+      SpellData.StatTypes.SPEED:          influenced_stat = BASE_SPEED          * SpellBook.get_stat(SpellData.StatTypes.SPEED)
+      SpellData.StatTypes.SPRINT:         influenced_stat = BASE_SPRINT         * SpellBook.get_stat(SpellData.StatTypes.SPRINT)
+      SpellData.StatTypes.JUMP:           influenced_stat = BASE_JUMP           * SpellBook.get_stat(SpellData.StatTypes.JUMP)
+      ## PLATFORMER JUMPS. while "jump" is held, gravity is low. when "jump" is released, gravity is high.
+      SpellData.StatTypes.GRAVITY:        influenced_stat = BASE_GRAVITY * pow( 2.0 , ( -SpellBook.get_stat(SpellData.StatTypes.GRAVITY) / 2 ) ) if Input.is_action_pressed("jump") else BASE_GRAVITY * pow( 2.0 , ( SpellBook.get_stat(SpellData.StatTypes.GRAVITY) / 2 ) )
+      SpellData.StatTypes.STEADFASTNESS:  influenced_stat = BASE_STEADFASTNESS  * SpellBook.get_stat(SpellData.StatTypes.STEADFASTNESS)
+      SpellData.StatTypes.MELEE_DAMAGE:   influenced_stat = BASE_MELEE_DAMAGE   * SpellBook.get_stat(SpellData.StatTypes.MELEE_DAMAGE)
+      SpellData.StatTypes.MELEE_RANGE:    influenced_stat = BASE_MELEE_RANGE    * SpellBook.get_stat(SpellData.StatTypes.MELEE_RANGE)
+      SpellData.StatTypes.MELEE_FORCE:    influenced_stat = BASE_MELEE_FORCE    * SpellBook.get_stat(SpellData.StatTypes.MELEE_FORCE)
+      SpellData.StatTypes.MELEE_COOLDOWN: influenced_stat = BASE_MELEE_COOLDOWN * SpellBook.get_stat(SpellData.StatTypes.MELEE_COOLDOWN)
+   return influenced_stat
 
 # ==================== #
 # just passin' through #

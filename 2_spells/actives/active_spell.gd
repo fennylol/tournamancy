@@ -8,7 +8,9 @@ var Cooldown: float = 0.0:
 var TimeSinceActivation: float = 0.0
 var Player_Self : Player
 
-func _init(id: SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR) -> void: super(id)
+func _init(id: SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR) -> void:
+   super(id)
+   Cooldown = SpellData.ActiveSpells.get(SpellID).get(SpellData.SpellFields.Cooldown)
 
 func _on_process_begin(delta: float) -> void: TimeSinceActivation += delta * ( 1 + ( Player_Self.SpellBook.get_stat(SpellData.StatTypes.COOLDOWN) * 0.01 ) )
 func _can_activate(cooldown_reduction: float = 0.0) -> bool: return TimeSinceActivation > ( Cooldown + cooldown_reduction )

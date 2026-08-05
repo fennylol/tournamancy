@@ -11,19 +11,20 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Tank : {
-      ClassFields.ACTIVES : [],
+      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.Thunderwave, SpellData.ActiveSpellIDs.IronBody],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.Speed : -5,
-         SpellData.PassiveSpellIDs.Gravity : 10,
-         #SpellData.PassiveSpellIDs.Damage : 5 //UNCOMMENT ONCE A SCRIPT IS ADDED
+         #SpellData.PassiveSpellIDs.Gravity : 0,
+         SpellData.PassiveSpellIDs.Damage : 5
       }
    },
    
    ClassIDs.Speedster : {
-      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.Teleport],
+      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.ShockstarDisco, SpellData.ActiveSpellIDs.StarlightBlink],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.Speed : 5,
-         SpellData.PassiveSpellIDs.Gravity : -3
+         SpellData.PassiveSpellIDs.Gravity : 5,
+         SpellData.PassiveSpellIDs.MoonJump : 1
       }
    },
    

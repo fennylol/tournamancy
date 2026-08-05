@@ -129,7 +129,8 @@ func _recieve_transform_data    ( data: PackedByteArray) -> void:
    transform_data.emit(peer_id, trans_data)
 func _recieve_damage_data       (data: PackedByteArray) -> void:
    #region 
-   ## I am going to try to figure this out, but if the code is bad feel free to refactor it properly. I am not committed to anything here
+   ## I am going to try to figure this out, but if the code is bad feel free to refactor it properly. I am not committed to anything here.
+   ## Note that DataTypes.DamageData == 0xDA. I don't know if that needs to change.
    var peer_id : int = data.decode_u32(0)
    var ID_OFFSET_SIZE         : int = OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE
    var ID_AND_LOC_OFFSET_SIZE : int = OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE
@@ -191,7 +192,8 @@ func send_player_transform_data(data: PackedByteArray, owner_id: int = _OTP.Netw
 func send_damage_data(package : DamagePackage, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    #region 
-   ## I am going to try to figure this out, but if the code is bad feel free to refactor it properly. I am not committed to anything here
+   ## I am going to try to figure this out, but if the code is bad feel free to refactor it properly. I am not committed to anything here.
+   ## Note that DataTypes.DamageData == 0xDA. I don't know if that needs to change.
    data.resize(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE + DamagePackage.TYPE_SIZE + DamagePackage.FORCE_SIZE)
    data.encode_u32(0,                                                                                                                                                                                                                                                      owner_id)
    data.encode_u32(OneTruePingus.NETWORK_ID_SIZE,                                                                                                                                                                                                                          package.id_from)
