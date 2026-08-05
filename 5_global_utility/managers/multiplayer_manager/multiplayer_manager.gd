@@ -7,6 +7,7 @@ signal ready_button_pressed()
 signal peer_disconnected(network_id: int)
 signal connection_established(network_id: int)
 signal transform_data(network_id: int, data: PackedByteArray)
+signal damage_data(network_id: int, package: DamagePackage)
 signal name_data(network_id: int, new_name: String)
 signal effect_equipped_data(network_id: int, spell_id: int, is_active: bool)
 #signal effect_erased_data(network_id: int, spell_id: int, is_active: bool)
@@ -126,8 +127,23 @@ func _recieve_transform_data    ( data: PackedByteArray) -> void:
    var peer_id: int = data.decode_u32(0)
    var trans_data: PackedByteArray = data.slice(OneTruePingus.NETWORK_ID_SIZE)
    transform_data.emit(peer_id, trans_data)
-func _recieve_damage_data       (_data: PackedByteArray) -> void:
-   print("DAMAGE DATA RECIEVED BUT NO HANDLER EXISTS")
+func _recieve_damage_data       (data: PackedByteArray) -> void:
+   #region 
+   ## I am going to try to figure this out, but if the code is bad feel free to refactor it properly. I am not committed to anything here
+   var peer_id : int = data.decode_u32(0)
+   var ID_OFFSET_SIZE         : int = OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE
+   var ID_AND_LOC_OFFSET_SIZE : int = OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE
+   var new_damage_instance := DamagePackage.new()
+   new_damage_instance.id_from          = data.decode_u32(OneTruePingus.NETWORK_ID_SIZE)
+   new_damage_instance.id_owner         = data.decode_u32(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE)
+   new_damage_instance.id_to            = data.decode_u32(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE)
+   new_damage_instance.location_source  = Vector3(data.decode_float(ID_OFFSET_SIZE),  data.decode_float(ID_OFFSET_SIZE + 4),  data.decode_float(ID_OFFSET_SIZE + 8))
+   new_damage_instance.location_receipt = Vector3(data.decode_float(ID_OFFSET_SIZE + DamagePackage.LOCATION_SOURCE_SIZE), data.decode_float(ID_OFFSET_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 4), data.decode_float(ID_OFFSET_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 8))
+   new_damage_instance.amount           = data.decode_float(ID_AND_LOC_OFFSET_SIZE)
+   new_damage_instance.type             = data.decode_u8(ID_AND_LOC_OFFSET_SIZE + DamagePackage.TYPE_SIZE) as DamagePackage.DamageType
+   new_damage_instance.force            = data.decode_float(ID_AND_LOC_OFFSET_SIZE + DamagePackage.TYPE_SIZE + DamagePackage.TYPE_SIZE)
+   damage_data.emit(peer_id, new_damage_instance)
+   #endregion
 func _recieve_connection_data   ( data: PackedByteArray) -> void:
    var peer_id = data.decode_u32(0)
    var peer_port = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
@@ -172,10 +188,25 @@ func send_player_transform_data(data: PackedByteArray, owner_id: int = _OTP.Netw
    data_with_id.encode_u32(0, owner_id)
    data_with_id.append_array(data)
    _OTP.send_data(DataTypes.TransformData, data_with_id)
-func send_damage_data() -> void:
-   print("DAMAGE DATA SNET BUT NO DATA REALLY EXISTS")
+func send_damage_data(package : DamagePackage, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
-   var make_the_function_signature_yellow_please
+   #region 
+   ## I am going to try to figure this out, but if the code is bad feel free to refactor it properly. I am not committed to anything here
+   data.resize(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE + DamagePackage.TYPE_SIZE + DamagePackage.FORCE_SIZE)
+   data.encode_u32(0,                                                                                                                                                                                                                                                      owner_id)
+   data.encode_u32(OneTruePingus.NETWORK_ID_SIZE,                                                                                                                                                                                                                          package.id_from)
+   data.encode_u32(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE,                                                                                                                                                                                             package.id_owner)
+   data.encode_u32(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE,                                                                                                                                                               package.id_to)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE,                                                                                                                                  package.location_source.x)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + 4,                                                                                                                              package.location_source.y)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + 8,                                                                                                                              package.location_source.z)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE,                                                                                             package.location_receipt.x)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 4,                                                                                         package.location_receipt.y)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 8,                                                                                         package.location_receipt.z)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE,                                                       package.amount)
+   data.encode_u8(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE,                              package.type)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE + DamagePackage.TYPE_SIZE, package.force)
+   #endregion
    _OTP.send_data(DataTypes.DamageData, data)
 func _send_connection_data(network_id: int, peer_address: String, peer_port: int) -> void:
    var data: PackedByteArray = []
@@ -203,7 +234,7 @@ func send_effect_equip_data(spell_id: int, is_active: bool, owner_id: int = _OTP
    data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE, is_active)
    _OTP.send_data(DataTypes.EffectEquip, data)
 func _send_effect_erase_data(spell_id: int, is_active: bool) -> void:
-   print("ERASE EFFECT DATA SNET BUT NO DATA REALLY EXISTS")
+   print("ERASE EFFECT DATA SENT BUT NO DATA REALLY EXISTS")
    var data: PackedByteArray = []
    _OTP.send_data(DataTypes.EffectErase, data)
 func send_effect_state_data(spell_id: int, is_active: bool, spell_state: int, owner_id: int = _OTP.NetworkID) -> void:

@@ -2,9 +2,6 @@ extends Node3D
 class_name Dummy
 
 ## NODES AND TEXTURES
-@onready var EYES        : Node3D        = $Eyes
-@onready var L_HAND      : Sprite3D      = $Eyes/Lhand
-@onready var R_HAND      : Sprite3D      = $Eyes/Rhand
 @onready var BODY        : WizardBody    = $WizardBody
 @onready var NAMETAG     : Label3D       = $NameTag
 @onready var HB_VIEWPORT : SubViewport   = $SubViewport
