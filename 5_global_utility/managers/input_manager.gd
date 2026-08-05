@@ -23,9 +23,9 @@ static func init_inputs() -> void:
       event.axis_value = value
       InputMap.action_add_event(input_name, event)
    
-   ## ------------------------
-   ##    KEYBOARD AND MOUSE
-   ## ------------------------
+   # ======================== #
+   #    KEYBOARD AND MOUSE    #
+   # ======================== #
    
    ## MENU
    register_keyboard_input.call("menu", KEY_ESCAPE)
@@ -61,9 +61,9 @@ static func init_inputs() -> void:
    register_keyboard_input.call("lock", KEY_SHIFT)
    register_keyboard_input.call("reroll", KEY_TAB)
    
-   ## ----------------
-   ##    CONTROLLER 
-   ## ----------------
+   # ================ #
+   #    CONTROLLER    #
+   # ================ #
    
    ## MENU
    register_joypad_button_input.call("menu", JOY_BUTTON_GUIDE)

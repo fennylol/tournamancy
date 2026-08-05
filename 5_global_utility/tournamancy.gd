@@ -22,9 +22,14 @@ func _ready() -> void:
    PlayerCharacter.enabled_changed.connect(MPM.passthrough_player_enabled_changed)
    PlayerCharacter.spell_equipped.connect(MPM.send_effect_equip_data)
    PlayerCharacter.spell_change_state.connect(MPM.send_effect_state_data)
+   sync_player_base_stats()
    
 func _physics_process(_delta: float) -> void:
    MPM.send_player_transform_data(PlayerCharacter.generate_transform_data())
+
+# ===================== #
+#    SIGNAL HANDLING    #
+# ===================== #
 
 func _on_mpm_connection_established(network_id: int) -> void:
    var dummy: Dummy = DummyScene.instantiate()
@@ -54,3 +59,11 @@ func _on_mpm_effect_state_data     (network_id: int, spell_id: int, is_active: b
    #MPM.passthrough_player_enabled_changed(enabled)
 #func _on_player_spell_equipped(spell_id: int, is_active: bool) -> void:
    #MPM.send_effect_equip_data(spell_id, is_active)
+
+# ================ #
+#    GAME SETUP    #
+# ================ #
+
+var match_settings : MatchSettings = MatchSettings.new()
+
+func sync_player_base_stats(): PlayerCharacter.sync_statistics(match_settings.PLAYER_BASE_STATS)
