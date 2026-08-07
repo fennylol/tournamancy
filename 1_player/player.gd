@@ -48,6 +48,8 @@ var HUD_HEALTHBAR      : HealthDisplay
 var personal_settings : PersonalSettings = PersonalSettings.new()
 var SpellBook: Grimoire = Grimoire.new()
 
+## LOCAL VARIABLES
+var is_sprinting : bool = false
 var Enabled: bool = false:
    set(new_val):
       Enabled = new_val
@@ -141,22 +143,36 @@ func _unhandled_input(event):
 # =============== #
 
 func _physics_process(delta):
-    # vertical movement
-   if not is_on_floor(): velocity.y -= get_influenced_stat(SpellData.StatTypes.GRAVITY) * delta
-   if Input.is_action_pressed("jump") and is_on_floor() and Enabled: velocity.y = get_influenced_stat(SpellData.StatTypes.JUMP)
+   ## GET RELEVANT INFLUENCED STATS
+   var influenced_speed   : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPEED, BASE_SPEED, SpellBook.get_stat(SpellData.StatTypes.SPEED))
+   var influenced_sprint  : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPRINT, BASE_SPRINT, SpellBook.get_stat(SpellData.StatTypes.SPRINT))
+   var influenced_jump    : float = SpellData.get_influenced_stat(SpellData.StatTypes.JUMP, BASE_JUMP, SpellBook.get_stat(SpellData.StatTypes.JUMP))
+   var influenced_gravity : float = SpellData.get_influenced_stat(SpellData.StatTypes.GRAVITY, BASE_GRAVITY, SpellBook.get_stat(SpellData.StatTypes.GRAVITY))
    
-   # horizontal movement
-   var input_dir = Input.get_vector("left", "right", "up", "down")
-   var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+   ## GRAVITY AND JUMP VELOCITY
+   if not is_on_floor(): velocity.y -= influenced_gravity * delta
+   if Input.is_action_pressed("jump") and is_on_floor() and Enabled: velocity.y = influenced_jump
    
-   if direction and Enabled:
-      velocity.x = direction.x * get_influenced_stat(SpellData.StatTypes.SPEED)
-      velocity.z = direction.z * get_influenced_stat(SpellData.StatTypes.SPEED)
+   ## PLAYER SPRINTS IF THEY A) ARE ALREADY SPRINTING OR B) PRESS THE "SPRINT" BUTTON. STOP SPRINTING WHEN STOP MOVING. CANNOT START/STOP SPRINTING IN THE AIR.
+   var sprint_multi : float = 1.0
+   if velocity.x == 0 and velocity.z == 0: is_sprinting = false
+   if not is_on_floor():
+      sprint_multi = influenced_sprint if is_sprinting else 1.0
    else:
-      velocity.x = move_toward(velocity.x, 0, get_influenced_stat(SpellData.StatTypes.SPEED))
-      velocity.z = move_toward(velocity.z, 0, get_influenced_stat(SpellData.StatTypes.SPEED))
+      if Input.is_action_pressed("sprint"): is_sprinting = true
+      if is_sprinting: sprint_multi = influenced_sprint
+   
+   ## HORIZONTAL MOVEMENT
+   var input_dir = Input.get_vector("left", "right", "up", "down")
+   var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized() if is_on_floor() else (Vector3(velocity.x, 0, velocity.z)).normalized()
+   if direction and Enabled:
+      velocity.x = direction.x * influenced_speed * sprint_multi
+      velocity.z = direction.z * influenced_speed * sprint_multi
+   else:
+      velocity.x = move_toward(velocity.x, 0, influenced_speed)
+      velocity.z = move_toward(velocity.z, 0, influenced_speed)
 
-   # use interactables
+   ## INTERACTABLES
    if Input.is_action_pressed("interact") and Enabled:
       if LOOK_DIR.is_colliding():
          var hit = LOOK_DIR.get_collider()
@@ -191,35 +207,7 @@ func generate_transform_data() -> PackedByteArray:
    packed_data.encode_u8(36, flags)
    
    return packed_data
-## Takes a given [param SpellData.StatTypes] value and returns a [b]float[/b] based on the player's base stat plus any stat contributions from actives and passives.[br][br]By default, an influenced stat is simply [code]BASESTAT * CONTRIBUTION[/code], but more complicated functions are possible (SEE [member GRAVITY]).
-func get_influenced_stat(stat : SpellData.StatTypes) -> float:
-   var influenced_stat : float
-   match stat:
-      SpellData.StatTypes.HEARTS:         influenced_stat = BASE_HEARTS         * SpellBook.get_stat(SpellData.StatTypes.HEARTS)
-      SpellData.StatTypes.ARMOR:          influenced_stat = BASE_ARMOR          * SpellBook.get_stat(SpellData.StatTypes.ARMOR)
-      SpellData.StatTypes.WARD:           influenced_stat = BASE_WARD           * SpellBook.get_stat(SpellData.StatTypes.WARD)
-      SpellData.StatTypes.OVERHEALTH:     influenced_stat = BASE_OVERHEALTH     * SpellBook.get_stat(SpellData.StatTypes.OVERHEALTH)
-      SpellData.StatTypes.ARMOR_STRENGTH: influenced_stat = BASE_ARMOR_STRENGTH * SpellBook.get_stat(SpellData.StatTypes.ARMOR_STRENGTH)
-      SpellData.StatTypes.WARD_STRENGTH:  influenced_stat = BASE_WARD_STRENGTH  * SpellBook.get_stat(SpellData.StatTypes.WARD_STRENGTH)
-      SpellData.StatTypes.LIFESTEAL:      influenced_stat = BASE_LIFESTEAL      * SpellBook.get_stat(SpellData.StatTypes.LIFESTEAL)
-      SpellData.StatTypes.DAMAGE:         influenced_stat = BASE_DAMAGE         * SpellBook.get_stat(SpellData.StatTypes.DAMAGE)
-      SpellData.StatTypes.RANGE:          influenced_stat = BASE_RANGE          * SpellBook.get_stat(SpellData.StatTypes.RANGE)
-      SpellData.StatTypes.COOLDOWN:       influenced_stat = BASE_COOLDOWN       * SpellBook.get_stat(SpellData.StatTypes.COOLDOWN)
-      SpellData.StatTypes.FORCE:          influenced_stat = BASE_FORCE          * SpellBook.get_stat(SpellData.StatTypes.FORCE)
-      SpellData.StatTypes.CRIT:           influenced_stat = BASE_CRIT           * SpellBook.get_stat(SpellData.StatTypes.CRIT)
-      SpellData.StatTypes.LUCK:           influenced_stat = BASE_LUCK           * SpellBook.get_stat(SpellData.StatTypes.LUCK)
-      SpellData.StatTypes.SPEED:          influenced_stat = BASE_SPEED          * SpellBook.get_stat(SpellData.StatTypes.SPEED)
-      SpellData.StatTypes.SPRINT:         influenced_stat = BASE_SPRINT         * SpellBook.get_stat(SpellData.StatTypes.SPRINT)
-      SpellData.StatTypes.JUMP:           influenced_stat = BASE_JUMP           * SpellBook.get_stat(SpellData.StatTypes.JUMP)
-      ## PLATFORMER JUMPS. while "jump" is held, gravity is low. when "jump" is released, gravity is high.
-      SpellData.StatTypes.GRAVITY:        influenced_stat = BASE_GRAVITY * pow( 2.0 , ( -SpellBook.get_stat(SpellData.StatTypes.GRAVITY) / 2 ) ) if Input.is_action_pressed("jump") else BASE_GRAVITY * pow( 2.0 , ( SpellBook.get_stat(SpellData.StatTypes.GRAVITY) / 2 ) )
-      SpellData.StatTypes.STEADFASTNESS:  influenced_stat = BASE_STEADFASTNESS  * SpellBook.get_stat(SpellData.StatTypes.STEADFASTNESS)
-      SpellData.StatTypes.MELEE_DAMAGE:   influenced_stat = BASE_MELEE_DAMAGE   * SpellBook.get_stat(SpellData.StatTypes.MELEE_DAMAGE)
-      SpellData.StatTypes.MELEE_RANGE:    influenced_stat = BASE_MELEE_RANGE    * SpellBook.get_stat(SpellData.StatTypes.MELEE_RANGE)
-      SpellData.StatTypes.MELEE_FORCE:    influenced_stat = BASE_MELEE_FORCE    * SpellBook.get_stat(SpellData.StatTypes.MELEE_FORCE)
-      SpellData.StatTypes.MELEE_COOLDOWN: influenced_stat = BASE_MELEE_COOLDOWN * SpellBook.get_stat(SpellData.StatTypes.MELEE_COOLDOWN)
-   return influenced_stat
-## Called by the game manager (Tournamancy.gd) with the statistics pulled from a MatchSettings object.
+## Called by the game manager (Tournamancy.gd) with the statistics passed in from a MatchSettings object.
 func sync_statistics(stat_dict : Dictionary):
    BASE_HEARTS         = stat_dict.get(SpellData.StatTypes.HEARTS)
    BASE_ARMOR          = stat_dict.get(SpellData.StatTypes.ARMOR)
@@ -248,6 +236,7 @@ func sync_statistics(stat_dict : Dictionary):
 # just passin' through #
 # ==================== #
 
+## Called by an interactable when it adds or removes a spell. Adds or removes the textures of said spells in the player's HUD.
 func update_HUD_icons():
    ## ACTIVE SPELL ICONS
    var active_spell_l = SpellBook.ActiveSpells[0].SpellID if SpellBook.ActiveSpells[0] else -1
@@ -256,6 +245,8 @@ func update_HUD_icons():
    HUD_RIGHT_ACTIVE._update_icon(active_spell_r)
    ## PASSIVE SPELL ICONS
    HUD_PASSIVEBOX.import_passive_spells(SpellBook.PassiveSpells, true)
+## Called by the base ActiveSpell class to get the players "stat influenced cooldown" which is multiplied with the delta each frame to reduce that spell's cooldown timer.
+func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.StatTypes.COOLDOWN, BASE_COOLDOWN, SpellBook.get_stat(SpellData.StatTypes.COOLDOWN))
 func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.equip_effect(spell_id, is_active)
    spell_equipped.emit(spell_id, is_active)

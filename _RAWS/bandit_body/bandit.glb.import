@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://3m1jillpw400"
-path="res://.godot/imported/bandit.glb-85d7cab1a0c24d6f4486b00a7eb20ef1.scn"
+path="res://.godot/imported/bandit.glb-c1fdd057e322f61271af50ad069ae1d8.scn"
 
 [deps]
 
-source_file="res://1_player/dummy/bandit.glb"
-dest_files=["res://.godot/imported/bandit.glb-85d7cab1a0c24d6f4486b00a7eb20ef1.scn"]
+source_file="res://_RAWS/bandit_body/bandit.glb"
+dest_files=["res://.godot/imported/bandit.glb-c1fdd057e322f61271af50ad069ae1d8.scn"]
 
 [params]
 

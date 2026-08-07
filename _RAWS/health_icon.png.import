@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://o8tt11me6a7o"
-path="res://.godot/imported/passive_icons.png-3703477179938218d09e1a68524ee898.ctex"
+uid="uid://cbte4ygi44lfo"
+path="res://.godot/imported/health_icon.png-18c3da45c50a7026b008a88f7891002e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://2_spells/passives/passive_icons.png"
-dest_files=["res://.godot/imported/passive_icons.png-3703477179938218d09e1a68524ee898.ctex"]
+source_file="res://_RAWS/health_icon.png"
+dest_files=["res://.godot/imported/health_icon.png-18c3da45c50a7026b008a88f7891002e.ctex"]
 
 [params]
 

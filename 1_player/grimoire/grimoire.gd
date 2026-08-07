@@ -43,7 +43,7 @@ func calculate_stats() -> Dictionary:
 
 func get_stat(id: SpellData.StatTypes) -> float:
    if StatModifiers.keys().has(id): return StatModifiers[id]
-   else: return 1
+   else: return 0 ##this was previously return 1, but it makes more sense to return 0 if there are not stat modifiers
 
 # ================ #
 # spell management #

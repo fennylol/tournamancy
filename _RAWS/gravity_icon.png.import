@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6oj1hdwo6ry7"
-path="res://.godot/imported/teleport_icon.png-ebfd935bd7ba85012cf439a5abddc9fb.ctex"
+uid="uid://dtoxyqm7tsoaa"
+path="res://.godot/imported/gravity_icon.png-eecb890482c419f10ee0630dced9cc0d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://2_spells/actives/StarlightBlink/teleport_icon.png"
-dest_files=["res://.godot/imported/teleport_icon.png-ebfd935bd7ba85012cf439a5abddc9fb.ctex"]
+source_file="res://_RAWS/gravity_icon.png"
+dest_files=["res://.godot/imported/gravity_icon.png-eecb890482c419f10ee0630dced9cc0d.ctex"]
 
 [params]
 
