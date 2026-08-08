@@ -62,7 +62,7 @@ var Enabled: bool = false:
 ## SIGNALS
 signal enabled_changed(new_val:bool)
 signal spell_equipped(spell_id: int, is_active: bool)
-signal spell_change_state(spell_id: int, is_active: bool, new_state: int)
+signal player_spell_change_state(spell_id: int, is_active: bool, new_state: int)
 
 # =========== #
 #    setup    #
@@ -73,8 +73,9 @@ func _ready() -> void:
    HUD_RIGHT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(R)")
    HUD_PASSIVEBOX = HUD.find_child("PassiveBox").find_child("PassiveIcons")
    HUD_HEALTHBAR = HUD.find_child("HealthPoints").find_child("HealthDisplay")
+   SpellBook.i_am_the_player(self)
    SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
-   SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state) # TODO: make this work.
+   SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state) # TODO: make this work. (David: i think it does?)
 
 # =================== #
 # _process() handling #
@@ -247,6 +248,9 @@ func update_HUD_icons():
    HUD_PASSIVEBOX.import_passive_spells(SpellBook.PassiveSpells, true)
 ## Called by the base ActiveSpell class to get the players "stat influenced cooldown" which is multiplied with the delta each frame to reduce that spell's cooldown timer.
 func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.StatTypes.COOLDOWN, BASE_COOLDOWN, SpellBook.get_stat(SpellData.StatTypes.COOLDOWN))
+## Passes a list of actives and passives to the Effectory. That's it. Effectory takes it from there.
+func sync_effectory(list_of_actives : Array[SpellData.ActiveSpellIDs], list_of_passives : Array[SpellData.PassiveSpellIDs]): 
+   EFFECTORY.sync_effects(list_of_actives, list_of_passives)
 func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.equip_effect(spell_id, is_active)
    spell_equipped.emit(spell_id, is_active)
@@ -256,4 +260,4 @@ func _on_grimoire_spell_erase(spell_id: int, is_active: bool) -> void:
    EFFECTORY.erase_effect(spell_id, is_active)
 func _on_grimoire_change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
    EFFECTORY.change_effect_state(spell_id, is_active, spell_state)
-   spell_change_state.emit(spell_id, is_active, spell_state)
+   player_spell_change_state.emit(spell_id, is_active, spell_state)

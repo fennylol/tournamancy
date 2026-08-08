@@ -21,7 +21,7 @@ func _ready() -> void:
    #PlayerCharacter.spell_equipped.connect(_on_player_spell_equipped)
    PlayerCharacter.enabled_changed.connect(MPM.passthrough_player_enabled_changed)
    PlayerCharacter.spell_equipped.connect(MPM.send_effect_equip_data)
-   PlayerCharacter.spell_change_state.connect(MPM.send_effect_state_data)
+   PlayerCharacter.player_spell_change_state.connect(MPM.send_effect_state_data)
    sync_player_base_stats()
    
 func _physics_process(_delta: float) -> void:
