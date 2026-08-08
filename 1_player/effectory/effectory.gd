@@ -25,8 +25,9 @@ func equip_effect(spell_id: int, is_active: bool) -> void:
    var effect_list: Array = spell_data[SpellData.SpellFields.DummyEffects if IsDummy else SpellData.SpellFields.Effects]
    
    for effect in effect_list:
-      var effect_node: Node3D = load(effect).instantiate()
+      var effect_node: Effect = load(effect).instantiate()
       container_node.add_child(effect_node)
+      if not IsDummy: effect_node.find_the_player(get_parent())
    
    add_child(container_node)
 func erase_effect(spell_id: int, is_active: bool) -> void:

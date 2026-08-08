@@ -39,6 +39,7 @@ func _ready() -> void:
 func _notification(what: int) -> void:
    if what == NOTIFICATION_WM_CLOSE_REQUEST:
      _send_disconnection_data()
+func get_local_player_id() -> int: return _OTP.NetworkID
 # =============== #
 # signal handling #
 # =============== #
@@ -127,9 +128,7 @@ func _recieve_transform_data    ( data: PackedByteArray) -> void:
    var peer_id: int = data.decode_u32(0)
    var trans_data: PackedByteArray = data.slice(OneTruePingus.NETWORK_ID_SIZE)
    transform_data.emit(peer_id, trans_data)
-func _recieve_damage_data       (data: PackedByteArray) -> void:
-   #region 
-   ## I am going to try to figure this out, but if the code is bad feel free to refactor it properly. I am not committed to anything here.
+func _recieve_damage_data       ( data: PackedByteArray) -> void:
    ## Note that DataTypes.DamageData == 0xDA. I don't know if that needs to change.
    var peer_id : int = data.decode_u32(0)
    var ID_OFFSET_SIZE         : int = OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE
@@ -141,10 +140,9 @@ func _recieve_damage_data       (data: PackedByteArray) -> void:
    new_damage_instance.location_source  = Vector3(data.decode_float(ID_OFFSET_SIZE),  data.decode_float(ID_OFFSET_SIZE + 4),  data.decode_float(ID_OFFSET_SIZE + 8))
    new_damage_instance.location_receipt = Vector3(data.decode_float(ID_OFFSET_SIZE + DamagePackage.LOCATION_SOURCE_SIZE), data.decode_float(ID_OFFSET_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 4), data.decode_float(ID_OFFSET_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 8))
    new_damage_instance.amount           = data.decode_float(ID_AND_LOC_OFFSET_SIZE)
-   new_damage_instance.type             = data.decode_u8(ID_AND_LOC_OFFSET_SIZE + DamagePackage.TYPE_SIZE) as DamagePackage.DamageType
-   new_damage_instance.force            = data.decode_float(ID_AND_LOC_OFFSET_SIZE + DamagePackage.TYPE_SIZE + DamagePackage.TYPE_SIZE)
+   new_damage_instance.type             = data.decode_u8(ID_AND_LOC_OFFSET_SIZE + DamagePackage.AMOUNT_SIZE) as DamagePackage.DamageType
+   new_damage_instance.force            = data.decode_float(ID_AND_LOC_OFFSET_SIZE + DamagePackage.AMOUNT_SIZE + DamagePackage.TYPE_SIZE)
    damage_data.emit(peer_id, new_damage_instance)
-   #endregion
 func _recieve_connection_data   ( data: PackedByteArray) -> void:
    var peer_id = data.decode_u32(0)
    var peer_port = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
@@ -191,8 +189,6 @@ func send_player_transform_data(data: PackedByteArray, owner_id: int = _OTP.Netw
    _OTP.send_data(DataTypes.TransformData, data_with_id)
 func send_damage_data(package : DamagePackage, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
-   #region 
-   ## I am going to try to figure this out, but if the code is bad feel free to refactor it properly. I am not committed to anything here.
    ## Note that DataTypes.DamageData == 0xDA. I don't know if that needs to change.
    data.resize(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE + DamagePackage.TYPE_SIZE + DamagePackage.FORCE_SIZE)
    data.encode_u32(0,                                                                                                                                                                                                                                                      owner_id)
@@ -208,7 +204,6 @@ func send_damage_data(package : DamagePackage, owner_id: int = _OTP.NetworkID) -
    data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE,                                                       package.amount)
    data.encode_u8(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE,                              package.type)
    data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE + DamagePackage.TYPE_SIZE, package.force)
-   #endregion
    _OTP.send_data(DataTypes.DamageData, data)
 func _send_connection_data(network_id: int, peer_address: String, peer_port: int) -> void:
    var data: PackedByteArray = []

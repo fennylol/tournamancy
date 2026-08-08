@@ -2,14 +2,22 @@
 
 [ext_resource type="Script" uid="uid://de5mdlfvbwnyk" path="res://1_player/dummy/dummy.gd" id="1_gb63j"]
 [ext_resource type="PackedScene" uid="uid://b104tuac4uwp4" path="res://1_player/character_body/wizard_body.tscn" id="2_efvjk"]
+[ext_resource type="Script" uid="uid://b7hkrvtuscupp" path="res://1_player/components/healthbar.gd" id="2_iiygx"]
 [ext_resource type="Script" uid="uid://cuueb1u2pkixq" path="res://1_player/effectory/effectory.gd" id="5_iiygx"]
 [ext_resource type="PackedScene" uid="uid://cgtqkg01jix6k" path="res://4_ui/HUD_2/HealthDisplay.tscn" id="6_efvjk"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_sof1a"]
 viewport_path = NodePath("SubViewport")
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_gb63j"]
+radius = 0.375
+
 [node name="Dummy" type="Node3D" unique_id=207561788]
 script = ExtResource("1_gb63j")
+
+[node name="HealthComponent" type="Node" parent="." unique_id=504310814]
+script = ExtResource("2_iiygx")
+metadata/_custom_type_script = "uid://b7hkrvtuscupp"
 
 [node name="NameTag" type="Label3D" parent="." unique_id=1907059803]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
@@ -22,6 +30,12 @@ billboard = 1
 texture = SubResource("ViewportTexture_sof1a")
 
 [node name="WizardBody" parent="." unique_id=980499684 instance=ExtResource("2_efvjk")]
+
+[node name="Body" type="StaticBody3D" parent="." unique_id=777734993]
+
+[node name="Soul" type="CollisionShape3D" parent="Body" unique_id=1775585963]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_gb63j")
 
 [node name="Effectory" type="Node3D" parent="." unique_id=1728106557]
 script = ExtResource("5_iiygx")

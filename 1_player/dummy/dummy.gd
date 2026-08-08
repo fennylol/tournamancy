@@ -1,12 +1,15 @@
 extends Node3D
 class_name Dummy
 
+var NETWORK_ID : int
+
 ## NODES AND TEXTURES
-@onready var BODY        : WizardBody    = $WizardBody
-@onready var NAMETAG     : Label3D       = $NameTag
-@onready var HB_VIEWPORT : SubViewport   = $SubViewport
-@onready var HEALTHBAR   : HealthDisplay = $SubViewport/HealthDisplay
-@onready var EFFECTS     : Node3D        = $Effectory
+@onready var BODY        : WizardBody      = $WizardBody
+@onready var NAMETAG     : Label3D         = $NameTag
+@onready var HB_VIEWPORT : SubViewport     = $SubViewport
+@onready var HB_DISPLAY  : HealthDisplay   = $SubViewport/HealthDisplay
+@onready var HEALTHBAR   : HealthComponent = $HealthComponent
+@onready var EFFECTS     : Node3D          = $Effectory
 const HAND_IMG : Texture2D = preload("res://4_ui/hud/oppponent_hand.png")
 const POINT_IMG: Texture2D = preload("res://4_ui/hud/oppponent_point.png")
 
@@ -18,15 +21,6 @@ var _net_vel := Vector3.ZERO
 var _has_net_state: bool = false
 var _time_since_packet: float = 0.0
 const EXTRAPOLATION_LIMIT: float = 0.5  # seconds
-
-## HEALTHBAR DATA
-var total_health : Array[float] = [ 20.0 , 0.0 , 0.0 , 0.0 ]
-
-func _ready() -> void:
-   _sync_healthbar()
-func _process(_delta: float) -> void:
-   if Input.is_physical_key_pressed(KEY_7): recieve_damage(0.25)
-   if Input.is_physical_key_pressed(KEY_8): recieve_additional_health([0.25])
 
 func _physics_process(delta: float) -> void:
    if not _has_net_state: return
@@ -67,22 +61,13 @@ func on_effect_erase_data(spell_id: int, is_active: bool) -> void: EFFECTS.erase
 func on_effect_state_data(spell_id: int, is_active: bool, spell_state: int) -> void:
    EFFECTS.change_effect_state(spell_id, is_active, spell_state)
 
-func recieve_damage(amt : float):
-   var remaining_damage : float = amt
-   for i in total_health.size():
-      var j : int= total_health.size() - 1 - i
-      if total_health[j] >= remaining_damage: 
-         total_health[j] -= remaining_damage
-         remaining_damage = 0
-      else:
-         remaining_damage -= total_health[j]
-         total_health[j] = 0
+func recieve_damage_package(package : DamagePackage):
+   HEALTHBAR.recieve_damage_package(package)
    _sync_healthbar()
-func recieve_additional_health(add_health : Array[float]):
-   for i in add_health.size():
-      if i >= 4: continue
-      total_health[i] += add_health[i]
+func recieve_base_statistics(stat_dict : Dictionary):
+   var starting_health : Array[float] = [stat_dict.get(SpellData.StatTypes.HEARTS),stat_dict.get(SpellData.StatTypes.ARMOR),stat_dict.get(SpellData.StatTypes.WARD),stat_dict.get(SpellData.StatTypes.OVERHEALTH)]
+   HEALTHBAR.set_health(starting_health)
    _sync_healthbar()
 func _sync_healthbar():
-   HEALTHBAR.update_display(total_health)
-   HB_VIEWPORT.size.x = HEALTHBAR.get_bar_size() * 24
+   HB_DISPLAY.update_display(HEALTHBAR.get_health())
+   HB_VIEWPORT.size.x = HB_DISPLAY.get_bar_size() * 24

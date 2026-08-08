@@ -348,10 +348,10 @@ const PassiveSpells: Dictionary = {
    },
 }
 
-## Takes a given [param StatTypes] value and returns a [b]float[/b] based on the player's base stat plus any stat contributions from actives and passives.[br][br]By default, an influenced stat is simply [code]BASESTAT * CONTRIBUTION[/code], but more complicated functions are possible (SEE [member GRAVITY]).
+## Takes a given [param StatTypes] value and returns a [b]float[/b] based on the player's base stat plus any stat contributions from actives and passives.[br][br]By default (for now), an influenced stat is simply [code]BASESTAT * CONTRIBUTION[/code], but more complicated functions are possible.[br][br]
 ## "🧑‍🔧" indicates the operation has not been checked yet, and it just in the default X*Y format.
 static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: float) -> float:
-   var influenced_stat : float
+   var influenced_stat : float = -999.0
    match id:
       ## ONE-TO-ONE. Each additional point is one (1.0) additional health.
       StatTypes.HEARTS:         influenced_stat = base_value + stat_value
@@ -363,7 +363,8 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       StatTypes.ARMOR_STRENGTH: influenced_stat = base_value * stat_value ##🧑‍🔧
       StatTypes.WARD_STRENGTH:  influenced_stat = base_value * stat_value ##🧑‍🔧
       StatTypes.LIFESTEAL:      influenced_stat = base_value * stat_value ##🧑‍🔧
-      StatTypes.DAMAGE:         influenced_stat = base_value * stat_value ##🧑‍🔧
+      ## NATURAL LOG. Slow growth as points are added. You need about ~7 stacks for double damage. Not sure if this is a good idea (🧑‍🔧), but it feels decent for now. Needs playtesting.
+      StatTypes.DAMAGE:         influenced_stat = log( base_value + stat_value )
       StatTypes.RANGE:          influenced_stat = base_value * stat_value ##🧑‍🔧
       ## ADD FIVE PERCENT. Each additional point causes active ability cooldowns to go 5% faster (20 stacks needed for a 1/2 reduction).
       StatTypes.COOLDOWN:       influenced_stat = 1 + ( ( base_value + stat_value ) * 0.05 )
@@ -382,7 +383,11 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       StatTypes.MELEE_RANGE:    influenced_stat = base_value * stat_value ##🧑‍🔧
       StatTypes.MELEE_FORCE:    influenced_stat = base_value * stat_value ##🧑‍🔧
       StatTypes.MELEE_COOLDOWN: influenced_stat = base_value * stat_value ##🧑‍🔧
-   return influenced_stat
+   if influenced_stat == -999.0: 
+      printerr("SpellData.get_influenced_stat() STAT ", id, " NOT FOUND. RETURNING 0.")
+      return 0.0
+   else:
+      return influenced_stat
 
 static func get_active_spell_data(id: ActiveSpellIDs) -> Dictionary: 
    if ActiveSpells.keys().has(id): return ActiveSpells[id]

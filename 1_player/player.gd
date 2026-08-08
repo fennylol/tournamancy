@@ -39,6 +39,7 @@ const TRANSFORM_DATA_SIZE: int = (4*9)+1
 @onready var RIGHT_ARM := $Eyes/RIGHTARM
 @onready var EFFECTORY := $Effectory
 @onready var HUD       := $DefaultHud
+@onready var HEALTHBAR := $Healthbar
 var HUD_LEFT_ACTIVE    : Node2D
 var HUD_RIGHT_ACTIVE   : Node2D
 var HUD_PASSIVEBOX     : Node2D
@@ -47,6 +48,7 @@ var HUD_HEALTHBAR      : HealthDisplay
 ## SETTINGS AND REFERENCE FILES
 var personal_settings : PersonalSettings = PersonalSettings.new()
 var SpellBook: Grimoire = Grimoire.new()
+var MY_NETWORK_ID : int
 
 ## LOCAL VARIABLES
 var is_sprinting : bool = false
@@ -63,6 +65,7 @@ var Enabled: bool = false:
 signal enabled_changed(new_val:bool)
 signal spell_equipped(spell_id: int, is_active: bool)
 signal player_spell_change_state(spell_id: int, is_active: bool, new_state: int)
+signal deploy_damage(package : DamagePackage)
 
 # =========== #
 #    setup    #
@@ -164,8 +167,8 @@ func _physics_process(delta):
       if is_sprinting: sprint_multi = influenced_sprint
    
    ## HORIZONTAL MOVEMENT
-   var input_dir = Input.get_vector("left", "right", "up", "down")
-   var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized() if is_on_floor() else (Vector3(velocity.x, 0, velocity.z)).normalized()
+   var input_dir := Input.get_vector("left", "right", "up", "down")
+   var direction : Vector3 = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
    if direction and Enabled:
       velocity.x = direction.x * influenced_speed * sprint_multi
       velocity.z = direction.z * influenced_speed * sprint_multi
@@ -232,6 +235,9 @@ func sync_statistics(stat_dict : Dictionary):
    BASE_MELEE_RANGE    = stat_dict.get(SpellData.StatTypes.MELEE_RANGE)
    BASE_MELEE_FORCE    = stat_dict.get(SpellData.StatTypes.MELEE_FORCE)
    BASE_MELEE_COOLDOWN = stat_dict.get(SpellData.StatTypes.MELEE_COOLDOWN)
+   var starting_health : Array[float] = [stat_dict.get(SpellData.StatTypes.HEARTS),stat_dict.get(SpellData.StatTypes.ARMOR),stat_dict.get(SpellData.StatTypes.WARD),stat_dict.get(SpellData.StatTypes.OVERHEALTH)]
+   HEALTHBAR.set_health(starting_health)
+   HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
 
 # ==================== #
 # just passin' through #
@@ -251,6 +257,11 @@ func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.St
 ## Passes a list of actives and passives to the Effectory. That's it. Effectory takes it from there.
 func sync_effectory(list_of_actives : Array[SpellData.ActiveSpellIDs], list_of_passives : Array[SpellData.PassiveSpellIDs]): 
    EFFECTORY.sync_effects(list_of_actives, list_of_passives)
+func send_damage_package(package : DamagePackage):
+   deploy_damage.emit(package)
+func recieve_damage_package(package : DamagePackage):
+   HEALTHBAR.recieve_damage_package(package)
+   HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
 func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.equip_effect(spell_id, is_active)
    spell_equipped.emit(spell_id, is_active)

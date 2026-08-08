@@ -4,7 +4,7 @@ class_name DamagePackage
 
 ## The object that dealt damage. For example: a player, turret, or familiar.
 var id_from : int
-## The damaging object's owner. If the object that dealt damage is a turret or another “spawnable” damaging object, this represents that object's owner. If the object that dealt damage is a player, this should be null.
+## The damaging object's owner. If the object that dealt damage is a turret or another “spawnable” damaging object, this represents that object's owner. If the object that dealt damage is a player, this should be 0.
 var id_owner : int
 ## The object recieving damage. For example: an enemy player, or their turret.
 var id_to : int
@@ -13,7 +13,9 @@ var location_source : Vector3
 ## The global position of the object recieving damage.
 var location_receipt  : Vector3
 ## The amount of damage dealt.
-var amount : float
+var amount : float = 0.0:
+   set(new_val):
+      amount = _round_damage_to_decimal(new_val)
 ## The type of damage dealt.
 var type : DamageType
 ## The amount of pushing / shoving force dealt by the attack.[br]This should be multiplied against the difference between location_source and location_receipt to get the direction.
@@ -34,8 +36,9 @@ const AMOUNT_SIZE           : int = 4
 ## size in bytes of a [member type].
 const TYPE_SIZE             : int = 1
 ## size in bytes of a [member force].
-const FORCE_SIZE            : int = 4
+const FORCE_SIZE            : int = 6
 
+const ROUNDING_PLACES       : int = 5
 
 ## There are eight damage types, each of which starts with a different letter.[br][b][color=orange]Impact[/color][/b] "default" hammers, bats, bullets.[br][b][color=white]Sharp[/color][/b] blades.[br][b][color=purple]Energy[/color][/b] classic magic rays, light-based attacks, etc.[br][b][color=red]Fire[/color][/b] fire.[br][b][color=cyan]Cold[/color][/b] cold.[br][b][color=yellow]Zap[/color][/b] electricity, shock.[br][b][color=brown]Rot[/color][/b] poison, acid, necrosis, other “evil”-types.[br][b][color=green]Natural[/color][/b] bleeding, suffocation, etc.
 enum DamageType {
@@ -65,3 +68,5 @@ func _init(_id_from : int = 0, _id_owner : int = 0, _id_to : int = 0, _location_
    amount = _amount
    type = _type
    force = _force
+
+func _round_damage_to_decimal(new_val) -> float: return round( new_val * pow( 10 , ROUNDING_PLACES ) ) / pow( 10 , ROUNDING_PLACES )
