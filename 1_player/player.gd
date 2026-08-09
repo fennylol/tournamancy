@@ -265,16 +265,12 @@ func sync_prism_settings( min_spell_from_prism : int , max_spell_from_prism : in
                                  passive_spell_weights,active_mercy_weights,passive_mercy_weights, \
                                  kos_per_mercy_weight,max_mercy_weight_application)
 func sync_health():
-   pass
-   var i = SpellData.get_influenced_stat(SpellData.StatTypes.HEARTS, BASE_HEARTS, SpellBook.get_stat(SpellData.StatTypes.HEARTS))
-   if SpellBook.StatModifiers == {}:
-      pass
-   #var new_health : Array[float] = [SpellData.get_influenced_stat(SpellData.StatTypes.HEARTS, BASE_HEARTS, SpellBook.get_stat(SpellData.StatTypes.HEARTS)),\
-                        #SpellData.get_influenced_stat(SpellData.StatTypes.ARMOR, BASE_ARMOR, SpellBook.get_stat(SpellData.StatTypes.ARMOR)),\
-                        #SpellData.get_influenced_stat(SpellData.StatTypes.WARD, BASE_WARD, SpellBook.get_stat(SpellData.StatTypes.WARD)),\
-                        #SpellData.get_influenced_stat(SpellData.StatTypes.OVERHEALTH, BASE_OVERHEALTH, SpellBook.get_stat(SpellData.StatTypes.OVERHEALTH))]
-   #HEALTHBAR.set_health(new_health)
-   #HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
+   var new_health : Array[float] = [SpellData.get_influenced_stat(SpellData.StatTypes.HEARTS, BASE_HEARTS, SpellBook.get_stat(SpellData.StatTypes.HEARTS)),\
+                        SpellData.get_influenced_stat(SpellData.StatTypes.ARMOR, BASE_ARMOR, SpellBook.get_stat(SpellData.StatTypes.ARMOR)),\
+                        SpellData.get_influenced_stat(SpellData.StatTypes.WARD, BASE_WARD, SpellBook.get_stat(SpellData.StatTypes.WARD)),\
+                        SpellData.get_influenced_stat(SpellData.StatTypes.OVERHEALTH, BASE_OVERHEALTH, SpellBook.get_stat(SpellData.StatTypes.OVERHEALTH))]
+   HEALTHBAR.set_health(new_health)
+   HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
 
 # ====================== #
 #  just passin' through  #

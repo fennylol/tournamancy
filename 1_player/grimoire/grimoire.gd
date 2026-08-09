@@ -61,6 +61,7 @@ func add_passive(id: SpellData.PassiveSpellIDs, stacks: int) -> void:
       var spell: PassiveSpell = load(data[SpellData.SpellFields.ScriptPath]).new(stacks)
       PassiveSpells.append(spell) ## TODO: check if spell already exists and just sum the stacks together if so
       spell.StateChanged.connect(func(new_state: int): spell_change_state.emit(id, false, new_state))
+      StatModifiers = calculate_stats()
       spell._on_equip(ThePlayer)
       spell_equipped.emit(id, false)
 func add_active(id: SpellData.ActiveSpellIDs, slot: int) -> void:
