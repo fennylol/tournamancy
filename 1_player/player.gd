@@ -65,7 +65,8 @@ var Enabled: bool = false:
 signal enabled_changed(new_val:bool)
 signal spell_equipped(spell_id: int, is_active: bool)
 signal player_spell_change_state(spell_id: int, is_active: bool, new_state: int)
-signal deploy_damage(package : DamagePackage)
+signal damage_dealt(package : DamagePackage)
+signal familiar_spawned(spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray)
 
 # =========== #
 #    setup    #
@@ -258,7 +259,7 @@ func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.St
 func sync_effectory(list_of_actives : Array[SpellData.ActiveSpellIDs], list_of_passives : Array[SpellData.PassiveSpellIDs]): 
    EFFECTORY.sync_effects(list_of_actives, list_of_passives)
 func send_damage_package(package : DamagePackage):
-   deploy_damage.emit(package)
+   damage_dealt.emit(package)
 func recieve_damage_package(package : DamagePackage):
    HEALTHBAR.recieve_damage_package(package)
    HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
@@ -272,3 +273,5 @@ func _on_grimoire_spell_erase(spell_id: int, is_active: bool) -> void:
 func _on_grimoire_change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
    EFFECTORY.change_effect_state(spell_id, is_active, spell_state)
    player_spell_change_state.emit(spell_id, is_active, spell_state)
+func spawn_familiar(is_active: bool, spell_id: int, familiar_idx: int, creation_data: PackedByteArray) -> void:
+   familiar_spawned.emit(is_active, spell_id, familiar_idx, creation_data)

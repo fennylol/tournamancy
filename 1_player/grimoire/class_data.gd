@@ -29,7 +29,7 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Test_A : {
-      ClassFields.ACTIVES : [],
+      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.GreatBallOfFire],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.JBLSpeaker : 1
       }

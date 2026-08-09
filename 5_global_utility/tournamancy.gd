@@ -1,8 +1,9 @@
 extends Node3D
 class_name Tournamancy
 
-@onready var PlayerCharacter: Player             = $Player
-@onready var MPM            : MultiplayerManager = $MultiplayerManager
+@onready var PLAYER_CHARACTER: Player             = $Player
+@onready var MPM             : MultiplayerManager = $MultiplayerManager
+@onready var FAMILIARS       : Node3D             = $Familiars
 
 var _dummies: Dictionary = {}
 const DummyScene: PackedScene = preload("res://1_player/dummy/dummy.tscn")
@@ -18,20 +19,33 @@ func _ready() -> void:
    MPM.damage_data.connect(_on_mpm_damage_data)
    MPM.effect_equipped_data.connect(_on_mpm_effect_equipped_data)
    MPM.effect_state_data.connect(_on_mpm_effect_state_data)
-   #PlayerCharacter.enabled_changed.connect(_on_player_enable_changed)
-   #PlayerCharacter.spell_equipped.connect(_on_player_spell_equipped)
-   PlayerCharacter.enabled_changed.connect(MPM.passthrough_player_enabled_changed)
-   PlayerCharacter.spell_equipped.connect(MPM.send_effect_equip_data)
-   PlayerCharacter.player_spell_change_state.connect(MPM.send_effect_state_data)
-   PlayerCharacter.deploy_damage.connect(MPM.send_damage_data)
-   PlayerCharacter.deploy_damage.connect(_on_player_deploy_damage)
+   MPM.spawn_familiar_data.connect(_on_mpm_spawn_familiar_data)
+   #PLAYER_CHARACTER.enabled_changed.connect(_on_player_enable_changed)
+   #PLAYER_CHARACTER.spell_equipped.connect(_on_player_spell_equipped)
+   PLAYER_CHARACTER.enabled_changed.connect(MPM.passthrough_player_enabled_changed)
+   PLAYER_CHARACTER.spell_equipped.connect(MPM.send_effect_equip_data)
+   PLAYER_CHARACTER.player_spell_change_state.connect(MPM.send_effect_state_data)
+   PLAYER_CHARACTER.damage_dealt.connect(_on_player_damage_dealt)
+   PLAYER_CHARACTER.familiar_spawned.connect(_on_player_familiar_spawned)
+   
+   PLAYER_CHARACTER.MY_NETWORK_ID = MPM.get_local_player_id()
+   PLAYER_CHARACTER.position = Vector3(randf(), 0, randf())
+   
    sync_player_base_stats()
-   var local_player_id : int = MPM.get_local_player_id()
-   PlayerCharacter.MY_NETWORK_ID = local_player_id
    
 func _physics_process(_delta: float) -> void:
-   MPM.send_player_transform_data(PlayerCharacter.generate_transform_data())
+   MPM.send_player_transform_data(PLAYER_CHARACTER.generate_transform_data())
 
+func _spawn_familiar(owner_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
+   var spell_data: Dictionary = SpellData.get_active_spell_data(spell_id) if is_active else SpellData.get_passive_spell_data(spell_id)
+   if not ((is_active and SpellData.is_valid_active_spell(spell_data)) or SpellData.is_valid_passive_spell(spell_data)): return
+   
+   var familiar_list: Array = spell_data[SpellData.SpellFields.Familiars]
+   if familiar_list.size() < familiar_idx: return
+   
+   var familiar: Familiar = load(familiar_list[familiar_idx]).create_from_byte_array(owner_id, creation_data)
+   FAMILIARS.add_child(familiar)
+   
 # ===================== #
 #    SIGNAL HANDLING    #
 # ===================== #
@@ -53,22 +67,25 @@ func _on_mpm_name_data             (network_id: int, new_name: String) -> void:
    if _dummies.has(network_id):
      _dummies[network_id].on_nametag_data(new_name)
 func _on_mpm_damage_data           (_network_id: int, package: DamagePackage):
-   if package.id_to == PlayerCharacter.MY_NETWORK_ID:
-      PlayerCharacter.recieve_damage_package(package)
+   if package.id_to == PLAYER_CHARACTER.MY_NETWORK_ID:
+      PLAYER_CHARACTER.recieve_damage_package(package)
    elif _dummies.has(package.id_to):
       _dummies[package.id_to].recieve_damage_package(package)
    else:
       return
 func _on_mpm_ready_button_pressed  () -> void:
-   PlayerCharacter.Enabled = true
+   PLAYER_CHARACTER.Enabled = true
 func _on_mpm_effect_equipped_data  (network_id: int, spell_id: int, is_active: bool) -> void:
    if _dummies.has(network_id):
      _dummies[network_id].on_effect_equip_data(spell_id, is_active)
 func _on_mpm_effect_state_data     (network_id: int, spell_id: int, is_active: bool, spell_state: int) -> void:
    if _dummies.has(network_id):
      _dummies[network_id].on_effect_state_data(spell_id, is_active, spell_state)
+func _on_mpm_spawn_familiar_data   (network_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
+   _spawn_familiar(network_id, spell_id, is_active, familiar_idx, creation_data)
 
-func _on_player_deploy_damage      (package : DamagePackage):
+func _on_player_damage_dealt       (package : DamagePackage) -> void:
+   MPM.send_damage_data(package)
    if _dummies.has(package.id_to):
       _dummies[package.id_to].recieve_damage_package(package)
 
@@ -76,7 +93,9 @@ func _on_player_deploy_damage      (package : DamagePackage):
    #MPM.passthrough_player_enabled_changed(enabled)
 #func _on_player_spell_equipped(spell_id: int, is_active: bool) -> void:
    #MPM.send_effect_equip_data(spell_id, is_active)
-
+func _on_player_familiar_spawned   (spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
+   _spawn_familiar(MPM.get_local_player_id(), spell_id, is_active, familiar_idx, creation_data)
+   MPM.send_spawn_familiar_data(spell_id, is_active, familiar_idx, creation_data)
 # ================ #
 #    GAME SETUP    #
 # ================ #
@@ -84,4 +103,4 @@ func _on_player_deploy_damage      (package : DamagePackage):
 var match_settings : MatchSettings = MatchSettings.new()
 
 func sync_player_base_stats(): 
-   PlayerCharacter.sync_statistics(match_settings.PLAYER_BASE_STATS)
+   PLAYER_CHARACTER.sync_statistics(match_settings.PLAYER_BASE_STATS)

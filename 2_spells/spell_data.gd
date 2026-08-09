@@ -3,6 +3,7 @@ class_name SpellData
 const IS_ACTIVE_SIZE: int = 1
 const SPELL_ID_SIZE: int = 2
 const SPELL_STATE_SIZE: int = 1
+const FAMILIAR_IDX_SIZE: int = 1
 
 enum StatTypes {
    # DEFENSE #
@@ -62,16 +63,28 @@ enum StatTypes {
    MELEE_COOLDOWN
 }
    
-enum SpellFields {Name, Description, IconPath, IconRect, ScriptPath, Cooldown, Effects, DummyEffects} # may at some point break this into PassiveSpellFields and ActiveSpellFields
+enum SpellFields {Name, Description, IconPath, IconRect, ScriptPath, Cooldown, Effects, DummyEffects, Familiars} # may at some point break this into PassiveSpellFields and ActiveSpellFields
 
 ## TODO: FOR FUTURE DEBUGGING, TRY TO KEEP THE ACTIVESPELLIDS AND ACTIVESPELLS SORTED ALPHABETICALLY
 enum ActiveSpellIDs {
+   GreatBallOfFire,
    IronBody,
    ShockstarDisco,
    StarlightBlink,
    Thunderwave,
    ERROR = -1}
 const ActiveSpells: Dictionary = {
+   ActiveSpellIDs.GreatBallOfFire:{
+      SpellFields.Name         : "Grea Ball o' Fire",
+      SpellFields.Description  : "",
+      SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
+      SpellFields.IconRect     : Rect2(32,64,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/actives/GreatBallOFire/great_ball_o_fire_script.gd",
+      SpellFields.Cooldown     : 0.0,
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : ["res://2_spells/actives/GreatBallOFire/familiar/great_ball_of_fire_familiar.gd"]
+   },
    ActiveSpellIDs.IronBody:{
       SpellFields.Name         : "Iron Body",
       SpellFields.Description  : "",
@@ -80,7 +93,8 @@ const ActiveSpells: Dictionary = {
       SpellFields.ScriptPath   : "res://2_spells/actives/IronBody/ironbody_script.gd",
       SpellFields.Cooldown     : 3.0,
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    ActiveSpellIDs.ShockstarDisco:{
       SpellFields.Name         : "Shockstar Disco",
@@ -90,7 +104,8 @@ const ActiveSpells: Dictionary = {
       SpellFields.ScriptPath   : "res://2_spells/actives/ShockstarDisco/shockstardisco_script.gd",
       SpellFields.Cooldown     : 0.5,
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    ActiveSpellIDs.StarlightBlink:{
       SpellFields.Name         : "Starlight Blink",
@@ -100,7 +115,8 @@ const ActiveSpells: Dictionary = {
       SpellFields.ScriptPath   : "res://2_spells/actives/StarlightBlink/starlightblink_script.gd",
       SpellFields.Cooldown     : 5.0,
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    ActiveSpellIDs.Thunderwave:{
       SpellFields.Name         : "Thunderwave",
@@ -110,7 +126,8 @@ const ActiveSpells: Dictionary = {
       SpellFields.ScriptPath   : "res://2_spells/actives/Thunderwave/thunderwave_script.gd",
       SpellFields.Cooldown     : 5.0,
       SpellFields.Effects      : ["res://2_spells/actives/Thunderwave/ThunderwaveArea.tscn"],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    }
 }
 
@@ -136,7 +153,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,0,32,32),
       SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/health_script.gd",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Armor:{
       SpellFields.Name         : "Armor",
@@ -145,7 +163,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,32,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Ward:{
       SpellFields.Name         : "Ward",
@@ -154,7 +173,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,64,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Overhealth:{
       SpellFields.Name         : "Overhealth",
@@ -163,7 +183,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,96,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Armor_Strength:{
       SpellFields.Name         : "Armor Strength",
@@ -172,7 +193,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,128,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Ward_Strength:{
       SpellFields.Name         : "Ward Strength",
@@ -181,7 +203,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,160,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Lifesteal:{
       SpellFields.Name         : "Lifesteal",
@@ -190,7 +213,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,192,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Damage:{
       SpellFields.Name         : "Damage",
@@ -199,7 +223,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,224,32,32),
       SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/damage_script.gd",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Attack_Range:{
       SpellFields.Name         : "Range",
@@ -208,7 +233,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,256,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Cooldown:{
       SpellFields.Name         : "Cooldown",
@@ -217,7 +243,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,288,32,32),
       SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/cooldown_script.gd",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Force:{
       SpellFields.Name         : "Force",
@@ -226,7 +253,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,320,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Crit:{
       SpellFields.Name         : "Critical",
@@ -235,7 +263,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,352,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Luck:{
       SpellFields.Name         : "Luck",
@@ -244,7 +273,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,384,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Speed:{
       SpellFields.Name         : "Speed",
@@ -253,7 +283,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,416,32,32),
       SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/speed_script.gd",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Sprint:{
       SpellFields.Name         : "Sprint",
@@ -262,7 +293,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,448,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Jump:{
       SpellFields.Name         : "Jump Height",
@@ -271,7 +303,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,480,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Gravity:{
       SpellFields.Name         : "Gravity",
@@ -280,7 +313,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,512,32,32),
       SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/gravity_script.gd",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Steadfastness:{
       SpellFields.Name         : "Steadfastness",
@@ -289,7 +323,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,544,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Melee_Damage:{
       SpellFields.Name         : "Melee Damage",
@@ -298,7 +333,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,576,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Melee_Range:{
       SpellFields.Name         : "Melee Range",
@@ -307,7 +343,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,608,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Melee_Force:{
       SpellFields.Name         : "Melee Force",
@@ -316,7 +353,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,640,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    PassiveSpellIDs.Melee_Cooldown:{
       SpellFields.Name         : "Melee Cooldown",
@@ -325,7 +363,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,672,32,32),
       SpellFields.ScriptPath   : "",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
    
    PassiveSpellIDs.JBLSpeaker:{
@@ -344,7 +383,8 @@ const PassiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(64,32,32,32),
       SpellFields.ScriptPath   : "res://2_spells/passives/MoonJump/moonjump_script.gd",
       SpellFields.Effects      : [],
-      SpellFields.DummyEffects : []
+      SpellFields.DummyEffects : [],      
+      SpellFields.Familiars    : []
    },
 }
 
