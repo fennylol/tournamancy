@@ -20,18 +20,15 @@ func _ready() -> void:
    MPM.effect_equipped_data.connect(_on_mpm_effect_equipped_data)
    MPM.effect_state_data.connect(_on_mpm_effect_state_data)
    MPM.spawn_familiar_data.connect(_on_mpm_spawn_familiar_data)
-   #PLAYER_CHARACTER.enabled_changed.connect(_on_player_enable_changed)
-   #PLAYER_CHARACTER.spell_equipped.connect(_on_player_spell_equipped)
-   PLAYER_CHARACTER.enabled_changed.connect(MPM.passthrough_player_enabled_changed)
+   PLAYER_CHARACTER.open_connection_menu_please.connect(MPM.open_connection_menu)
    PLAYER_CHARACTER.spell_equipped.connect(MPM.send_effect_equip_data)
    PLAYER_CHARACTER.player_spell_change_state.connect(MPM.send_effect_state_data)
    PLAYER_CHARACTER.damage_dealt.connect(_on_player_damage_dealt)
    PLAYER_CHARACTER.familiar_spawned.connect(_on_player_familiar_spawned)
-   
    PLAYER_CHARACTER.MY_NETWORK_ID = MPM.get_local_player_id()
    PLAYER_CHARACTER.position = Vector3(randf(), 0, randf())
-   
    sync_player_base_stats()
+   sync_prism_settings()
    
 func _physics_process(_delta: float) -> void:
    MPM.send_player_transform_data(PLAYER_CHARACTER.generate_transform_data())
@@ -89,13 +86,10 @@ func _on_player_damage_dealt       (package : DamagePackage) -> void:
    if _dummies.has(package.id_to):
       _dummies[package.id_to].recieve_damage_package(package)
 
-#func _on_player_enable_changed(enabled: bool) -> void:
-   #MPM.passthrough_player_enabled_changed(enabled)
-#func _on_player_spell_equipped(spell_id: int, is_active: bool) -> void:
-   #MPM.send_effect_equip_data(spell_id, is_active)
 func _on_player_familiar_spawned   (spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
    _spawn_familiar(MPM.get_local_player_id(), spell_id, is_active, familiar_idx, creation_data)
    MPM.send_spawn_familiar_data(spell_id, is_active, familiar_idx, creation_data)
+
 # ================ #
 #    GAME SETUP    #
 # ================ #
@@ -104,3 +98,9 @@ var match_settings : MatchSettings = MatchSettings.new()
 
 func sync_player_base_stats(): 
    PLAYER_CHARACTER.sync_statistics(match_settings.PLAYER_BASE_STATS)
+func sync_prism_settings():
+   PLAYER_CHARACTER.sync_prism_settings(match_settings.MIN_SPELL_FROM_PRISM,match_settings.MAX_SPELL_FROM_PRISM,match_settings.DEFAULT_PRISM_SHOW_COUNT, \
+                                    match_settings.PRISM_REROLL_COUNT,match_settings.PRISM_REROLL_DECREMENT,match_settings.MAX_PRISM_REROLL_LOCK, \
+                                    match_settings.PRISM_FORCE_ACTIVE_ABILITIES,match_settings.ACTIVE_ABILITIES_PERCENT,
+                                    match_settings.ACTIVE_SPELL_WEIGHTS, match_settings.PASSIVE_SPELL_WEIGHTS, match_settings.ACTIVE_MERCY_WEIGHTS, \
+                                    match_settings.PASSIVE_MERCY_WEIGHTS, match_settings.KOS_PER_MERCY_WEIGHT,match_settings.MAX_MERCY_WEIGHT_APPLICATION)

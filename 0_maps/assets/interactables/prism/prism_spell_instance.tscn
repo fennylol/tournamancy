@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://bj6q28e650yw4"]
+
+[ext_resource type="Texture2D" uid="uid://7pia4qi2dswh" path="res://2_spells/actives/misc_active_icons.png" id="1_ou73g"]
+[ext_resource type="Texture2D" uid="uid://smb1wwefykoj" path="res://0_maps/assets/interactables/prism/prism_buttons.png" id="2_db3dx"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fxxwl"]
+atlas = ExtResource("1_ou73g")
+region = Rect2(0, 0, 32, 32)
+margin = Rect2(8, 8, 16, 16)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ou73g"]
+atlas = ExtResource("2_db3dx")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6cit1"]
+atlas = ExtResource("2_db3dx")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ttl7i"]
+atlas = ExtResource("2_db3dx")
+region = Rect2(48, 0, 48, 48)
+
+[node name="SpellInstance" type="CenterContainer" unique_id=1539131419]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Spell_Icon" type="TextureRect" parent="." unique_id=2069318989]
+texture_filter = 1
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_scale = Vector2(2, 2)
+offset_transform_visual_only = false
+texture = SubResource("AtlasTexture_fxxwl")
+
+[node name="Selected" type="TextureRect" parent="Spell_Icon" unique_id=1915307248]
+visible = false
+texture_filter = 1
+layout_mode = 0
+offset_right = 48.0
+offset_bottom = 48.0
+offset_transform_scale = Vector2(2, 2)
+offset_transform_visual_only = false
+texture = SubResource("AtlasTexture_ou73g")
+
+[node name="Button" type="TextureButton" parent="Spell_Icon" unique_id=1141259950]
+texture_filter = 1
+layout_mode = 0
+offset_right = 48.0
+offset_bottom = 48.0
+texture_pressed = SubResource("AtlasTexture_6cit1")
+texture_hover = SubResource("AtlasTexture_ttl7i")
+texture_focused = SubResource("AtlasTexture_ttl7i")

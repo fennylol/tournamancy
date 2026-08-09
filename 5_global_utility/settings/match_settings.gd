@@ -132,12 +132,22 @@ var PRISM_REROLL_DECREMENT : int = 1
 var MAX_PRISM_REROLL_LOCK : int = 1
 ## If true, a prism will force active abilities to appear a set percentage of the time.
 var PRISM_FORCE_ACTIVE_ABILITIES : bool = true
-## If PRISM_FORCE_ACTIVE_ABILITIES is true, the percent chance of an active ability to be shown.
-var PRISM_FORCE_ACTIVE_ABILITIES_PERCENT : float = 0.10
-##
-var SPELL_WEIGHTS : Dictionary = {}
-##
-var MERCY_WEIGHTS : Dictionary = {}
+## If [member PRISM_FORCE_ACTIVE_ABILITIES] is true, the percent chance of an active ability to be shown. 1.0 is 100%.
+var ACTIVE_ABILITIES_PERCENT : float = 0.10
+## [b]The spell weights for active spells.[/b][br][br]Each spell will be more or less likely to appear depending on its associated value in this property. If one spell has a weight of 2 and another spell has a weight of 1, the first spell will be twice as likely to appear.[br][br]Negative weight values are treated the same as values of 0 - neither will appear at all.
+var ACTIVE_SPELL_WEIGHTS : Dictionary = {
+   SpellData.ActiveSpellIDs.GreatBallOfFire : 1,
+   SpellData.ActiveSpellIDs.IronBody        : 1,
+   SpellData.ActiveSpellIDs.ShockstarDisco  : 1,
+   SpellData.ActiveSpellIDs.StarlightBlink  : 1,
+   SpellData.ActiveSpellIDs.Thunderwave     : 1
+}
+## [b]The spell weights for passive spells.[/b][br][br]Each spell will be more or less likely to appear depending on its associated value in this property. If one spell has a weight of 2 and another spell has a weight of 1, the first spell will be twice as likely to appear.[br][br]Negative weight values are treated the same as values of 0 - neither will appear at all.
+var PASSIVE_SPELL_WEIGHTS : Dictionary = {}
+## [b]The mercy weights for active spells.[/b][br][br]A spell's mercy weight is summed with its standard weight when a player has been knocked out enough times. This allows some spells to become more or less likely to appear the worse a player is performing.[br][br]Mercy weights can be negative, which will reduce the associated spell's weight by that amount.
+var ACTIVE_MERCY_WEIGHTS : Dictionary = {}
+## [b]The mercy weights for passive spells.[/b][br][br]A spell's mercy weight is summed with its standard weight when a player has been knocked out enough times. This allows some spells to become more or less likely to appear the worse a player is performing.[br][br]Mercy weights can be negative, which will reduce the associated spell's weight by that amount.
+var PASSIVE_MERCY_WEIGHTS : Dictionary = {}
 ## The number of times a player must be knocked out before the mercy weights are applied.
 var KOS_PER_MERCY_WEIGHT : int = 2
 ## The maximum number of times mercy weights can be applied.[br][br]Mercy weights are be applied a number of times equal to a player's number of kock-outs divided by KOS_PER_MERCY_WEIGHT, to a maximum of MAX_MERCY_WEIGHT_APPLICATION.[br][br]A value of -1 indicates that mercy weights can be applied infinitely.

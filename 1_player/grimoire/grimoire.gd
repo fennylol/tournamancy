@@ -39,13 +39,15 @@ func calculate_stats() -> Dictionary:
    var stat_dict: Dictionary = {}
    for spell:PassiveSpell in PassiveSpells:
       var spell_stats := spell._get_stat_contributions()
-      for stat:SpellData.StatTypes in spell_stats.keys():
+      for stat : SpellData.StatTypes in spell_stats.keys():
          if spell_stats[stat] is int or spell_stats[stat] is float:
-            if not stat_dict.keys().has(stat): stat_dict[stat] = 1
+            if not stat_dict.keys().has(stat): stat_dict[stat] = 0.0
             stat_dict[stat] += spell_stats[stat]
    return stat_dict
 
 func get_stat(id: SpellData.StatTypes) -> float:
+   print(StatModifiers)
+   
    if StatModifiers.keys().has(id): return StatModifiers[id]
    else: return 0 ##this was previously return 1, but it makes more sense to return 0 if there are no stat modifiers
 
@@ -59,6 +61,7 @@ func add_passive(id: SpellData.PassiveSpellIDs, stacks: int) -> void:
       var spell: PassiveSpell = load(data[SpellData.SpellFields.ScriptPath]).new(stacks)
       PassiveSpells.append(spell) ## TODO: check if spell already exists and just sum the stacks together if so
       spell.StateChanged.connect(func(new_state: int): spell_change_state.emit(id, false, new_state))
+      spell._on_equip(ThePlayer)
       spell_equipped.emit(id, false)
 func add_active(id: SpellData.ActiveSpellIDs, slot: int) -> void:
    var data: Dictionary = SpellData.get_active_spell_data(id)
@@ -83,6 +86,7 @@ func adopt_class(id: ClassData.ClassIDs) -> void:
          add_active(class_data[ClassData.ClassFields.ACTIVES][i], i)
       for spell_id in class_data[ClassData.ClassFields.PASSIVES]:
          add_passive(spell_id, class_data[ClassData.ClassFields.PASSIVES][spell_id])
+   
    
    ## SYNC EFFECTORY
    var list_of_active_spells : Array[SpellData.ActiveSpellIDs]

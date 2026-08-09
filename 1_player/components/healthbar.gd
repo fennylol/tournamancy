@@ -30,6 +30,10 @@ func recieve_damage_package(package : DamagePackage):
          unallocated_damage = 0.0
 
 func get_health() -> Array[float]: return total_health
-func set_health(health_array : Array[float]):
+func set_health(health_array : Array[float], add : bool = false):
    health_array.resize(NUMBER_OF_HEALTH_TYPES)
-   total_health = health_array
+   if add:
+      for i in range(health_array.size()):
+         total_health[i] += health_array[i]
+   else:
+      total_health = health_array

@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://c56fevj40b86v"]
+
+[ext_resource type="Script" uid="uid://q7fr5te42vlq" path="res://0_maps/assets/interactables/prism/simple_prism.gd" id="1_61pph"]
+[ext_resource type="PackedScene" uid="uid://bjyc6skyrpmh1" path="res://0_maps/assets/interactables/prism/prism_body.tscn" id="2_h4jo4"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_xwstj"]
+radius = 1.0
+
+[node name="SimplePrism" type="Area3D" unique_id=1103879490]
+collision_layer = 2
+script = ExtResource("1_61pph")
+
+[node name="PrismBody" parent="." unique_id=888082724 instance=ExtResource("2_h4jo4")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1627309498]
+shape = SubResource("SphereShape3D_xwstj")

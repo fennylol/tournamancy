@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://bn2hnjsbj6jjw" path="res://0_maps/rough_city_01/rought_city_01.tscn" id="2_3tyep"]
 [ext_resource type="PackedScene" uid="uid://c5ar3hknkofok" path="res://_RAWS/pillar.glb" id="2_xvh3c"]
 [ext_resource type="PackedScene" uid="uid://dfo252iy5r2oq" path="res://0_maps/assets/interactables/class_button/class_button.tscn" id="3_sdsrs"]
+[ext_resource type="PackedScene" uid="uid://c56fevj40b86v" path="res://0_maps/assets/interactables/prism/simple_prism.tscn" id="4_sdsrs"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ttyqa"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -95,3 +96,7 @@ mesh = SubResource("ArrayMesh_2vu8a")
 transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
 ClassID = 4
 button_color = Color(1, 0.5687833, 0.98551124, 1)
+
+[node name="SimplePrism" parent="." unique_id=1103879490 instance=ExtResource("4_sdsrs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.488354, 1.4550233, 2.0091224)
+PrismShape = 3

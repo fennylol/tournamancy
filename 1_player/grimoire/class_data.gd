@@ -15,7 +15,8 @@ const ClassRecipes: Dictionary = {
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.Speed : -5,
          #SpellData.PassiveSpellIDs.Gravity : 0,
-         SpellData.PassiveSpellIDs.Damage : 5
+         SpellData.PassiveSpellIDs.Damage : 5,
+         SpellData.PassiveSpellIDs.Heart : 4
       }
    },
    

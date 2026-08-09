@@ -27,19 +27,16 @@ var BASE_MELEE_COOLDOWN : float = 0.0
 #endregion
 
 const TRANSFORM_DATA_SIZE: int = (4*9)+1
-#const HAND_IMG : Texture2D = preload("res://4_ui/hud/Lhand.png")
-#const POINT_IMG: Texture2D = preload("res://4_ui/hud/Lpoint.png")
 
 ## NODES
-@onready var CAMERA    := $Eyes
-@onready var LOOK_DIR  := $Eyes/RayCast3D
-#@onready var L_HAND    := $Eyes/Lhand
-#@onready var R_HAND    := $Eyes/Rhand
-@onready var LEFT_ARM  := $Eyes/LEFTARM
-@onready var RIGHT_ARM := $Eyes/RIGHTARM
-@onready var EFFECTORY := $Effectory
-@onready var HUD       := $DefaultHud
-@onready var HEALTHBAR := $Healthbar
+@onready var CAMERA    : Camera3D        = $Eyes
+@onready var LOOK_DIR  : RayCast3D       = $Eyes/RayCast3D
+@onready var LEFT_ARM  : Node3D          = $Eyes/LEFTARM
+@onready var RIGHT_ARM : Node3D          = $Eyes/RIGHTARM
+@onready var EFFECTORY : Effectory       = $Effectory
+@onready var HEALTHBAR : HealthComponent = $Healthbar
+@onready var HUD       : Control         = $CanvasLayer/DefaultHud
+@onready var PRISMMENU : PrismMenu       = $CanvasLayer/PrismMenu
 var HUD_LEFT_ACTIVE    : Node2D
 var HUD_RIGHT_ACTIVE   : Node2D
 var HUD_PASSIVEBOX     : Node2D
@@ -51,18 +48,18 @@ var SpellBook: Grimoire = Grimoire.new()
 var MY_NETWORK_ID : int
 
 ## LOCAL VARIABLES
-var is_sprinting : bool = false
+var is_sprinting  : bool = false
+var prism_is_open : bool = false
 var Enabled: bool = false:
    set(new_val):
       Enabled = new_val
-      enabled_changed.emit(new_val)
       if Enabled:
          Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
       else:
          Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 ## SIGNALS
-signal enabled_changed(new_val:bool)
+signal open_connection_menu_please(show_menu:bool)
 signal spell_equipped(spell_id: int, is_active: bool)
 signal player_spell_change_state(spell_id: int, is_active: bool, new_state: int)
 signal damage_dealt(package : DamagePackage)
@@ -79,7 +76,9 @@ func _ready() -> void:
    HUD_HEALTHBAR = HUD.find_child("HealthPoints").find_child("HealthDisplay")
    SpellBook.i_am_the_player(self)
    SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
-   SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state) # TODO: make this work. (David: i think it does?)
+   SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state)
+   PRISMMENU.close_menu.connect(close_prism)
+   PRISMMENU.visible = false
 
 # =================== #
 # _process() handling #
@@ -89,7 +88,9 @@ func _process(delta):
    
    ## MOUSE CAPTURE
    if Input.is_action_just_pressed("menu"):
+      if prism_is_open: return
       Enabled = !Enabled
+      open_connection_menu_please.emit(not(Enabled))
    
    ## PASSIVE PROCESSES, BEGIN
    if Enabled: SpellBook.process_begin(delta, self)
@@ -143,9 +144,9 @@ func _unhandled_input(event):
       CAMERA.rotate_x(-event.relative.y * .005 * personal_settings.MOUSE_SENSITIVITY)
       CAMERA.rotation.x = clamp(CAMERA.rotation.x, -PI/2, PI/2)
 
-# =============== #
-# simple movement #
-# =============== #
+# =================== #
+#   simple movement   #
+# =================== #
 
 func _physics_process(delta):
    ## GET RELEVANT INFLUENCED STATS
@@ -185,9 +186,23 @@ func _physics_process(delta):
             hit._on_interact(self)
    move_and_slide()
 
-# ================= #
-# data manipulation #
-# ================= #
+# ================== #
+#   prism handling   #
+# ================== #
+
+func open_prism(prism : Prism):
+   prism_is_open = true
+   PRISMMENU.visible = true
+   Enabled = false
+   PRISMMENU.setup()
+func close_prism():
+   prism_is_open = false
+   PRISMMENU.visible = false
+   Enabled = true
+
+# =================== #
+#  data manipulation  #
+# =================== #
 
 ## Encodes player data to be sent to multiplayer peers.
 func generate_transform_data() -> PackedByteArray:
@@ -239,10 +254,31 @@ func sync_statistics(stat_dict : Dictionary):
    var starting_health : Array[float] = [stat_dict.get(SpellData.StatTypes.HEARTS),stat_dict.get(SpellData.StatTypes.ARMOR),stat_dict.get(SpellData.StatTypes.WARD),stat_dict.get(SpellData.StatTypes.OVERHEALTH)]
    HEALTHBAR.set_health(starting_health)
    HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
+func sync_prism_settings( min_spell_from_prism : int , max_spell_from_prism : int , default_prism_show_count : int , \
+                        prism_reroll_count : int , prism_reroll_decrement : int , max_prism_reroll_lock: int , \
+                        prism_force_active_abilities : bool , active_abilities_percent : float , active_spell_weights : Dictionary, \
+                        passive_spell_weights : Dictionary, active_mercy_weights : Dictionary, passive_mercy_weights : Dictionary, \
+                        kos_per_mercy_weight : int , max_mercy_weight_application : int ):
+   PRISMMENU.import_match_settings(min_spell_from_prism,max_spell_from_prism,default_prism_show_count,\
+                                 prism_reroll_count,prism_reroll_decrement,max_prism_reroll_lock,\
+                                 prism_force_active_abilities,active_abilities_percent,active_spell_weights, \
+                                 passive_spell_weights,active_mercy_weights,passive_mercy_weights, \
+                                 kos_per_mercy_weight,max_mercy_weight_application)
+func sync_health():
+   pass
+   var i = SpellData.get_influenced_stat(SpellData.StatTypes.HEARTS, BASE_HEARTS, SpellBook.get_stat(SpellData.StatTypes.HEARTS))
+   if SpellBook.StatModifiers == {}:
+      pass
+   #var new_health : Array[float] = [SpellData.get_influenced_stat(SpellData.StatTypes.HEARTS, BASE_HEARTS, SpellBook.get_stat(SpellData.StatTypes.HEARTS)),\
+                        #SpellData.get_influenced_stat(SpellData.StatTypes.ARMOR, BASE_ARMOR, SpellBook.get_stat(SpellData.StatTypes.ARMOR)),\
+                        #SpellData.get_influenced_stat(SpellData.StatTypes.WARD, BASE_WARD, SpellBook.get_stat(SpellData.StatTypes.WARD)),\
+                        #SpellData.get_influenced_stat(SpellData.StatTypes.OVERHEALTH, BASE_OVERHEALTH, SpellBook.get_stat(SpellData.StatTypes.OVERHEALTH))]
+   #HEALTHBAR.set_health(new_health)
+   #HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
 
-# ==================== #
-# just passin' through #
-# ==================== #
+# ====================== #
+#  just passin' through  #
+# ====================== #
 
 ## Called by an interactable when it adds or removes a spell. Adds or removes the textures of said spells in the player's HUD.
 func update_HUD_icons():

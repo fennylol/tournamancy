@@ -1,0 +1,248 @@
+[gd_scene format=3 uid="uid://dp3a6xh2ybnyy"]
+
+[ext_resource type="Script" uid="uid://blfua2y68aym4" path="res://0_maps/assets/interactables/prism/prism_menu.gd" id="1_hqamg"]
+
+[node name="PrismMenu" type="Control" unique_id=775943470]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hqamg")
+
+[node name="HBoxContainer_bigrec" type="HBoxContainer" parent="." unique_id=650993852]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="spacer_L" type="Control" parent="HBoxContainer_bigrec" unique_id=1489789478]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer_bigrec" unique_id=2024917028]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="spacer_U" type="Control" parent="HBoxContainer_bigrec/VBoxContainer" unique_id=1290642794]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer_bigrec/VBoxContainer" unique_id=1581367402]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 10.0
+color = Color(0.9275, 0.71000004, 1, 0.1254902)
+
+[node name="spacer_D" type="Control" parent="HBoxContainer_bigrec/VBoxContainer" unique_id=2012212980]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="spacer_R" type="Control" parent="HBoxContainer_bigrec" unique_id=1082944799]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer_smallrec" type="HBoxContainer" parent="." unique_id=128850422]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="spacer_L" type="Control" parent="HBoxContainer_smallrec" unique_id=1522037953]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer_smallrec" unique_id=1942537948]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="spacer_U" type="Control" parent="HBoxContainer_smallrec/VBoxContainer" unique_id=2126542592]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer_smallrec/VBoxContainer" unique_id=1236270341]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 10.0
+
+[node name="spacer_L" type="Control" parent="HBoxContainer_smallrec/VBoxContainer/HBoxContainer" unique_id=1461421332]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer_smallrec/VBoxContainer/HBoxContainer" unique_id=338600311]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 6.0
+
+[node name="spacer_U" type="Control" parent="HBoxContainer_smallrec/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=269850964]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer_smallrec/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1441427329]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 12.0
+color = Color(0.8, 0.8, 0.8, 0.23529412)
+
+[node name="spacer_D" type="Control" parent="HBoxContainer_smallrec/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=180362276]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 8.0
+
+[node name="spacer_R" type="Control" parent="HBoxContainer_smallrec/VBoxContainer/HBoxContainer" unique_id=120370628]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="spacer_D" type="Control" parent="HBoxContainer_smallrec/VBoxContainer" unique_id=567999386]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="spacer_R" type="Control" parent="HBoxContainer_smallrec" unique_id=1604161564]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=2132038012]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="spacer_L" type="Control" parent="HBoxContainer" unique_id=945898233]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=408989952]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="spacer_U" type="Control" parent="HBoxContainer/VBoxContainer" unique_id=1084443430]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/VBoxContainer" unique_id=757160952]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 10.0
+
+[node name="spacer_L" type="Control" parent="HBoxContainer/VBoxContainer/HBoxContainer" unique_id=45461518]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/HBoxContainer" unique_id=341050314]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 6.0
+
+[node name="spacer_U" type="Control" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=254349726]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="GridContainer" type="GridContainer" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1230229900]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 12.0
+focus_neighbor_bottom = NodePath("../HBoxContainerD/VBoxContainer/Button_Reroll")
+focus_next = NodePath("../HBoxContainerD/VBoxContainer/Button_Reroll")
+
+[node name="spacer_M" type="Control" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=398721214]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainerD" type="HBoxContainer" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1804975095]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 6.0
+
+[node name="spacer_L" type="Control" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD" unique_id=296588577]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD" unique_id=418774014]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="Button_Reroll" type="Button" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=214618658]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 20.0
+focus_neighbor_bottom = NodePath("../Button_Confirm")
+focus_next = NodePath("../Button_Confirm")
+text = "REROLL"
+
+[node name="spacer_U" type="Control" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=225218596]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Button_Confirm" type="Button" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=1735421461]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 20.0
+focus_neighbor_top = NodePath("../Button_Reroll")
+focus_neighbor_bottom = NodePath("../Button_Cancel")
+focus_next = NodePath("../Button_Cancel")
+focus_previous = NodePath("../Button_Reroll")
+text = "CONFIRM"
+
+[node name="spacer_D" type="Control" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=418832320]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Button_Cancel" type="Button" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=1025091920]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 20.0
+focus_neighbor_top = NodePath("../Button_Confirm")
+focus_previous = NodePath("../Button_Confirm")
+text = "CANCEL
+"
+
+[node name="spacer_R" type="Control" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD" unique_id=495009174]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="spacer_D" type="Control" parent="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=560185576]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="spacer_R" type="Control" parent="HBoxContainer/VBoxContainer/HBoxContainer" unique_id=71312926]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="spacer_D" type="Control" parent="HBoxContainer/VBoxContainer" unique_id=1517421933]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="spacer_R" type="Control" parent="HBoxContainer" unique_id=1871045553]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll" to="." method="_on_button_reroll_pressed"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm" to="." method="_on_button_confirm_pressed"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel" to="." method="_on_button_cancel_pressed"]

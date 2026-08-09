@@ -147,7 +147,7 @@ enum PassiveSpellIDs {
    }
 const PassiveSpells: Dictionary = {
    PassiveSpellIDs.Heart:{
-      SpellFields.Name         : "Health",
+      SpellFields.Name         : "Heart",
       SpellFields.Description  : "Increases the amount of damage you can take before you are knocked out.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,0,32,32),

@@ -83,8 +83,8 @@ func _refresh_peer_list() -> void:
        peer_disconnected.emit(peer.NetworkID)
        _OTP.Peers.erase(peer)
    _ConnectionMenu.update_peers(_OTP.Peers, _NameTags)
-func passthrough_player_enabled_changed(new_val: bool) -> void:
-   _ConnectionMenu.visible = not new_val
+func open_connection_menu(show_menu: bool) -> void:
+   _ConnectionMenu.visible = show_menu
 
 # ============ #
 # data routing #
