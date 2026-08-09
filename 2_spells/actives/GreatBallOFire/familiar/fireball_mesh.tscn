@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://b1ckxcliyfg7s"]
-
-[ext_resource type="SphereMesh" uid="uid://beik71texuu31" path="res://2_spells/actives/GreatBallOFire/familiar/fireball_mesh.tres" id="1_at40f"]
-
-[node name="FireballMesh" type="MeshInstance3D" unique_id=72165593]
-mesh = ExtResource("1_at40f")
