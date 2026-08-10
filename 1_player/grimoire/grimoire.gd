@@ -93,10 +93,3 @@ func adopt_class(id: ClassData.ClassIDs) -> void:
    for a in ActiveSpells: if a is ActiveSpell: list_of_active_spells.append(a.SpellID)
    for p in PassiveSpells: list_of_passive_spells.append(p.SpellID)
    ThePlayer.sync_effectory(list_of_active_spells,list_of_passive_spells)
-
-# ============= #
-# locate player #
-# ============= #
-
-## I realize this is probably bad practice, but if it works it works. Feel free to clean it up at any point.
-func i_am_the_player(player : Player): ThePlayer = player

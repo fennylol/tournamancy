@@ -1,31 +1,6 @@
 extends CharacterBody3D
 class_name Player
 
-#region BASE STATISTICS
-var BASE_HEARTS         : float = 0.0
-var BASE_ARMOR          : float = 0.0
-var BASE_WARD           : float = 0.0
-var BASE_OVERHEALTH     : float = 0.0
-var BASE_ARMOR_STRENGTH : float = 0.0
-var BASE_WARD_STRENGTH  : float = 0.0
-var BASE_LIFESTEAL      : float = 0.0
-var BASE_DAMAGE         : float = 0.0
-var BASE_RANGE          : float = 0.0
-var BASE_COOLDOWN       : float = 0.0
-var BASE_FORCE          : float = 0.0
-var BASE_CRIT           : float = 0.0
-var BASE_LUCK           : float = 0.0
-var BASE_SPEED          : float = 0.0
-var BASE_SPRINT         : float = 0.0
-var BASE_JUMP           : float = 0.0
-var BASE_GRAVITY        : float = 0.0
-var BASE_STEADFASTNESS  : float = 0.0
-var BASE_MELEE_DAMAGE   : float = 0.0
-var BASE_MELEE_RANGE    : float = 0.0
-var BASE_MELEE_FORCE    : float = 0.0
-var BASE_MELEE_COOLDOWN : float = 0.0
-#endregion
-
 const TRANSFORM_DATA_SIZE: int = (4*9)+1
 
 ## NODES
@@ -74,11 +49,19 @@ func _ready() -> void:
    HUD_RIGHT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(R)")
    HUD_PASSIVEBOX = HUD.find_child("PassiveBox").find_child("PassiveIcons")
    HUD_HEALTHBAR = HUD.find_child("HealthPoints").find_child("HealthDisplay")
-   SpellBook.i_am_the_player(self)
+   SpellBook.ThePlayer = self
    SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
    SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state)
    PRISMMENU.close_menu.connect(close_prism)
    PRISMMENU.visible = false
+
+   var starting_health : Array[float] = [
+      SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.HEARTS],
+      SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.ARMOR],
+      SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.WARD],
+      SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.OVERHEALTH]
+   ]
+   _update_heath_display(starting_health)
 
 # =================== #
 # _process() handling #
@@ -150,10 +133,10 @@ func _unhandled_input(event):
 
 func _physics_process(delta):
    ## GET RELEVANT INFLUENCED STATS
-   var influenced_speed   : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPEED, BASE_SPEED, SpellBook.get_stat(SpellData.StatTypes.SPEED))
-   var influenced_sprint  : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPRINT, BASE_SPRINT, SpellBook.get_stat(SpellData.StatTypes.SPRINT))
-   var influenced_jump    : float = SpellData.get_influenced_stat(SpellData.StatTypes.JUMP, BASE_JUMP, SpellBook.get_stat(SpellData.StatTypes.JUMP))
-   var influenced_gravity : float = SpellData.get_influenced_stat(SpellData.StatTypes.GRAVITY, BASE_GRAVITY, SpellBook.get_stat(SpellData.StatTypes.GRAVITY))
+   var influenced_speed   : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPEED,   SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.SPEED],   SpellBook.get_stat(SpellData.StatTypes.SPEED))
+   var influenced_sprint  : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPRINT,  SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.SPRINT],  SpellBook.get_stat(SpellData.StatTypes.SPRINT))
+   var influenced_jump    : float = SpellData.get_influenced_stat(SpellData.StatTypes.JUMP,    SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.JUMP],    SpellBook.get_stat(SpellData.StatTypes.JUMP))
+   var influenced_gravity : float = SpellData.get_influenced_stat(SpellData.StatTypes.GRAVITY, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.GRAVITY], SpellBook.get_stat(SpellData.StatTypes.GRAVITY))
    
    ## GRAVITY AND JUMP VELOCITY
    if not is_on_floor(): velocity.y -= influenced_gravity * delta
@@ -227,48 +210,17 @@ func generate_transform_data() -> PackedByteArray:
    packed_data.encode_u8(36, flags)
    
    return packed_data
-## Called by the game manager (Tournamancy.gd) with the statistics passed in from a MatchSettings object.
-func sync_statistics(stat_dict : Dictionary):
-   BASE_HEARTS         = stat_dict.get(SpellData.StatTypes.HEARTS)
-   BASE_ARMOR          = stat_dict.get(SpellData.StatTypes.ARMOR)
-   BASE_WARD           = stat_dict.get(SpellData.StatTypes.WARD)
-   BASE_OVERHEALTH     = stat_dict.get(SpellData.StatTypes.OVERHEALTH)
-   BASE_ARMOR_STRENGTH = stat_dict.get(SpellData.StatTypes.ARMOR_STRENGTH)
-   BASE_WARD_STRENGTH  = stat_dict.get(SpellData.StatTypes.WARD_STRENGTH)
-   BASE_LIFESTEAL      = stat_dict.get(SpellData.StatTypes.LIFESTEAL)
-   BASE_DAMAGE         = stat_dict.get(SpellData.StatTypes.DAMAGE)
-   BASE_RANGE          = stat_dict.get(SpellData.StatTypes.RANGE)
-   BASE_COOLDOWN       = stat_dict.get(SpellData.StatTypes.COOLDOWN)
-   BASE_FORCE          = stat_dict.get(SpellData.StatTypes.FORCE)
-   BASE_CRIT           = stat_dict.get(SpellData.StatTypes.CRIT)
-   BASE_LUCK           = stat_dict.get(SpellData.StatTypes.LUCK)
-   BASE_SPEED          = stat_dict.get(SpellData.StatTypes.SPEED)
-   BASE_SPRINT         = stat_dict.get(SpellData.StatTypes.SPRINT)
-   BASE_JUMP           = stat_dict.get(SpellData.StatTypes.JUMP)
-   BASE_GRAVITY        = stat_dict.get(SpellData.StatTypes.GRAVITY)
-   BASE_STEADFASTNESS  = stat_dict.get(SpellData.StatTypes.STEADFASTNESS)
-   BASE_MELEE_DAMAGE   = stat_dict.get(SpellData.StatTypes.MELEE_DAMAGE)
-   BASE_MELEE_RANGE    = stat_dict.get(SpellData.StatTypes.MELEE_RANGE)
-   BASE_MELEE_FORCE    = stat_dict.get(SpellData.StatTypes.MELEE_FORCE)
-   BASE_MELEE_COOLDOWN = stat_dict.get(SpellData.StatTypes.MELEE_COOLDOWN)
-   var starting_health : Array[float] = [stat_dict.get(SpellData.StatTypes.HEARTS),stat_dict.get(SpellData.StatTypes.ARMOR),stat_dict.get(SpellData.StatTypes.WARD),stat_dict.get(SpellData.StatTypes.OVERHEALTH)]
-   HEALTHBAR.set_health(starting_health)
-   HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
-func sync_prism_settings( min_spell_from_prism : int , max_spell_from_prism : int , default_prism_show_count : int , \
-                        prism_reroll_count : int , prism_reroll_decrement : int , max_prism_reroll_lock: int , \
-                        prism_force_active_abilities : bool , active_abilities_percent : float , active_spell_weights : Dictionary, \
-                        passive_spell_weights : Dictionary, active_mercy_weights : Dictionary, passive_mercy_weights : Dictionary, \
-                        kos_per_mercy_weight : int , max_mercy_weight_application : int ):
-   PRISMMENU.import_match_settings(min_spell_from_prism,max_spell_from_prism,default_prism_show_count,\
-                                 prism_reroll_count,prism_reroll_decrement,max_prism_reroll_lock,\
-                                 prism_force_active_abilities,active_abilities_percent,active_spell_weights, \
-                                 passive_spell_weights,active_mercy_weights,passive_mercy_weights, \
-                                 kos_per_mercy_weight,max_mercy_weight_application)
+
 func sync_health():
-   var new_health : Array[float] = [SpellData.get_influenced_stat(SpellData.StatTypes.HEARTS, BASE_HEARTS, SpellBook.get_stat(SpellData.StatTypes.HEARTS)),\
-                        SpellData.get_influenced_stat(SpellData.StatTypes.ARMOR, BASE_ARMOR, SpellBook.get_stat(SpellData.StatTypes.ARMOR)),\
-                        SpellData.get_influenced_stat(SpellData.StatTypes.WARD, BASE_WARD, SpellBook.get_stat(SpellData.StatTypes.WARD)),\
-                        SpellData.get_influenced_stat(SpellData.StatTypes.OVERHEALTH, BASE_OVERHEALTH, SpellBook.get_stat(SpellData.StatTypes.OVERHEALTH))]
+   var new_health : Array[float] = [
+      SpellData.get_influenced_stat(SpellData.StatTypes.HEARTS,     SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.HEARTS],     SpellBook.get_stat(SpellData.StatTypes.HEARTS)),\
+      SpellData.get_influenced_stat(SpellData.StatTypes.ARMOR,      SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.ARMOR],      SpellBook.get_stat(SpellData.StatTypes.ARMOR)),\
+      SpellData.get_influenced_stat(SpellData.StatTypes.WARD,       SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.WARD],       SpellBook.get_stat(SpellData.StatTypes.WARD)),\
+      SpellData.get_influenced_stat(SpellData.StatTypes.OVERHEALTH, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.OVERHEALTH], SpellBook.get_stat(SpellData.StatTypes.OVERHEALTH))
+   ]
+   _update_heath_display(new_health)
+
+func _update_heath_display(new_health : Array[float]) -> void:
    HEALTHBAR.set_health(new_health)
    HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
 
@@ -286,14 +238,14 @@ func update_HUD_icons():
    ## PASSIVE SPELL ICONS
    HUD_PASSIVEBOX.import_passive_spells(SpellBook.PassiveSpells, true)
 ## Called by the base ActiveSpell class to get the players "stat influenced cooldown" which is multiplied with the delta each frame to reduce that spell's cooldown timer.
-func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.StatTypes.COOLDOWN, BASE_COOLDOWN, SpellBook.get_stat(SpellData.StatTypes.COOLDOWN))
+func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.StatTypes.COOLDOWN,  SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.COOLDOWN], SpellBook.get_stat(SpellData.StatTypes.COOLDOWN))
 ## Passes a list of actives and passives to the Effectory. That's it. Effectory takes it from there.
 func sync_effectory(list_of_actives : Array[SpellData.ActiveSpellIDs], list_of_passives : Array[SpellData.PassiveSpellIDs]): 
    EFFECTORY.sync_effects(list_of_actives, list_of_passives)
 func send_damage_package(package : DamagePackage):
    damage_dealt.emit(package)
-func recieve_damage_package(package : DamagePackage):
-   HEALTHBAR.recieve_damage_package(package)
+func on_damage_data(package : DamagePackage):
+   HEALTHBAR.on_damage_data(package)
    HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
 func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.equip_effect(spell_id, is_active)

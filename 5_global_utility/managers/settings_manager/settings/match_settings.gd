@@ -4,7 +4,7 @@ class_name MatchSettings
 # ==================== #
 #    WIN CONDITIONS    #
 # ==================== #
-
+static func _WIN_CONDITION_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## A player wins the match when they have this many points.
 var POINTS_TO_WIN : int = 10
 ## A list of circumstances that might affect a player's point total.
@@ -29,18 +29,19 @@ var POINT_RULES : Dictionary = {
 # ==================== #
 #    ARENA CREATION    #
 # ==================== #
-
+static func _ARENA_CREATION_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## future
 
 # =================== #
 #    ARENA EFFECTS    #
 # =================== #
-
+static func _ARENA_EFFECTS_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## future
 
 # ===================== #
 #    PLAYER SPAWNING    #
 # ===================== #
+static func _PLAYER_SPAWNING_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 
 ## A list of possible "sets of locations" which are considered valid spots for player spawning
 enum PlayerSpawnLocationOptions {
@@ -85,7 +86,7 @@ var RETURNING_PLAYER_OVERHEALTH : float = 100.0
 # ============ #
 #    PRISMS    #
 # ============ #
-
+static func _PRISM_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## The number of seconds in between new prisms spawning into the arena
 var NEW_PRISM_COOLDOWN : float = 45.0
 ## A list of possible "sets of locations" which are considered valid spots for prism spawning
@@ -156,7 +157,7 @@ var MAX_MERCY_WEIGHT_APPLICATION : int = -1
 # ============= #
 #    PLAYERS    #
 # ============= #
-
+static func _PLAYER_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## Determines the base statistics of all players (such as hearts and speed) without modifying passive loadouts.
 var PLAYER_BASE_STATS : Dictionary = {
    SpellData.StatTypes.HEARTS         : 20.0,
@@ -192,7 +193,7 @@ var PLAYER_SPELL_WEIGHT_OVERRIDES : Dictionary = {}
 # ============== #
 #    GAMEPLAY    #
 # ============== #
-
+static func _GAMEPLAY_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## After all players have spawned in, the number of seconds that must pass before the match begins
 var MATCH_START_COUNTDOWN : float = 5.0
 ## During MATCH_START_COUNTDOWN, can a player take damage.

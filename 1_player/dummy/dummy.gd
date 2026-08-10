@@ -22,6 +22,16 @@ var _has_net_state: bool = false
 var _time_since_packet: float = 0.0
 const EXTRAPOLATION_LIMIT: float = 0.5  # seconds
 
+func _ready() -> void:
+   var starting_health : Array[float] = [
+      SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.HEARTS],
+      SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.ARMOR],
+      SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.WARD],
+      SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.OVERHEALTH]
+   ]
+   HEALTHBAR.set_health(starting_health)
+   _sync_healthbar()
+
 func _physics_process(delta: float) -> void:
    if not _has_net_state: return
 
@@ -52,22 +62,18 @@ func on_transform_data(data: PackedByteArray) -> void:
    
    _has_net_state = true
    _time_since_packet = 0.0
+   
 func on_nametag_data(new_name: String) -> void:
    NAMETAG.text = new_name
-
 func on_effect_equip_data(spell_id: int, is_active: bool) -> void:
    EFFECTS.equip_effect(spell_id, is_active)
 func on_effect_erase_data(spell_id: int, is_active: bool) -> void: EFFECTS.erase_effect(spell_id, is_active)
 func on_effect_state_data(spell_id: int, is_active: bool, spell_state: int) -> void:
    EFFECTS.change_effect_state(spell_id, is_active, spell_state)
+func on_damage_data(package : DamagePackage):
+   HEALTHBAR.on_damage_data(package)
+   _sync_healthbar()
 
-func recieve_damage_package(package : DamagePackage):
-   HEALTHBAR.recieve_damage_package(package)
-   _sync_healthbar()
-func recieve_base_statistics(stat_dict : Dictionary):
-   var starting_health : Array[float] = [stat_dict.get(SpellData.StatTypes.HEARTS),stat_dict.get(SpellData.StatTypes.ARMOR),stat_dict.get(SpellData.StatTypes.WARD),stat_dict.get(SpellData.StatTypes.OVERHEALTH)]
-   HEALTHBAR.set_health(starting_health)
-   _sync_healthbar()
 func _sync_healthbar():
    HB_DISPLAY.update_display(HEALTHBAR.get_health())
    HB_VIEWPORT.size.x = HB_DISPLAY.get_bar_size() * 24

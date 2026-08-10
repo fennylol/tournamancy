@@ -14,7 +14,7 @@ func _ready():
 func _process(_delta):
    pass
 
-func recieve_damage_package(package : DamagePackage):
+func on_damage_data(package : DamagePackage):
    damage_taken += package.amount
 
    ## REMOVE INCOMING DAMAGE FROM TOTAL HEALTH
