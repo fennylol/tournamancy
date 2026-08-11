@@ -7,9 +7,13 @@ const FIREBALL_NOISE: NoiseTexture2D = preload("res://2_spells/actives/GreatBall
 const FIREBALL_GRADIENT: GradientTexture1D = preload("res://2_spells/actives/GreatBallOFire/familiar/fireball_gradient.tres")
 
 const MAX_LIFE_TIME: float = 15
-const SPEED: float = 15.0
+#const SPEED: float = 15.0
+const SPEED: float = 1.0
 
 var Velocity: Vector3
+var BallHue: float
+var TailHue: float
+var my_grad: GradientTexture1D
 
 func _physics_process(delta: float) -> void:
    if Velocity.length_squared() > 0.001:
@@ -28,39 +32,59 @@ func _physics_process(delta: float) -> void:
       global_transform.basis = Basis(new_quat)
    
    position += Velocity*SPEED*delta
-   Velocity.y += -delta*0.5
+   Velocity.y += -delta*(SPEED/30.0)
 
 static func create_from_byte_array(owner_id: int, data: PackedByteArray) -> Familiar:
    var new_position := Vector3( data.decode_float( 0), data.decode_float( 4), data.decode_float( 8) )
    var new_velocity := Vector3( data.decode_float(12), data.decode_float(16), data.decode_float(20) )
-   return GreatBallOFireFamiliar.new(owner_id, new_position, new_velocity) 
+   var ball_hue: float = data.decode_float(24)
+   var tail_hue: float = data.decode_float(28)
+   return GreatBallOFireFamiliar.new(owner_id, new_position, new_velocity, ball_hue, tail_hue) 
 func reduce_to_byte_array() -> PackedByteArray:
    var data: PackedByteArray = []
-   data.resize(4 * 6)
+   data.resize(4 * 8)
    data.encode_float( 0, position.x)
    data.encode_float( 4, position.y)
    data.encode_float( 8, position.z)
    data.encode_float(12, Velocity.x)
    data.encode_float(16, Velocity.y)
    data.encode_float(20, Velocity.z)
+   data.encode_float(24, BallHue)
+   data.encode_float(28, TailHue)
    self.queue_free()
    return data
 
-func _init(owner_id: int, fireball_pos: Vector3, fireball_velocity : Vector3) -> void:
+func _init(owner_id: int, fireball_pos: Vector3, fireball_velocity: Vector3, ball_hue: float, tail_hue: float) -> void:
    super(owner_id, MAX_LIFE_TIME)
    position = fireball_pos
    Velocity = fireball_velocity
+   BallHue = ball_hue
+   TailHue = tail_hue
    name = str(owner_id) + "__great_ball_o_fire__" + str(randi())
    
    var shader_mat := ShaderMaterial.new()
+   var new_gradient_tex := GradientTexture1D.new()
+   var new_gradient := Gradient.new()
+   new_gradient.set_color(0, SettingsManager.personal_settings.PRIMARY_COLOR)
+   new_gradient.set_color(1, SettingsManager.personal_settings.SECONDARY_COLOR)
+   new_gradient.set_offset(0, 0.2)
+   new_gradient.set_offset(1, 0.8)
+   #new_gradient.interpolation_color_space = Gradient.ColorSpace.GRADIENT_COLOR_SPACE_OKLAB
+   new_gradient_tex.gradient = new_gradient
+   my_grad = new_gradient_tex
+   
    shader_mat.shader = FIREBALL_SHADER
    shader_mat.set_shader_parameter("noise_sampler", FIREBALL_NOISE)
-   shader_mat.set_shader_parameter("gradient_sampler", FIREBALL_GRADIENT)
+   shader_mat.set_shader_parameter("gradient_sampler", new_gradient_tex)
    
    var mesh_inst := MeshInstance3D.new()
    mesh_inst.mesh = FIREBALL_MESH
    mesh_inst.material_override = shader_mat
    add_child(mesh_inst)
+   
+   #var packed = PackedScene.new()
+   #packed.pack(mesh_inst)
+   #ResourceSaver.save(packed, "res://saved_branch.tscn")
 
 func _ready() -> void:
    if Velocity.length_squared() > 0.001:

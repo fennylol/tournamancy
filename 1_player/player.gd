@@ -12,6 +12,10 @@ const TRANSFORM_DATA_SIZE: int = (4*9)+1
 @onready var HEALTHBAR : HealthComponent = $Healthbar
 @onready var HUD       : Control         = $CanvasLayer/DefaultHud
 @onready var PRISMMENU : PrismMenu       = $CanvasLayer/PrismMenu
+
+@onready var HAT_MESH: MeshInstance3D = $Eyes/HAT
+@onready var ARM_L_MESH: MeshInstance3D = $Eyes/LEFTARM/ARM_L
+@onready var ARM_R_MESH: MeshInstance3D = $Eyes/RIGHTARM/ARM_R
 var HUD_LEFT_ACTIVE    : Node2D
 var HUD_RIGHT_ACTIVE   : Node2D
 var HUD_PASSIVEBOX     : Node2D
@@ -54,6 +58,7 @@ func _ready() -> void:
    SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state)
    PRISMMENU.close_menu.connect(close_prism)
    PRISMMENU.visible = false
+   set_colors(SettingsManager.personal_settings.PRIMARY_COLOR, SettingsManager.personal_settings.SECONDARY_COLOR)
 
    var starting_health : Array[float] = [
       SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.HEARTS],
@@ -223,6 +228,19 @@ func sync_health():
 func _update_heath_display(new_health : Array[float]) -> void:
    HEALTHBAR.set_health(new_health)
    HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
+
+
+func set_colors(primary_color: Color, secondary_color: Color) -> void:
+   var primary_mat := StandardMaterial3D.new()
+   primary_mat.albedo_color = primary_color
+   
+   var secondary_mat := StandardMaterial3D.new()
+   secondary_mat.albedo_color = secondary_color
+   
+   HAT_MESH.set_surface_override_material(0, secondary_mat)
+   
+   ARM_L_MESH.set_surface_override_material(0, primary_mat)
+   ARM_R_MESH.set_surface_override_material(0, primary_mat)
 
 # ====================== #
 #  just passin' through  #

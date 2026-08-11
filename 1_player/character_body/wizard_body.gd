@@ -8,6 +8,13 @@ class_name WizardBody
 @onready var LEGS : Node3D = $_LEGS
 @onready var FEET: Node3D = $_FEET
 
+
+@onready var TORSO_MESH: MeshInstance3D = $_TORSO/TORSO
+@onready var ARM_L_MESH: MeshInstance3D = $_TORSO/_LEFTARM/ARM_L
+@onready var ARM_R_MESH: MeshInstance3D = $_TORSO/_RIGHTARM/ARM_R
+@onready var LEGS_MESH: MeshInstance3D = $_LEGS/LEGS
+@onready var HAT_MESH: MeshInstance3D = $_TORSO/_HEAD/HAT
+
 const MAX_HEAD_YAW    : float = 0.96    # 55 deg
 const MIN_HEAD_YAW    : float = -0.96   #-55 deg
 const MAX_TORSO_YAW   : float = 0.61    # 35 deg
@@ -59,3 +66,16 @@ func update_hat_color(_c : Color): pass
 # animation range: 6-10 deg
 func _process(_delta: float) -> void:
    pass
+
+func set_colors(primary_color: Color, secondary_color: Color) -> void:
+   var primary_mat := StandardMaterial3D.new()
+   primary_mat.albedo_color = primary_color
+   
+   var secondary_mat := StandardMaterial3D.new()
+   secondary_mat.albedo_color = secondary_color
+   
+   HAT_MESH.set_surface_override_material(0, secondary_mat)
+   TORSO_MESH.set_surface_override_material(0, primary_mat)
+   ARM_L_MESH.set_surface_override_material(0, primary_mat)
+   ARM_R_MESH.set_surface_override_material(0, primary_mat)
+   LEGS_MESH.set_surface_override_material(0, primary_mat)

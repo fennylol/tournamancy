@@ -264,6 +264,7 @@ IsDummy = false
 metadata/_custom_type_script = "uid://cuueb1u2pkixq"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=890875531]
+visible = false
 
 [node name="DefaultHud" parent="CanvasLayer" unique_id=1610244138 instance=ExtResource("3_qeeko")]
 

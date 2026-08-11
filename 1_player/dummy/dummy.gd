@@ -31,6 +31,7 @@ func _ready() -> void:
    ]
    HEALTHBAR.set_health(starting_health)
    _sync_healthbar()
+   BODY.set_colors(SettingsManager.personal_settings.PRIMARY_COLOR, SettingsManager.personal_settings.SECONDARY_COLOR)
 
 func _physics_process(delta: float) -> void:
    if not _has_net_state: return
