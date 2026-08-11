@@ -243,6 +243,9 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
+[connection signal="mouse_entered" from="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll" to="." method="_on_button_reroll_mouse_entered"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll" to="." method="_on_button_reroll_pressed"]
+[connection signal="mouse_entered" from="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm" to="." method="_on_button_confirm_mouse_entered"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm" to="." method="_on_button_confirm_pressed"]
+[connection signal="mouse_entered" from="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel" to="." method="_on_button_cancel_mouse_entered"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel" to="." method="_on_button_cancel_pressed"]

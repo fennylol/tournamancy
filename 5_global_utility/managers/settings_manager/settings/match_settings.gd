@@ -134,7 +134,7 @@ var MAX_PRISM_REROLL_LOCK : int = 1
 ## If true, a prism will force active abilities to appear a set percentage of the time.
 var PRISM_FORCE_ACTIVE_ABILITIES : bool = true
 ## If [member PRISM_FORCE_ACTIVE_ABILITIES] is true, the percent chance of an active ability to be shown. 1.0 is 100%.
-var ACTIVE_ABILITIES_PERCENT : float = 0.10
+var ACTIVE_ABILITIES_PERCENT : float = 1.0 # forcing 100% for debug purposes. probably should be 0.1 (10%)
 ## [b]The spell weights for active spells.[/b][br][br]Each spell will be more or less likely to appear depending on its associated value in this property. If one spell has a weight of 2 and another spell has a weight of 1, the first spell will be twice as likely to appear.[br][br]Negative weight values are treated the same as values of 0 - neither will appear at all.
 var ACTIVE_SPELL_WEIGHTS : Dictionary = {
    SpellData.ActiveSpellIDs.GreatBallOfFire : 1,

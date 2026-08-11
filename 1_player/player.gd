@@ -182,11 +182,12 @@ func open_prism(prism : Prism):
    prism_is_open = true
    PRISMMENU.visible = true
    Enabled = false
-   PRISMMENU.setup()
-func close_prism():
+   PRISMMENU.setup(prism)
+func close_prism(prism : Prism):
    prism_is_open = false
    PRISMMENU.visible = false
    Enabled = true
+   prism.destroy_self()
 
 # =================== #
 #  data manipulation  #

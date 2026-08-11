@@ -75,7 +75,7 @@ enum ActiveSpellIDs {
    ERROR = -1}
 const ActiveSpells: Dictionary = {
    ActiveSpellIDs.GreatBallOfFire:{
-      SpellFields.Name         : "Grea Ball o' Fire",
+      SpellFields.Name         : "Great Ball o' Fire",
       SpellFields.Description  : "",
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
       SpellFields.IconRect     : Rect2(32,64,32,32),
