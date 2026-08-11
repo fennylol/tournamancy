@@ -258,7 +258,12 @@ func update_HUD_icons():
    HUD_PASSIVEBOX.import_passive_spells(SpellBook.PassiveSpells, true)
 ## Called by the base ActiveSpell class to get the players "stat influenced cooldown" which is multiplied with the delta each frame to reduce that spell's cooldown timer.
 func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.StatTypes.COOLDOWN,  SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.COOLDOWN], SpellBook.get_stat(SpellData.StatTypes.COOLDOWN))
+##
+func get_active(hand : int) -> SpellData.ActiveSpellIDs: return SpellBook.ActiveSpells[hand].SpellID as SpellData.ActiveSpellIDs if SpellBook.ActiveSpells[hand] else SpellData.ActiveSpellIDs.ERROR
 ## Passes a list of actives and passives to the Effectory. That's it. Effectory takes it from there.
+func request_new_active_spell(id : SpellData.ActiveSpellIDs, slot : int):
+   SpellBook.add_active(id, slot)
+   update_HUD_icons()
 func sync_effectory(list_of_actives : Array[SpellData.ActiveSpellIDs], list_of_passives : Array[SpellData.PassiveSpellIDs]): 
    EFFECTORY.sync_effects(list_of_actives, list_of_passives)
 func send_damage_package(package : DamagePackage):

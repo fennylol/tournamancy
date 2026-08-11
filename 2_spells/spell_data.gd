@@ -67,12 +67,13 @@ enum SpellFields {Name, Description, IconPath, IconRect, ScriptPath, Cooldown, E
 
 ## TODO: FOR FUTURE DEBUGGING, TRY TO KEEP THE ACTIVESPELLIDS AND ACTIVESPELLS SORTED ALPHABETICALLY
 enum ActiveSpellIDs {
+   ERROR = -1,
    GreatBallOfFire,
    IronBody,
    ShockstarDisco,
    StarlightBlink,
-   Thunderwave,
-   ERROR = -1}
+   Thunderwave
+   }
 const ActiveSpells: Dictionary = {
    ActiveSpellIDs.GreatBallOfFire:{
       SpellFields.Name         : "Great Ball o' Fire",
