@@ -133,7 +133,158 @@ text = "copy ID"
 [node name="spacer4" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=880933413]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 6.0
+
+[node name="ColorZone" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=371015816]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone" unique_id=1404874887]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="ColorZone" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone" unique_id=1055095996]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="Labels" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone" unique_id=173640653]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="spacer3" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Labels" unique_id=1928717404]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PrimaryLabel" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Labels" unique_id=1913766854]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "Primary"
+horizontal_alignment = 1
+
+[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Labels" unique_id=486078936]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="SecondaryLabel" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Labels" unique_id=752103678]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "Secondary"
+horizontal_alignment = 1
+
+[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Labels" unique_id=1440679141]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Colors" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone" unique_id=325449955]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 5.0
+
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Colors" unique_id=1309002680]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="PrimaryColor" type="ColorRect" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Colors/AspectRatioContainer" unique_id=1721564756]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Colors" unique_id=274514455]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AspectRatioContainer2" type="AspectRatioContainer" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Colors" unique_id=709778112]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 4.0
+
+[node name="SecondaryColor" type="ColorRect" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Colors/AspectRatioContainer2" unique_id=2073186229]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Values" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone" unique_id=157391668]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="spacer3" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Values" unique_id=1976063502]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="PrimaryHue" type="HSlider" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Values" unique_id=1742912639]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.5
+max_value = 1.0
+step = 0.01
+
+[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Values" unique_id=884217656]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.5
+
+[node name="SecondaryHue" type="HSlider" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Values" unique_id=478575229]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.5
+max_value = 1.0
+step = 0.01
+
+[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Values" unique_id=1722837098]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="ValueLabels" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone" unique_id=782798578]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+
+[node name="spacer3" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=556752509]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=977704203]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "0.0"
+horizontal_alignment = 1
+
+[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=1922327583]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=804090456]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "0.0"
+horizontal_alignment = 1
+
+[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=1476529549]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone" unique_id=1998529981]
+layout_mode = 2
+
+[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone" unique_id=1410380274]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
+
+[node name="spacer6" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=2080941782]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="name_box" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=233220469]
 layout_mode = 2
@@ -150,6 +301,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.5
 text = "change name"
+
+[node name="ColorRect" type="ColorRect" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=801767364]
+layout_mode = 2
+color = Color(0.5449743, 0.54497427, 0.54497427, 1)
 
 [node name="spacer3" type="Control" parent="VBoxContainer/HBoxContainer" unique_id=1090649834]
 layout_mode = 2

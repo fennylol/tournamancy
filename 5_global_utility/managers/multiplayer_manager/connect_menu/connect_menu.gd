@@ -18,12 +18,20 @@ class_name ConnectMenu
 @onready var CONNECT_BUTTON : Button   = $VBoxContainer/HBoxContainer/TheirInfo/target_ip_box/connect_button
 @onready var READY_BUTTON   : Button   = $VBoxContainer/ready_button
 
+@onready var PRIMARY_COLOR_DISPLAY   : ColorRect = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Colors/AspectRatioContainer/PrimaryColor
+@onready var SECONDARY_COLOR_DISPLAY : ColorRect = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Colors/AspectRatioContainer2/SecondaryColor
+@onready var PRIMARY_COLOR_SLIDER    : HSlider   = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Values/PrimaryHue
+@onready var SECONDARY_COLOR_SLIDER  : HSlider   = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Values/SecondaryHue
+@onready var PRIMARY_COLOR_LABEL     : Label     = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels/Label
+@onready var SECONDARY_COLOR_LABEL   : Label     = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels/Label2
+
 signal network_type_changed(global: bool)
 signal hosting_type_changed(client: bool)
 signal connect_button_pressed(Address: String)
 signal ready_button_pressed()
 signal quit_button_pressed()
 signal name_changed(new_name: String)
+signal color_changed(primary: bool, new_color: Color)
 
 func _ready() -> void:
    GLOBAL_BUTTON.pressed.connect(_on_network_type_changed.bind(true))
@@ -38,6 +46,9 @@ func _ready() -> void:
    
    COPY_ID_BUTTON.pressed.connect(func(): DisplayServer.clipboard_set(ID_LABEL.text.strip_edges()))
    COPY_IP_BUTTON.pressed.connect(func(): DisplayServer.clipboard_set(IP_LABEL.text.strip_edges()))
+   
+   PRIMARY_COLOR_SLIDER.value_changed.connect(_on_primary_slider_value_changed)
+   SECONDARY_COLOR_SLIDER.value_changed.connect(_on_secondary_slider_value_changed)
 
 # =============== #
 # button handlers #
@@ -62,6 +73,15 @@ func _on_hosting_type_changed(client: bool) -> void:
    JOIN_BUTTON.disabled = client
    HOST_BUTTON.disabled = not client
    QUIT_BUTTON.text = ("quit" if client else "close") + " lobby"
+# =============== #
+# slider handlers #
+# =============== #
+func _on_primary_slider_value_changed(new_val: float) -> void:
+   PRIMARY_COLOR_LABEL.text = str(snappedf(new_val, 0.01))
+   PRIMARY_COLOR_DISPLAY.color = Color.from_ok_hsl(new_val, 1.0, 0.6)
+func _on_secondary_slider_value_changed(new_val: float) -> void:
+   SECONDARY_COLOR_LABEL.text = str(snappedf(new_val, 0.01))
+   SECONDARY_COLOR_DISPLAY.color = Color.from_ok_hsl(new_val, 0.9, 0.8)
 # ============= #
 # label setters #
 # ============= #
