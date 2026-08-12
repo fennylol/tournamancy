@@ -10,6 +10,7 @@ var StatModifiers: Dictionary = {}
 var ThePlayer : Player
 
 signal spell_equipped(spell_id: int, is_active: bool)
+signal passive_spell_updated(spell_id: int)
 #signal spell_erased(spell_id: int, is_active: bool)
 signal spell_change_state(spell_id: int, is_active: bool, new_state: int)
 
@@ -57,11 +58,23 @@ func add_passive(id: SpellData.PassiveSpellIDs, stacks: int) -> void:
    var data: Dictionary = SpellData.get_passive_spell_data(id)
    if SpellData.is_valid_passive_spell(data):
       var spell: PassiveSpell = load(data[SpellData.SpellFields.ScriptPath]).new(stacks)
-      PassiveSpells.append(spell) ## TODO: check if spell already exists and just sum the stacks together if so
-      spell.StateChanged.connect(func(new_state: int): spell_change_state.emit(id, false, new_state))
-      StatModifiers = calculate_stats()
-      spell._on_equip(ThePlayer)
-      spell_equipped.emit(id, false)
+      ## CHECK TO SEE IF THE SPELL ALREADY EXISTS. UPDATE IF SO
+      var spell_extant : bool = false
+      for i in range(PassiveSpells.size()): 
+         if PassiveSpells[i].SpellID == id: 
+            spell_extant = true
+            PassiveSpells[i].Stacks += stacks
+            StatModifiers = calculate_stats()
+            PassiveSpells[i]._on_update(ThePlayer)
+            passive_spell_updated.emit(id)
+      ## ADD THE SPELL IF NOT EXTANT
+      if not spell_extant:
+         PassiveSpells.append(spell)
+         spell.StateChanged.connect(func(new_state: int): spell_change_state.emit(id, false, new_state))
+         StatModifiers = calculate_stats()
+         spell._on_equip(ThePlayer)
+         spell_equipped.emit(id, false)
+
 func add_active(id: SpellData.ActiveSpellIDs, slot: int) -> void:
    var data: Dictionary = SpellData.get_active_spell_data(id)
    if SpellData.is_valid_active_spell(data):

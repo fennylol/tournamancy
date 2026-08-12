@@ -13,7 +13,7 @@ func _on_process_begin(_delta: float, player: Player) -> void:
    else:
       if Input.is_action_just_pressed("jump") and airjumps_remaining > 0:
          airjumps_remaining -= 1
-         player.velocity.y = SpellData.get_influenced_stat(SpellData.StatTypes.JUMP, player.BASE_JUMP, player.SpellBook.get_stat(SpellData.StatTypes.JUMP))
+         player.velocity.y = SpellData.get_influenced_stat(SpellData.StatTypes.JUMP, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.JUMP], player.SpellBook.get_stat(SpellData.StatTypes.JUMP))
 func _on_process_end(_delta: float, _player: Player) -> void: pass
 func _on_equip(_player: Player) -> void: pass
 func _on_unequip(_player: Player) -> void: pass

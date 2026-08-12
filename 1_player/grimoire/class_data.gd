@@ -13,7 +13,7 @@ const ClassRecipes: Dictionary = {
    ClassIDs.Tank : {
       ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.Thunderwave, SpellData.ActiveSpellIDs.IronBody],
       ClassFields.PASSIVES: {
-         SpellData.PassiveSpellIDs.Speed : -5,
+         SpellData.PassiveSpellIDs.Speed : -2,
          #SpellData.PassiveSpellIDs.Gravity : 0,
          SpellData.PassiveSpellIDs.Damage : 5,
          SpellData.PassiveSpellIDs.Heart : 4

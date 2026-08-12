@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bj6q28e650yw4"]
 
 [ext_resource type="Texture2D" uid="uid://7pia4qi2dswh" path="res://2_spells/actives/misc_active_icons.png" id="1_ou73g"]
-[ext_resource type="Texture2D" uid="uid://smb1wwefykoj" path="res://0_maps/assets/interactables/prism/prism_buttons.png" id="2_db3dx"]
+[ext_resource type="Texture2D" uid="uid://cssnvvdrvplv3" path="res://0_maps/assets/interactables/prism/prism_buttons.png" id="2_db3dx"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fxxwl"]
 atlas = ExtResource("1_ou73g")
@@ -51,3 +51,12 @@ offset_bottom = 48.0
 texture_pressed = SubResource("AtlasTexture_6cit1")
 texture_hover = SubResource("AtlasTexture_ttl7i")
 texture_focused = SubResource("AtlasTexture_ttl7i")
+
+[node name="Stacks" type="Label" parent="." unique_id=92551743]
+visible = false
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position = Vector2(48, 0)
+offset_transform_scale = Vector2(2, 2)
+text = "x1"
+vertical_alignment = 1

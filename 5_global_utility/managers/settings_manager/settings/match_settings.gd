@@ -134,7 +134,7 @@ var MAX_PRISM_REROLL_LOCK : int = 1
 ## If true, a prism will force active abilities to appear a set percentage of the time.
 var PRISM_FORCE_ACTIVE_ABILITIES : bool = true
 ## If [member PRISM_FORCE_ACTIVE_ABILITIES] is true, the percent chance of an active ability to be shown. 1.0 is 100%.
-var ACTIVE_ABILITIES_PERCENT : float = 1.0 # forcing 100% for debug purposes. probably should be 0.1 (10%)
+var ACTIVE_ABILITIES_PERCENT : float = 0.0
 ## [b]The spell weights for active spells.[/b][br][br]Each spell will be more or less likely to appear depending on its associated value in this property. If one spell has a weight of 2 and another spell has a weight of 1, the first spell will be twice as likely to appear.[br][br]Negative weight values are treated the same as values of 0 - neither will appear at all.
 var ACTIVE_SPELL_WEIGHTS : Dictionary = {
    SpellData.ActiveSpellIDs.GreatBallOfFire : 1,
@@ -144,7 +144,33 @@ var ACTIVE_SPELL_WEIGHTS : Dictionary = {
    SpellData.ActiveSpellIDs.Thunderwave     : 1
 }
 ## [b]The spell weights for passive spells.[/b][br][br]Each spell will be more or less likely to appear depending on its associated value in this property. If one spell has a weight of 2 and another spell has a weight of 1, the first spell will be twice as likely to appear.[br][br]Negative weight values are treated the same as values of 0 - neither will appear at all.
-var PASSIVE_SPELL_WEIGHTS : Dictionary = {}
+var PASSIVE_SPELL_WEIGHTS : Dictionary = {
+   ## STAT PASSIVES
+   SpellData.PassiveSpellIDs.Heart          : 1,
+   SpellData.PassiveSpellIDs.Armor          : 1,
+   SpellData.PassiveSpellIDs.Ward           : 1,
+   SpellData.PassiveSpellIDs.Overhealth     : 1,
+   SpellData.PassiveSpellIDs.Armor_Strength : 1,
+   SpellData.PassiveSpellIDs.Ward_Strength  : 1,
+   SpellData.PassiveSpellIDs.Lifesteal      : 1,
+   SpellData.PassiveSpellIDs.Damage         : 1,
+   SpellData.PassiveSpellIDs.Attack_Range   : 1,
+   SpellData.PassiveSpellIDs.Cooldown       : 1,
+   SpellData.PassiveSpellIDs.Force          : 1,
+   SpellData.PassiveSpellIDs.Crit           : 1,
+   SpellData.PassiveSpellIDs.Luck           : 1,
+   SpellData.PassiveSpellIDs.Speed          : 1,
+   SpellData.PassiveSpellIDs.Sprint         : 1,
+   SpellData.PassiveSpellIDs.Jump           : 1,
+   SpellData.PassiveSpellIDs.Gravity        : 1,
+   SpellData.PassiveSpellIDs.Steadfastness  : 1,
+   SpellData.PassiveSpellIDs.Melee_Damage   : 1,
+   SpellData.PassiveSpellIDs.Melee_Range    : 1,
+   SpellData.PassiveSpellIDs.Melee_Force    : 1,
+   SpellData.PassiveSpellIDs.Melee_Cooldown : 1,
+   ## NON-STAT PASSIVES
+   SpellData.PassiveSpellIDs.MoonJump       : 1
+}
 ## [b]The mercy weights for active spells.[/b][br][br]A spell's mercy weight is summed with its standard weight when a player has been knocked out enough times. This allows some spells to become more or less likely to appear the worse a player is performing.[br][br]Mercy weights can be negative, which will reduce the associated spell's weight by that amount.
 var ACTIVE_MERCY_WEIGHTS : Dictionary = {}
 ## [b]The mercy weights for passive spells.[/b][br][br]A spell's mercy weight is summed with its standard weight when a player has been knocked out enough times. This allows some spells to become more or less likely to appear the worse a player is performing.[br][br]Mercy weights can be negative, which will reduce the associated spell's weight by that amount.

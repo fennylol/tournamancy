@@ -3,18 +3,20 @@ extends Node2D
 @onready var icon_grid : TileMapLayer = $TileMapLayer
 @onready var icon_stack  : Node2D = $IconStack
 @onready var number_node : Node2D = $Numbers
-var passive_list : Dictionary[int,int] = {}
+var passive_list : Dictionary[SpellData.PassiveSpellIDs,int] = {}
 var offset_size : int = 32
 var timer = 1.0
 
-func import_passive_spells(list : Array[PassiveSpell], full_clear : bool = false):
+func import_passive_spells(imported_spells : Array[PassiveSpell], full_clear : bool = false):
    ## SET UP DICTIONARY
    if full_clear: passive_list.clear()
-   for i in range(list.size()):
+   for i in range(imported_spells.size()):
       var stack_size : int
-      if passive_list.has(list[i].SpellID): stack_size = list[i].Stacks + passive_list.get(list[i])
-      else:                                 stack_size = list[i].Stacks
-      passive_list.merge( {list[i].SpellID : stack_size },true)
+      if passive_list.has(imported_spells[i].SpellID):
+         stack_size = imported_spells[i].Stacks + passive_list.get(imported_spells[i].SpellID)
+      else:
+         stack_size = imported_spells[i].Stacks
+      passive_list.merge( {imported_spells[i].SpellID : stack_size },true)
    ## CLEAR AND SET ICONS
    for child in icon_stack.get_children(): child.queue_free()
    for child in number_node.get_children(): child.queue_free()

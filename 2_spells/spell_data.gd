@@ -67,12 +67,12 @@ enum SpellFields {Name, Description, IconPath, IconRect, ScriptPath, Cooldown, E
 
 ## TODO: FOR FUTURE DEBUGGING, TRY TO KEEP THE ACTIVESPELLIDS AND ACTIVESPELLS SORTED ALPHABETICALLY
 enum ActiveSpellIDs {
-   ERROR = -1,
    GreatBallOfFire,
    IronBody,
    ShockstarDisco,
    StarlightBlink,
-   Thunderwave
+   Thunderwave,
+   ERROR = -1
    }
 const ActiveSpells: Dictionary = {
    ActiveSpellIDs.GreatBallOfFire:{
@@ -162,7 +162,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Adds bonus health which reduces incoming damage by a flat amount. Effective against weak, fast attacks",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,32,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/armor_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -172,7 +172,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Adds bonus health which reduces incoming damage by a percent if you haven't been damaged in some time. Effective against strong, slow attacks.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,64,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/ward_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -182,7 +182,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Adds bonus health which decays over time.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,96,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/overhealth_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -192,7 +192,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases the amount that your 'Armor' reduces incoming damage by.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,128,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/armorstrength_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -202,7 +202,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases the maximum percentage that your 'Ward' reduces incoming damage by.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,160,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/wardstrength_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -212,7 +212,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases how much damage you can convert into health.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,192,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/lifesteal_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -232,7 +232,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases how far your spells can reach.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,256,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/range_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -252,7 +252,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases the effectiveness of your pushing and shoving effects.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,320,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/force_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -262,7 +262,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Causes your spells to deal additional damage on a critical hit.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,352,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/critical_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -272,7 +272,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases the likelyhood of chance-based effects.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,384,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/luck_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -292,7 +292,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Greatly increases how fast you can run.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,448,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/sprint_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -302,7 +302,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases how high you can jump.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,480,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/jump_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -322,7 +322,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Reduces how far enemies can push and shove you.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,544,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/steadfast_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -332,7 +332,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases the damage of your quick melee attack.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,576,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleedamage_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -342,7 +342,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases the reach of your quick melee attack.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,608,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleerange_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -352,7 +352,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Increases the distance you shove with your quick melee attack.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,640,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleeforce_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -362,7 +362,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.Description  : "Makes your quick melee attack faster.",
       SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
       SpellFields.IconRect     : Rect2(0,672,32,32),
-      SpellFields.ScriptPath   : "",
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleecooldown_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],      
       SpellFields.Familiars    : []
@@ -413,12 +413,12 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       StatTypes.CRIT:           influenced_stat = base_value * stat_value ##🧑‍🔧
       StatTypes.LUCK:           influenced_stat = base_value * stat_value ##🧑‍🔧
       ## ADDITIVE. Each additional point of speed increases walk speed by ~1 m/s
-      StatTypes.SPEED:          influenced_stat = base_value + stat_value
+      StatTypes.SPEED:          influenced_stat = base_value + stat_value if stat_value >= 0 else base_value / abs(stat_value)
       ## ADDITIVE. Each additional point increases sprint speed by an amount equal to 1/4 walk speed.
       StatTypes.SPRINT:         influenced_stat = base_value + ( stat_value * 0.25 )
       StatTypes.JUMP:           influenced_stat = base_value + stat_value ##🧑‍🔧
       ## PLATFORMER JUMPS. While the "jump" button is held, gravity is low. When the "jump" button is released, gravity is high.
-      StatTypes.GRAVITY:        influenced_stat = base_value * pow( 2.0 , ( -stat_value / 2 ) ) if Input.is_action_pressed("jump") else base_value * pow( 2.0 , ( stat_value / 2 ) )
+      StatTypes.GRAVITY:        influenced_stat = base_value * pow( 2.0 , ( -( stat_value * 0.25 ) / 2 ) ) if Input.is_action_pressed("jump") else base_value * pow( 2.0 , ( ( stat_value * 0.25 ) / 2 ) )
       StatTypes.STEADFASTNESS:  influenced_stat = base_value * stat_value ##🧑‍🔧
       StatTypes.MELEE_DAMAGE:   influenced_stat = base_value * stat_value ##🧑‍🔧
       StatTypes.MELEE_RANGE:    influenced_stat = base_value * stat_value ##🧑‍🔧

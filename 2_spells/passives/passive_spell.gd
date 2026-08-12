@@ -14,4 +14,5 @@ func _get_stat_contributions() -> Dictionary:
 func _on_process_begin(_delta: float, _player: Player) -> void: printerr("ERROR: _on_process_begin() not overridden but called.")
 func _on_process_end(_delta: float, _player: Player) -> void: printerr("ERROR: _on_process_end() not overridden but called.")
 func _on_equip(_player: Player) -> void: printerr("ERROR: _on_equip() not overridden but called.")
+func _on_update(_player : Player) -> void: printerr("ERROR: _on_update() not overridden but called.")
 func _on_unequip(_player: Player) -> void: printerr("ERROR: _on_unequip() not overridden but called.")

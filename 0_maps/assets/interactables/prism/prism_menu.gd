@@ -22,16 +22,19 @@ signal close_menu()
 
 var SlotTextureList   : Array[TextureRect]
 var SlotButtonList    : Array[TextureButton]
+var SlotLabelList     : Array[Label]
 var SlotIsActive_List : Array[bool]
 var SlotIDList        : Array[int]
 var CurrentButton : Control
 
 var ActiveSpellList           : Array[SpellData.ActiveSpellIDs]  = []
 var PassiveSpellList          : Array[SpellData.PassiveSpellIDs] = []
+var PassiveSpellStacks        : Array[int]                       = []
 var selected_active_list      : Array[SpellData.ActiveSpellIDs]  = []
 var selected_passive_list     : Array[SpellData.PassiveSpellIDs] = []
-var passed_active_spell_list  : Array[SpellData.ActiveSpellIDs]  = []
-var passed_passive_spell_list : Array[SpellData.PassiveSpellIDs] = []
+var selected_passive_stacks   : Array[int]                       = []
+#var passed_active_spell_list  : Array[SpellData.ActiveSpellIDs]  = []
+#var passed_passive_spell_list : Array[SpellData.PassiveSpellIDs] = []
 
 var current_slot_count : int = 0
 var reroll_count : int = 0
@@ -59,6 +62,8 @@ func setup(the_prism_in_question : Prism) -> void:
    CurrentActivePrism = the_prism_in_question
    ActiveSpellList = CurrentActivePrism.get_active_spells()
    PassiveSpellList = CurrentActivePrism.get_passive_spells()
+   PassiveSpellStacks = CurrentActivePrism.get_passive_stacks()
+   PassiveSpellStacks.resize(PassiveSpellList.size())
    current_slot_count = SettingsManager.match_settings.DEFAULT_PRISM_SHOW_COUNT
    reroll_count = 0
    BUTTON_REROLL.disabled = false
@@ -73,13 +78,14 @@ func gridmap_setup(slot_number : int):
    for i in SPELL_GRIDMAP.get_children(): i.queue_free()
    ## RESIZE GRID AND FILL WITH SPELL SLOTS
    SPELL_GRIDMAP.columns = ceil( slot_number / floor( sqrt( slot_number ) ) )
-   for i : Array in [SlotTextureList, SlotButtonList, SlotIsActive_List, SlotIDList]: i.resize(slot_number)
+   for i : Array in [SlotTextureList, SlotButtonList, SlotLabelList, SlotIsActive_List, SlotIDList]: i.resize(slot_number)
    for i in range(slot_number):
       var new_slot_instance = SpellSlotInstance.instantiate()
       SPELL_GRIDMAP.add_child(new_slot_instance)
       new_slot_instance.name = "Spell Slot " + str(i)
       SlotTextureList[i] = new_slot_instance.get_child(0) as TextureRect
       SlotButtonList[i] = new_slot_instance.get_child(0).get_child(1) as TextureButton
+      SlotLabelList[i] = new_slot_instance.get_child(1) as Label
    ## CONNECT BUTTONS TOGETHER
    for i in range(SlotButtonList.size()):
       SlotButtonList[i].pressed.connect(_on_spell_icon_button_pressed)
@@ -145,14 +151,16 @@ func roll_slots():
                break
          for j in range(passive_weight_array.size()):
             if SettingsManager.match_settings.PRISM_FORCE_ACTIVE_ABILITIES == true and SlotIsActive_List[i] == true: break
+            chosen_value -= passive_weight_array[j]
             if chosen_value <= 0:
                slot_position = j
                SlotIsActive_List[i] = false
                break
-         if slot_position == -1:
-            printerr("Slot position not found based on rolled value")
-            return
-      
+         if slot_position == -1: break
+      if slot_position == -1:
+         printerr("Slot position not found based on rolled value")
+         continue
+         
       ## GET ID AND UPDATE TEXTURE
       @warning_ignore("incompatible_ternary")
       var spell_id = ActiveSpellList[slot_position] if SlotIsActive_List[i] == true else PassiveSpellList[slot_position]
@@ -160,8 +168,11 @@ func roll_slots():
       var new_texture = AtlasTexture.new()
       new_texture.margin = ICONMARGIN
       new_texture.atlas = load(SpellData.ActiveSpells.get(spell_id).get(SpellData.SpellFields.IconPath)) if SlotIsActive_List[i] == true else load(SpellData.PassiveSpells.get(spell_id).get(SpellData.SpellFields.IconPath))
-      new_texture.region = SpellData.ActiveSpells.get(spell_id).get(SpellData.SpellFields.IconRect) if SlotIsActive_List[i] == true else load(SpellData.PassiveSpells.get(spell_id).get(SpellData.SpellFields.IconRect))
+      new_texture.region = SpellData.ActiveSpells.get(spell_id).get(SpellData.SpellFields.IconRect) if SlotIsActive_List[i] == true else SpellData.PassiveSpells.get(spell_id).get(SpellData.SpellFields.IconRect)
       SlotTextureList[i].texture = new_texture
+      #if not SlotIsActive_List[i]:
+         #SlotLabelList[i].visible = true
+         #SlotLabelList[i].text = "x" + str(PassiveSpellStacks[i])
       
       ## REMOVE FROM POOL
       ## need to find a way to keep this from bricking the program if it empties the array
@@ -204,18 +215,23 @@ func _on_button_reroll_pressed() -> void:
    if reroll_count < SettingsManager.match_settings.PRISM_REROLL_COUNT:
       reroll_count += 1
       current_slot_count = SettingsManager.match_settings.DEFAULT_PRISM_SHOW_COUNT - ( reroll_count * SettingsManager.match_settings.PRISM_REROLL_DECREMENT )
+      selected_active_list.clear()
+      selected_passive_list.clear()
       gridmap_setup(current_slot_count)
       roll_slots()
    BUTTON_REROLL.text = "REROLL (" + str(SettingsManager.match_settings.PRISM_REROLL_COUNT - reroll_count) + ")" if (SettingsManager.match_settings.PRISM_REROLL_COUNT - reroll_count) != 0 else "NO REROLLS REMAIN"
    if reroll_count >= SettingsManager.match_settings.PRISM_REROLL_COUNT: BUTTON_REROLL.disabled = true
 func _on_button_confirm_pressed() -> void:
    for i in range(selected_passive_list.size()):
-      pass
+      ## oh no i forgot to figure out stacks
+      get_parent().get_parent().request_new_passive_spell(selected_passive_list.pop_front(), 1)
    if selected_active_list != []:
       selecting_active = true
       MAIN_MENU.visible = false
       ACTIVE_MENU.visible = true
       setup_active_spell_chooser(selected_active_list.pop_front())
+   else:
+      close_menu.emit(CurrentActivePrism)
 func _on_button_cancel_pressed() -> void:
    close_menu.emit(CurrentActivePrism)
 
@@ -257,7 +273,6 @@ func setup_active_spell_chooser(id : SpellData.ActiveSpellIDs):
    ActiveButton_Selected.pressed.connect(_on_active_spell_chooser_button_press.bind(id))
    ActiveButton_Left.pressed.connect(_on_active_spell_chooser_button_press.bind(id, 0))
    ActiveButton_Right.pressed.connect(_on_active_spell_chooser_button_press.bind(id, 1))
-   
 func _on_active_spell_chooser_button_press(new_id : SpellData.ActiveSpellIDs, slot : int = -1):
    if slot != -1: get_parent().get_parent().request_new_active_spell(new_id, slot)
    if selected_active_list == []:

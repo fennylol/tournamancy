@@ -1,9 +1,9 @@
 extends PassiveSpell
-class_name SpeedSpell
+class_name LifestealSpell
 
-func _init(stacks: int = 1) -> void: super(stacks, SpellData.PassiveSpellIDs.Speed)
+func _init(stacks: int = 1) -> void: super(stacks, SpellData.PassiveSpellIDs.Lifesteal)
 
-func _get_stat_contributions() -> Dictionary: return { SpellData.StatTypes.SPEED: Stacks }
+func _get_stat_contributions() -> Dictionary: return { SpellData.StatTypes.LIFESTEAL: Stacks }
 
 func _on_process_begin(_delta: float, _player: Player) -> void: pass
 func _on_process_end(_delta: float, _player: Player) -> void: pass

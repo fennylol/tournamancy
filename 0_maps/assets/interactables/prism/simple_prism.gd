@@ -23,7 +23,8 @@ func destroy_self(): self.queue_free()
 # ================ #
 
 var ActiveSpellList : Array[SpellData.ActiveSpellIDs] = [0,1,2,3,4]
-var PassiveSpellList : Array[SpellData.PassiveSpellIDs] = []
+var PassiveSpellList : Array[SpellData.PassiveSpellIDs] = [SpellData.PassiveSpellIDs.Heart,SpellData.PassiveSpellIDs.Damage,SpellData.PassiveSpellIDs.Speed,SpellData.PassiveSpellIDs.Sprint,SpellData.PassiveSpellIDs.Jump,SpellData.PassiveSpellIDs.Gravity,SpellData.PassiveSpellIDs.MoonJump]
+var PassiveSpellStacks : Array[int] = [4,3,1,1,2,1,1]
 
 func load_spells_from_world():
    pass
@@ -32,6 +33,7 @@ func load_spells_from_player(actives : Array[SpellData.ActiveSpellIDs], passives
    PassiveSpellList = passives
 func get_active_spells() -> Array[SpellData.ActiveSpellIDs]: return ActiveSpellList
 func get_passive_spells() -> Array[SpellData.PassiveSpellIDs]: return PassiveSpellList
+func get_passive_stacks() -> Array[int]: return PassiveSpellStacks
 
 # ============= #
 #   animation   #
