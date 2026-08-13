@@ -5,19 +5,6 @@
 [ext_resource type="PackedScene" uid="uid://dfo252iy5r2oq" path="res://0_maps/assets/interactables/class_button/class_button.tscn" id="3_sdsrs"]
 [ext_resource type="PackedScene" uid="uid://c56fevj40b86v" path="res://0_maps/assets/interactables/prism/simple_prism.tscn" id="4_sdsrs"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ttyqa"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-
-[sub_resource type="Sky" id="Sky_xvh3c"]
-sky_material = SubResource("ProceduralSkyMaterial_ttyqa")
-
-[sub_resource type="Environment" id="Environment_2vu8a"]
-background_mode = 2
-sky = SubResource("Sky_xvh3c")
-tonemap_mode = 2
-glow_enabled = true
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ttiif"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_cymnw"]
@@ -52,18 +39,12 @@ shadow_mesh = SubResource("ArrayMesh_cymnw")
 
 [node name="Foyer" type="Node3D" unique_id=55400169]
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1571649318]
-transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
-shadow_enabled = true
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1762737499]
-environment = SubResource("Environment_2vu8a")
-
 [node name="RoughtCity01" parent="." unique_id=1341565703 instance=ExtResource("2_3tyep")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -49.038, 0, 20.89)
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, -61.637024, 0, 20.89)
 
 [node name="pillar" parent="." unique_id=822652854 instance=ExtResource("2_xvh3c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2.5)
+visible = false
 
 [node name="ClassButton" parent="pillar" unique_id=274360327 instance=ExtResource("3_sdsrs")]
 transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
@@ -72,6 +53,7 @@ button_color = Color(0.62398005, 0.66371423, 0.99636203, 1)
 
 [node name="pillar2" parent="." unique_id=1238312467 instance=ExtResource("2_xvh3c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.5)
+visible = false
 
 [node name="ClassButton" parent="pillar2" unique_id=49028904 instance=ExtResource("3_sdsrs")]
 transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
@@ -80,6 +62,7 @@ button_color = Color(0.5058824, 1, 0.53333336, 1)
 
 [node name="pillar3" parent="." unique_id=918547285 instance=ExtResource("2_xvh3c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2.5)
+visible = false
 
 [node name="ClassButton" parent="pillar3" unique_id=1290390003 instance=ExtResource("3_sdsrs")]
 transform = Transform3D(1, 0, 0, 0, 0.90630776, -0.42261833, 0, 0.42261833, 0.90630776, 0, 0.9, 0)
@@ -87,6 +70,7 @@ button_color = Color(0.28549445, 0.74813414, 0.9999998, 1)
 
 [node name="pillar4" type="Node3D" parent="." unique_id=1839087667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -2.5)
+visible = false
 
 [node name="Cube" type="MeshInstance3D" parent="pillar4" unique_id=111607730]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
@@ -98,12 +82,12 @@ ClassID = 4
 button_color = Color(1, 0.5687833, 0.98551124, 1)
 
 [node name="SimplePrism" parent="." unique_id=1103879490 instance=ExtResource("4_sdsrs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.488354, 1.2, 2.0091224)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1978598, 1.2, -14.185532)
 
 [node name="SimplePrism2" parent="." unique_id=575747947 instance=ExtResource("4_sdsrs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2884703, 1.2, -0.21941268)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.422855, 1.200001, -3.9397478)
 PrismShape = 2
 
 [node name="SimplePrism3" parent="." unique_id=1613869526 instance=ExtResource("4_sdsrs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.088189, 1.2, -2.6144605)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.045638, 1.2, 1.771982)
 PrismShape = 4

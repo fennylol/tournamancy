@@ -1,17 +1,54 @@
 [gd_scene format=3 uid="uid://bamfpbtds4sbn"]
 
 [ext_resource type="Script" uid="uid://18utgu4nnymv" path="res://5_global_utility/tournamancy.gd" id="1_iumqp"]
+[ext_resource type="Texture2D" uid="uid://d1pqvt4xng076" path="res://_RAWS/qwantani_moonrise_puresky_2k.hdr" id="2_526d8"]
 [ext_resource type="PackedScene" uid="uid://dv7m42e1emxrj" path="res://1_player/player.tscn" id="3_y7xaf"]
 [ext_resource type="PackedScene" uid="uid://dijyime6b78x1" path="res://0_maps/foyer/foyer.tscn" id="4_cpal3"]
 [ext_resource type="PackedScene" uid="uid://dhklqs0eyw4da" path="res://5_global_utility/managers/multiplayer_manager/multiplayer_manager.tscn" id="4_u0se1"]
+[ext_resource type="PackedScene" uid="uid://c73in64nqv3jt" path="res://0_maps/rough_library_01/Library.tscn" id="5_u0se1"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_p4wgu"]
+panorama = ExtResource("2_526d8")
+energy_multiplier = 0.05
+
+[sub_resource type="Sky" id="Sky_xvh3c"]
+sky_material = SubResource("PanoramaSkyMaterial_p4wgu")
+radiance_size = 1
+
+[sub_resource type="Environment" id="Environment_ikkou"]
+background_mode = 2
+sky = SubResource("Sky_xvh3c")
+ambient_light_source = 3
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_xwstj"]
+size = Vector2(500, 500)
 
 [node name="Tournamancy" type="Node3D" unique_id=1175185699]
 script = ExtResource("1_iumqp")
 
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=414571710]
+transform = Transform3D(0.91461605, 0.35015446, -0.20216179, 2.7805944e-08, 0.49999988, 0.8660255, 0.40432355, -0.7920807, 0.45730796, 0, 0, 0)
+light_energy = 0.15
+shadow_enabled = true
+sky_mode = 1
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2110615909]
+environment = SubResource("Environment_ikkou")
+
 [node name="MultiplayerManager" parent="." unique_id=227674921 instance=ExtResource("4_u0se1")]
 
 [node name="Player" parent="." unique_id=1131720607 instance=ExtResource("3_y7xaf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 150)
 
 [node name="Foyer" parent="." unique_id=55400169 instance=ExtResource("4_cpal3")]
 
 [node name="Familiars" type="Node3D" parent="." unique_id=1467524638]
+
+[node name="Library" parent="." unique_id=1578454167 instance=ExtResource("5_u0se1")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 150)
+
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=1582742729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("PlaneMesh_xwstj")

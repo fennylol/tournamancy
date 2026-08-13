@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://cx5piybf0aqlg"]
+
+[ext_resource type="Script" uid="uid://cbug2v8f0818s" path="res://0_maps/assets/interactables/class_button/class_book.gd" id="1_cnucu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cnucu"]
+albedo_color = Color(1, 0.5336117, 0.4686132, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_xwstj"]
+material = SubResource("StandardMaterial3D_cnucu")
+size = Vector3(0.16, 0.56, 0.46)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_xwstj"]
+size = Vector3(0.25, 0.6, 0.5)
+
+[node name="ClassBook" type="Area3D" unique_id=2068591967]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_cnucu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=976724277]
+mesh = SubResource("BoxMesh_xwstj")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1120023644]
+shape = SubResource("BoxShape3D_xwstj")

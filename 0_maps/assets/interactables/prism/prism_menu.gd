@@ -275,9 +275,9 @@ func setup_active_spell_chooser(remaining_spells : Array[SpellData.ActiveSpellID
    ACTIVE_CR.get_child(0).texture = new_texture_r
    
    ## BUTTON SETUP
-   ActiveButton_Selected.pressed.disconnect(_on_active_spell_chooser_button_press)
-   ActiveButton_Left.pressed.disconnect(_on_active_spell_chooser_button_press)
-   ActiveButton_Right.pressed.disconnect(_on_active_spell_chooser_button_press)
+   if ActiveButton_Selected.pressed.has_connections(): ActiveButton_Selected.pressed.disconnect(_on_active_spell_chooser_button_press)
+   if ActiveButton_Left.pressed.has_connections(): ActiveButton_Left.pressed.disconnect(_on_active_spell_chooser_button_press)
+   if ActiveButton_Right.pressed.has_connections(): ActiveButton_Right.pressed.disconnect(_on_active_spell_chooser_button_press)
    ActiveButton_Selected.pressed.connect(_on_active_spell_chooser_button_press.bind(id, remaining_spells))
    ActiveButton_Left.pressed.connect(_on_active_spell_chooser_button_press.bind(id, remaining_spells, 0))
    ActiveButton_Right.pressed.connect(_on_active_spell_chooser_button_press.bind(id, remaining_spells, 1))

@@ -2,10 +2,17 @@ extends Node3D
 class_name Tournamancy
 
 @onready var PLAYER_CHARACTER: Player             = $Player
+@onready var LIBRARY         : Node3D             = $Library
 @onready var MPM             : MultiplayerManager = $MultiplayerManager
 @onready var FAMILIARS       : Node3D             = $Familiars
 
 const DummyScene: PackedScene = preload("res://1_player/dummy/dummy.tscn")
+
+const drag_player_to : Vector3 = Vector3(0,100,-10)
+var drag_player_from : Vector3 = Vector3.ZERO
+var is_dragging : bool = false
+var dragtime : float = 0
+const dragspeed : float = 0.20
 
 enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD, NameTagData = 0x15}
 func _ready() -> void:
@@ -20,16 +27,20 @@ func _ready() -> void:
    MPM.effect_equipped_data.connect(_on_mpm_effect_equipped_data)
    MPM.effect_state_data.connect(_on_mpm_effect_state_data)
    MPM.spawn_familiar_data.connect(_on_mpm_spawn_familiar_data)
+   LIBRARY.player_exited.connect(_on_library_player_exited)
    PLAYER_CHARACTER.open_connection_menu_please.connect(MPM.open_connection_menu)
    PLAYER_CHARACTER.spell_equipped.connect(MPM.send_effect_equip_data)
    PLAYER_CHARACTER.player_spell_change_state.connect(MPM.send_effect_state_data)
    PLAYER_CHARACTER.damage_dealt.connect(_on_player_damage_dealt)
    PLAYER_CHARACTER.familiar_spawned.connect(_on_player_familiar_spawned)
    PLAYER_CHARACTER.MY_NETWORK_ID = MPM.get_local_player_id()
-   PLAYER_CHARACTER.position = Vector3(randf(), 0, randf())
+   PLAYER_CHARACTER.position += Vector3(randf(), 0, randf())
 
-   
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
+   if is_dragging:
+      dragtime += delta * dragspeed
+      PLAYER_CHARACTER.position = drag_player_from.slerp(drag_player_to, ease(dragtime,-3))
+   if abs(PLAYER_CHARACTER.position.z - drag_player_to.z) <= 1: is_dragging = false
    MPM.send_player_transform_data(PLAYER_CHARACTER.generate_transform_data())
 
 func _spawn_familiar(owner_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
@@ -85,3 +96,8 @@ func _on_player_damage_dealt       (package : DamagePackage) -> void:
 func _on_player_familiar_spawned   (spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
    _spawn_familiar(MPM.get_local_player_id(), spell_id, is_active, familiar_idx, creation_data)
    MPM.send_spawn_familiar_data(spell_id, is_active, familiar_idx, creation_data)
+
+func _on_library_player_exited     (start_location : Vector3):
+   drag_player_from = start_location
+   is_dragging = true
+   dragtime = 0.0

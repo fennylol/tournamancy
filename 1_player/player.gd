@@ -80,7 +80,7 @@ func _process(delta):
       if prism_is_open: return
       Enabled = !Enabled
       open_connection_menu_please.emit(not(Enabled))
-   
+      HUD.visible = Enabled
    
    ## PASSIVE PROCESSES, BEGIN
    if Enabled: SpellBook.process_begin(delta, self)
@@ -92,31 +92,21 @@ func _process(delta):
    CAMERA.rotation.x += cam_vertical * 0.05 * personal_settings.JOYSTICK_SENSITIVITY_X
    CAMERA.rotation.x = clamp(CAMERA.rotation.x, -PI/2, PI/2)
    
-   ## CHANGE HAND TEXTURES
-   #if Input.is_action_just_pressed("interact") and Enabled: 
-      #L_HAND.texture = POINT_IMG
-   #elif Input.is_action_just_released("interact") or not Enabled: 
-      #L_HAND.texture = HAND_IMG
-   
    if Input.is_action_just_pressed("active_spell_0") and Enabled:
-      #L_HAND.texture = POINT_IMG
       LEFT_ARM.rotation.x = -80.0
       HUD_LEFT_ACTIVE._hold()
       if SpellBook.ActiveSpells[0]:
          SpellBook.ActiveSpells[0]._on_activate(self)
    elif Input.is_action_just_released("active_spell_0") or not Enabled: 
-      #L_HAND.texture = HAND_IMG
       LEFT_ARM.rotation.x = 0.0
       HUD_LEFT_ACTIVE._release()
    
    if Input.is_action_just_pressed("active_spell_1") and Enabled:
-      #R_HAND.texture = POINT_IMG
       RIGHT_ARM.rotation.x = -80.0
       HUD_RIGHT_ACTIVE._hold()
       if SpellBook.ActiveSpells[1]:
          SpellBook.ActiveSpells[1]._on_activate(self)      
    elif Input.is_action_just_released("active_spell_1") or not Enabled: 
-      #R_HAND.texture = HAND_IMG 
       RIGHT_ARM.rotation.x = 0.0
       HUD_RIGHT_ACTIVE._release()
    

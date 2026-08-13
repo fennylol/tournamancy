@@ -14,3 +14,8 @@ script = ExtResource("1_61pph")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1627309498]
 shape = SubResource("SphereShape3D_xwstj")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=852177182]
+light_color = Color(0.92941177, 0.70980394, 1, 1)
+omni_range = 3.0
+omni_attenuation = 2.0

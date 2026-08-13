@@ -1,3 +1,10 @@
+[*] Skybox HDRI
+Qwantani Moonrise (Pure Sky) by Greg Zaal (Photography) and Jarod Guest (Processing)
+https://polyhaven.com/a/qwantani_moonrise_puresky
+
+[*] Valley 3D Model
+"Valley" (https://skfb.ly/6vwyG) by Adil.Fell is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
 [1] Fireball Shader Effect
 Clear Code
 https://youtu.be/AoGOIiBo4Eg?si=ECNrluw-NdCDZt0L

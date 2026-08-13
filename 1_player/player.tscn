@@ -1,7 +1,6 @@
 [gd_scene format=4 uid="uid://dv7m42e1emxrj"]
 
 [ext_resource type="Script" uid="uid://btixegg8i4faq" path="res://1_player/player.gd" id="1_8s5v1"]
-[ext_resource type="Texture2D" uid="uid://ddq437x4g5mpf" path="res://4_ui/hud/Lhand.png" id="2_qeeko"]
 [ext_resource type="Material" uid="uid://287a32tur6sm" path="res://1_player/character_body/mat_ROBES.tres" id="3_6utbb"]
 [ext_resource type="Material" uid="uid://dwg2qqcqwc3ob" path="res://1_player/character_body/mat_HAT.tres" id="3_ecodu"]
 [ext_resource type="PackedScene" uid="uid://cpsbgkgmeqg12" path="res://4_ui/HUD_2/Default_HUD.tscn" id="3_qeeko"]
@@ -216,19 +215,6 @@ target_position = Vector3(0, 0, -2.5)
 collision_mask = 2
 collide_with_areas = true
 
-[node name="Lhand" type="Sprite3D" parent="Eyes" unique_id=1657256075]
-transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -0.4, -0.2, -0.425)
-visible = false
-pixel_size = 0.001
-texture = ExtResource("2_qeeko")
-
-[node name="Rhand" type="Sprite3D" parent="Eyes" unique_id=1345139767]
-transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0.4, -0.2, -0.425)
-visible = false
-flip_h = true
-pixel_size = 0.001
-texture = ExtResource("2_qeeko")
-
 [node name="LEFTARM" type="Node3D" parent="Eyes" unique_id=1673151304]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, -0.19633603, -0.033138633)
 
@@ -264,9 +250,9 @@ IsDummy = false
 metadata/_custom_type_script = "uid://cuueb1u2pkixq"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=890875531]
-visible = false
 
 [node name="DefaultHud" parent="CanvasLayer" unique_id=1610244138 instance=ExtResource("3_qeeko")]
+visible = false
 
 [node name="PrismMenu" parent="CanvasLayer" unique_id=775943470 instance=ExtResource("8_7yfv2")]
 visible = false
