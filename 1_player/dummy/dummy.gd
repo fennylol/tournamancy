@@ -48,6 +48,7 @@ func _physics_process(delta: float) -> void:
    #EYES.rotation.x = clamp(_net_rot.x, -PI/2, PI/2)
    
    velocity = _net_vel
+
 func on_transform_data(data: PackedByteArray) -> void:
    _net_pos = Vector3(data.decode_float(0),  data.decode_float(4),  data.decode_float(8))
    _net_rot = Vector3(data.decode_float(12), data.decode_float(16), data.decode_float(20))
@@ -63,9 +64,19 @@ func on_transform_data(data: PackedByteArray) -> void:
    
    _has_net_state = true
    _time_since_packet = 0.0
+func on_identity_data(new_name: String, primary_color: float, secondary_color: float) -> void:
+   var new_primary_color: Color = SettingsManager.personal_settings.make_color(true, primary_color)
+   var new_secondary_color: Color = SettingsManager.personal_settings.make_color(false, secondary_color)
    
-func on_nametag_data(new_name: String) -> void:
    NAMETAG.text = new_name
+   BODY.set_colors(new_primary_color, new_secondary_color)
+   var dummy_settings: SettingsManager.PeerSettings = SettingsManager.peer_settings[NETWORK_ID]
+   dummy_settings.name_tag = new_name
+   dummy_settings.primary_color = new_primary_color
+   dummy_settings.secondary_color = new_secondary_color
+   
+   
+   
 func on_effect_equip_data(spell_id: int, is_active: bool) -> void:
    EFFECTS.equip_effect(spell_id, is_active)
 func on_effect_erase_data(spell_id: int, is_active: bool) -> void: EFFECTS.erase_effect(spell_id, is_active)

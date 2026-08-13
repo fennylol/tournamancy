@@ -59,7 +59,7 @@ func _ready() -> void:
    SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state)
    PRISMMENU.close_menu.connect(close_prism)
    PRISMMENU.visible = false
-   set_colors(SettingsManager.personal_settings.PRIMARY_COLOR, SettingsManager.personal_settings.SECONDARY_COLOR)
+   set_colors()
 
    var starting_health : Array[float] = [
       SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.HEARTS],
@@ -80,6 +80,7 @@ func _process(delta):
       if prism_is_open: return
       Enabled = !Enabled
       open_connection_menu_please.emit(not(Enabled))
+   
    
    ## PASSIVE PROCESSES, BEGIN
    if Enabled: SpellBook.process_begin(delta, self)
@@ -232,12 +233,12 @@ func _update_heath_display(new_health : Array[float]) -> void:
    HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
 
 
-func set_colors(primary_color: Color, secondary_color: Color) -> void:
+func set_colors() -> void:
    var primary_mat := StandardMaterial3D.new()
-   primary_mat.albedo_color = primary_color
+   primary_mat.albedo_color = SettingsManager.personal_settings.PRIMARY_COLOR
    
    var secondary_mat := StandardMaterial3D.new()
-   secondary_mat.albedo_color = secondary_color
+   secondary_mat.albedo_color = SettingsManager.personal_settings.SECONDARY_COLOR
    
    HAT_MESH.set_surface_override_material(0, secondary_mat)
    

@@ -1,21 +1,13 @@
 extends ActiveSpell
 class_name GreatBallOFire
 
-var BallHue: float = randf()
-var TailHue: float = fmod(BallHue+randf_range(0.25, 0.5), 1.0)
-var FireBallColor := Color.from_ok_hsl(BallHue, 1, 0.6)
-var FireTailColor := Color.from_ok_hsl(TailHue, 0.5, 0.75)
-
-func _init() -> void:
-   super(SpellData.ActiveSpellIDs.GreatBallOfFire)
+func _init() -> void: super(SpellData.ActiveSpellIDs.GreatBallOfFire)
    
-
-
 func _on_activate(activator: Player) -> void:
    if _can_activate():
       TimeSinceActivation = 0.0
       var player_look_dir: Vector3 = -activator.CAMERA.global_transform.basis.z
       var fireball_pos: Vector3 = activator.CAMERA.global_position + (player_look_dir * 0.25)
       var fireball_velocity: Vector3 = player_look_dir #+ (activator.velocity * 0.15)
-      var temp_familiar := GreatBallOFireFamiliar.new(activator.MY_NETWORK_ID, fireball_pos, fireball_velocity, BallHue, TailHue)
+      var temp_familiar := GreatBallOFireFamiliar.new(activator.MY_NETWORK_ID, fireball_pos, fireball_velocity)
       activator.spawn_familiar(SpellData.ActiveSpellIDs.GreatBallOfFire, true, 0, temp_familiar.reduce_to_byte_array())

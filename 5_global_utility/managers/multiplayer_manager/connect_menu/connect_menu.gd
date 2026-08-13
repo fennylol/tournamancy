@@ -30,8 +30,7 @@ signal hosting_type_changed(client: bool)
 signal connect_button_pressed(Address: String)
 signal ready_button_pressed()
 signal quit_button_pressed()
-signal name_changed(new_name: String)
-signal color_changed(primary: bool, new_color: Color)
+signal identity_changed()
 
 func _ready() -> void:
    GLOBAL_BUTTON.pressed.connect(_on_network_type_changed.bind(true))
@@ -49,6 +48,8 @@ func _ready() -> void:
    
    PRIMARY_COLOR_SLIDER.value_changed.connect(_on_primary_slider_value_changed)
    SECONDARY_COLOR_SLIDER.value_changed.connect(_on_secondary_slider_value_changed)
+   PRIMARY_COLOR_SLIDER.value = SettingsManager.personal_settings.PRIMARY_COLOR.ok_hsl_h
+   SECONDARY_COLOR_SLIDER.value = SettingsManager.personal_settings.SECONDARY_COLOR.ok_hsl_h
 
 # =============== #
 # button handlers #
@@ -63,7 +64,8 @@ func _on_set_name_button_pressed() -> void:
    if new_name != "":
       NAME_TAG_BOX.placeholder_text = new_name
       NAME_TAG_BOX.text = ""
-      name_changed.emit(new_name)
+      SettingsManager.personal_settings.NICKNAME = new_name
+      identity_changed.emit()
 func _on_network_type_changed(global: bool) -> void:
    network_type_changed.emit(global)
    GLOBAL_BUTTON.disabled = global
@@ -77,11 +79,17 @@ func _on_hosting_type_changed(client: bool) -> void:
 # slider handlers #
 # =============== #
 func _on_primary_slider_value_changed(new_val: float) -> void:
+   var new_color: Color = SettingsManager.personal_settings.make_color(true, new_val)
    PRIMARY_COLOR_LABEL.text = str(snappedf(new_val, 0.01))
-   PRIMARY_COLOR_DISPLAY.color = Color.from_ok_hsl(new_val, 1.0, 0.6)
+   PRIMARY_COLOR_DISPLAY.color = new_color
+   SettingsManager.personal_settings.PRIMARY_COLOR = new_color
+   identity_changed.emit()
 func _on_secondary_slider_value_changed(new_val: float) -> void:
+   var new_color: Color = SettingsManager.personal_settings.make_color(false, new_val)
    SECONDARY_COLOR_LABEL.text = str(snappedf(new_val, 0.01))
-   SECONDARY_COLOR_DISPLAY.color = Color.from_ok_hsl(new_val, 0.9, 0.8)
+   SECONDARY_COLOR_DISPLAY.color = new_color
+   SettingsManager.personal_settings.SECONDARY_COLOR = new_color
+   identity_changed.emit()
 # ============= #
 # label setters #
 # ============= #
@@ -93,23 +101,20 @@ func set_ip_label(input_text: String) -> void:
 # ============= #
 # other utility #
 # ============= #
-func update_peers(peers: Array, name_tags: Dictionary = {}) -> void:
-   QUIT_BUTTON.disabled = peers.is_empty()
+func update_peers(peers: Array[OneTruePingus.PingusPeer]) -> void:
    var lines: PackedStringArray = []
    for peer in peers:
-      if peer is not OneTruePingus.PingusPeer: continue
       var state_str: String = peer.Addr + ":" + str(peer.Port)
       match peer.State:
          OneTruePingus.PingusStates.NOT_STARTED: state_str += " not started"
          OneTruePingus.PingusStates.INFORMING  : state_str += " informing..."
          OneTruePingus.PingusStates.CONNECTED  : state_str += " connected"
          _                                     : state_str += " unknown"
-      if peer.NetworkID != 0:
-         var display_name: String = name_tags.get(peer.NetworkID, str(peer.NetworkID))
-         state_str = display_name + " (" + str(peer.NetworkID) + ")\n" + state_str
+      if peer.NetworkID != 0 and SettingsManager.peer_settings.has(peer.NetworkID):
+         state_str = SettingsManager.peer_settings[peer.NetworkID].name_tag + " (" + str(peer.NetworkID) + ")\n" + state_str
       lines.append(state_str)
    PEER_LIST.text = "\n".join(lines)
-
+      
 func _is_valid_ip_addr(input_text: String) -> bool:
    var regex = RegEx.new()
    regex.compile("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")

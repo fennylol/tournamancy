@@ -7,12 +7,10 @@ const FIREBALL_NOISE: NoiseTexture2D = preload("res://2_spells/actives/GreatBall
 const FIREBALL_GRADIENT: GradientTexture1D = preload("res://2_spells/actives/GreatBallOFire/familiar/fireball_gradient.tres")
 
 const MAX_LIFE_TIME: float = 15
-#const SPEED: float = 15.0
-const SPEED: float = 1.0
+const SPEED: float = 15.0
+#const SPEED: float = 1.0
 
 var Velocity: Vector3
-var BallHue: float
-var TailHue: float
 var my_grad: GradientTexture1D
 
 func _physics_process(delta: float) -> void:
@@ -37,9 +35,7 @@ func _physics_process(delta: float) -> void:
 static func create_from_byte_array(owner_id: int, data: PackedByteArray) -> Familiar:
    var new_position := Vector3( data.decode_float( 0), data.decode_float( 4), data.decode_float( 8) )
    var new_velocity := Vector3( data.decode_float(12), data.decode_float(16), data.decode_float(20) )
-   var ball_hue: float = data.decode_float(24)
-   var tail_hue: float = data.decode_float(28)
-   return GreatBallOFireFamiliar.new(owner_id, new_position, new_velocity, ball_hue, tail_hue) 
+   return GreatBallOFireFamiliar.new(owner_id, new_position, new_velocity) 
 func reduce_to_byte_array() -> PackedByteArray:
    var data: PackedByteArray = []
    data.resize(4 * 8)
@@ -49,24 +45,22 @@ func reduce_to_byte_array() -> PackedByteArray:
    data.encode_float(12, Velocity.x)
    data.encode_float(16, Velocity.y)
    data.encode_float(20, Velocity.z)
-   data.encode_float(24, BallHue)
-   data.encode_float(28, TailHue)
    self.queue_free()
    return data
 
-func _init(owner_id: int, fireball_pos: Vector3, fireball_velocity: Vector3, ball_hue: float, tail_hue: float) -> void:
+func _init(owner_id: int, fireball_pos: Vector3, fireball_velocity: Vector3) -> void:
    super(owner_id, MAX_LIFE_TIME)
    position = fireball_pos
    Velocity = fireball_velocity
-   BallHue = ball_hue
-   TailHue = tail_hue
    name = str(owner_id) + "__great_ball_o_fire__" + str(randi())
    
    var shader_mat := ShaderMaterial.new()
    var new_gradient_tex := GradientTexture1D.new()
    var new_gradient := Gradient.new()
-   new_gradient.set_color(0, SettingsManager.personal_settings.PRIMARY_COLOR)
-   new_gradient.set_color(1, SettingsManager.personal_settings.SECONDARY_COLOR)
+   var ball_color: Color = SettingsManager.peer_settings[owner_id].primary_color   if SettingsManager.peer_settings.has(owner_id) else SettingsManager.personal_settings.PRIMARY_COLOR
+   var tail_color: Color = SettingsManager.peer_settings[owner_id].secondary_color if SettingsManager.peer_settings.has(owner_id) else SettingsManager.personal_settings.SECONDARY_COLOR
+   new_gradient.set_color(0, ball_color)
+   new_gradient.set_color(1, tail_color)
    new_gradient.set_offset(0, 0.2)
    new_gradient.set_offset(1, 0.8)
    #new_gradient.interpolation_color_space = Gradient.ColorSpace.GRADIENT_COLOR_SPACE_OKLAB

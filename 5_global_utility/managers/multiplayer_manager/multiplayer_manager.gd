@@ -4,31 +4,31 @@ class_name MultiplayerManager
 @onready var _ConnectionMenu: ConnectMenu = $ConnectMenu
 
 signal ready_button_pressed()
+signal identity_changed()
+
 signal peer_disconnected(network_id: int)
 signal connection_established(network_id: int)
 signal transform_data(network_id: int, data: PackedByteArray)
 signal damage_data(network_id: int, package: DamagePackage)
-signal name_data(network_id: int, new_name: String)
+signal identity_data(network_id: int, new_name: String, primary_color: float, secondary_color: float)
 signal effect_equipped_data(network_id: int, spell_id: int, is_active: bool)
 #signal effect_erased_data(network_id: int, spell_id: int, is_active: bool)
 signal effect_state_data(network_id: int, spell_id: int, is_active: bool, spell_state: int)
 signal spawn_familiar_data(network_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray)
 
-var NameTag  : String        = ""
 var _OTP     : OneTruePingus = OneTruePingus.new()
-var _NameTags: Dictionary    = {}
 var _Hosting : bool          = false
 
 var DEBUG_PRINT_CONTROL_MESSAGES: bool = true
 
 func _ready() -> void:
-   NameTag = str(_OTP.NetworkID)
-   _ConnectionMenu.set_id_label(NameTag)
+   SettingsManager.personal_settings.NICKNAME = str(_OTP.NetworkID)
+   _ConnectionMenu.set_id_label(SettingsManager.personal_settings.NICKNAME)
 
    _OTP.recieved_data.connect(_recieve_data)
    _OTP.connection_established.connect(_on_connection_established)
    
-   _ConnectionMenu.name_changed.connect(_on_name_changed)
+   _ConnectionMenu.identity_changed.connect(_on_identity_changed)
    _ConnectionMenu.connect_button_pressed.connect(_on_connect_button_pressed)
    _ConnectionMenu.ready_button_pressed.connect(_on_ready_button_pressed)
    _ConnectionMenu.network_type_changed.connect(_on_network_type_changed)
@@ -62,14 +62,14 @@ func _on_connection_established(network_id: int, peer_address: String, peer_port
      if peer.NetworkID == network_id: continue
      if peer.State != OneTruePingus.PingusStates.CONNECTED: continue
      _send_connection_data(peer.NetworkID, peer.Addr, peer.Port)
+   _send_identity_data()
    _refresh_peer_list()
-   _send_nametag_data()
 func _on_ready_button_pressed() -> void:
    ready_button_pressed.emit()
    _ConnectionMenu.visible = false
-func _on_name_changed(new_name: String) -> void:
-   NameTag = new_name
-   _send_nametag_data()
+func _on_identity_changed() -> void:
+   identity_changed.emit()
+   _send_identity_data()
 func _on_network_type_changed(global: bool) -> void:
    _ConnectionMenu.set_ip_label(_OTP.get_addr_port(global))
    if not global: 
@@ -82,7 +82,7 @@ func _refresh_peer_list() -> void:
      if peer.KeepAliveNum*OneTruePingus._KEEP_ALIVE_TIME >= OneTruePingus._TIMEOUT_TIME:
        peer_disconnected.emit(peer.NetworkID)
        _OTP.Peers.erase(peer)
-   _ConnectionMenu.update_peers(_OTP.Peers, _NameTags)
+   _ConnectionMenu.update_peers(_OTP.Peers)
 func open_connection_menu(show_menu: bool) -> void:
    _ConnectionMenu.visible = show_menu
 
@@ -94,7 +94,7 @@ enum DataTypes {
    # gameplay data #
    TransformData = 0x20, DamageData = 0xDA,
    # connection state #
-   ConnectionData = 0xCD, DisconnectionData = 0xDD, NameTagData = 0x15, 
+   ConnectionData = 0xCD, DisconnectionData = 0xDD, IdentityData = 0x15, 
    # inventory #
    EffectEquip = 0xEC, EffectErase = 0x0C, EffectState = 0xC5,
    # familiars #
@@ -117,7 +117,7 @@ func _recieve_data(_sender_id: int, data_type: int, data: PackedByteArray) -> vo
       DataTypes.DamageData       : _recieve_damage_data        (data)
       DataTypes.ConnectionData   : _recieve_connection_data    (data)
       DataTypes.DisconnectionData: _recieve_disconnection_data (data)
-      DataTypes.NameTagData      : _recieve_name_data          (data)
+      DataTypes.IdentityData     : _recieve_identity_data      (data)
       DataTypes.EffectEquip      : _recieve_effect_equip_data  (data)
       DataTypes.EffectErase      : _recieve_effect_erase_data  (data)
       DataTypes.EffectState      : _recieve_effect_state_data  (data)
@@ -165,11 +165,12 @@ func _recieve_disconnection_data (data: PackedByteArray) -> void:
        _OTP.Peers.erase(peer)
        peer_disconnected.emit(peer.NetworkID)
    _refresh_peer_list()
-func _recieve_name_data          (data: PackedByteArray) -> void:
+func _recieve_identity_data      (data: PackedByteArray) -> void:
    var peer_id: int = data.decode_u32(0)
-   var new_name: String = data.slice(OneTruePingus.NETWORK_ID_SIZE).get_string_from_utf8()
-   _NameTags[peer_id] = new_name
-   name_data.emit(peer_id, new_name)
+   var primary_color  : float = data.decode_float(OneTruePingus.NETWORK_ID_SIZE)
+   var secondary_color: float = data.decode_float(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.COLOR_SIZE)
+   var new_name: String = data.slice(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.COLOR_SIZE + PersonalSettings.COLOR_SIZE).get_string_from_utf8()
+   identity_data.emit(peer_id, new_name, primary_color, secondary_color)
    _refresh_peer_list()
 func _recieve_effect_equip_data  (data: PackedByteArray) -> void:
    var peer_id: int    = data.decode_u32(0)
@@ -229,12 +230,14 @@ func _send_disconnection_data(disconnecting_id: int = _OTP.NetworkID) -> void:
    data.resize(OneTruePingus.NETWORK_ID_SIZE)
    data.encode_u32(0, disconnecting_id)
    _OTP.send_data(DataTypes.DisconnectionData, data)
-func _send_nametag_data(owner_id: int = _OTP.NetworkID) -> void:
+func _send_identity_data(owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
-   data.resize(OneTruePingus.NETWORK_ID_SIZE)
+   data.resize(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.COLOR_SIZE + PersonalSettings.COLOR_SIZE)
    data.encode_u32(0, owner_id)
-   data.append_array(NameTag.to_utf8_buffer())
-   _OTP.send_data(DataTypes.NameTagData, data)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE, SettingsManager.personal_settings.get_color(true))
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.COLOR_SIZE, SettingsManager.personal_settings.get_color(false))
+   data.append_array(SettingsManager.personal_settings.NICKNAME.to_utf8_buffer())
+   _OTP.send_data(DataTypes.IdentityData, data)
 func send_effect_equip_data(spell_id: int, is_active: bool, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE)

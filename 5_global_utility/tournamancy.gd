@@ -5,7 +5,6 @@ class_name Tournamancy
 @onready var MPM             : MultiplayerManager = $MultiplayerManager
 @onready var FAMILIARS       : Node3D             = $Familiars
 
-var _dummies: Dictionary = {}
 const DummyScene: PackedScene = preload("res://1_player/dummy/dummy.tscn")
 
 enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD, NameTagData = 0x15}
@@ -14,8 +13,9 @@ func _ready() -> void:
    MPM.connection_established.connect(_on_mpm_connection_established)
    MPM.peer_disconnected.connect(_on_mpm_peer_discconected)
    MPM.ready_button_pressed.connect(_on_mpm_ready_button_pressed)
+   MPM.identity_changed.connect(PLAYER_CHARACTER.set_colors)
    MPM.transform_data.connect(_on_mpm_transform_data)
-   MPM.name_data.connect(_on_mpm_name_data)
+   MPM.identity_data.connect(_on_mpm_identity_data)
    MPM.damage_data.connect(_on_mpm_damage_data)
    MPM.effect_equipped_data.connect(_on_mpm_effect_equipped_data)
    MPM.effect_state_data.connect(_on_mpm_effect_state_data)
@@ -51,38 +51,37 @@ func _on_mpm_connection_established(network_id: int) -> void:
    add_child(dummy)
    dummy.NETWORK_ID = network_id
    dummy.set_name("dummy_" + str(network_id))
-   _dummies[network_id] = dummy
+   SettingsManager.peer_settings[network_id] = SettingsManager.PeerSettings.new(dummy, str(network_id), Color.WHITE, Color.WHITE)
 func _on_mpm_peer_discconected     (network_id: int) -> void:
-   if _dummies.has(network_id):
-     _dummies[network_id].queue_free()
+   if SettingsManager.peer_settings.has(network_id):
+      SettingsManager.peer_settings[network_id].dummy.queue_free()
+      SettingsManager.peer_settings[network_id] = null
 func _on_mpm_transform_data        (network_id: int, data: PackedByteArray) -> void:
-   if _dummies.has(network_id):
-     _dummies[network_id].on_transform_data(data)
-func _on_mpm_name_data             (network_id: int, new_name: String) -> void:
-   if _dummies.has(network_id):
-     _dummies[network_id].on_nametag_data(new_name)
+   if SettingsManager.peer_settings.has(network_id):
+     SettingsManager.peer_settings[network_id].dummy.on_transform_data(data)
+func _on_mpm_identity_data         (network_id: int, new_name: String, primary_color: float, secondary_color: float) -> void:
+   if SettingsManager.peer_settings.has(network_id):
+      SettingsManager.peer_settings[network_id].dummy.on_identity_data(new_name, primary_color, secondary_color)
 func _on_mpm_damage_data           (_network_id: int, package: DamagePackage):
    if package.id_to == PLAYER_CHARACTER.MY_NETWORK_ID:
       PLAYER_CHARACTER.on_damage_data(package)
-   elif _dummies.has(package.id_to):
-      _dummies[package.id_to].on_damage_data(package)
-   else:
-      return
+   elif SettingsManager.peer_settings.has(package.id_to):
+      SettingsManager.peer_settings[package.id_to].dummy.on_damage_data(package)
 func _on_mpm_ready_button_pressed  () -> void:
    PLAYER_CHARACTER.Enabled = true
 func _on_mpm_effect_equipped_data  (network_id: int, spell_id: int, is_active: bool) -> void:
-   if _dummies.has(network_id):
-     _dummies[network_id].on_effect_equip_data(spell_id, is_active)
+   if SettingsManager.peer_settings.has(network_id):
+     SettingsManager.peer_settings[network_id].dummy.on_effect_equip_data(spell_id, is_active)
 func _on_mpm_effect_state_data     (network_id: int, spell_id: int, is_active: bool, spell_state: int) -> void:
-   if _dummies.has(network_id):
-     _dummies[network_id].on_effect_state_data(spell_id, is_active, spell_state)
+   if SettingsManager.peer_settings.has(network_id):
+     SettingsManager.peer_settings[network_id].dummy.on_effect_state_data(spell_id, is_active, spell_state)
 func _on_mpm_spawn_familiar_data   (network_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
    _spawn_familiar(network_id, spell_id, is_active, familiar_idx, creation_data)
 
 func _on_player_damage_dealt       (package : DamagePackage) -> void:
    MPM.send_damage_data(package)
-   if _dummies.has(package.id_to):
-      _dummies[package.id_to].on_damage_data(package)
+   if SettingsManager.peer_settings.has(package.id_to):
+      SettingsManager.peer_settings[package.id_to].dummy.on_damage_data(package)
 func _on_player_familiar_spawned   (spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
    _spawn_familiar(MPM.get_local_player_id(), spell_id, is_active, familiar_idx, creation_data)
    MPM.send_spawn_familiar_data(spell_id, is_active, familiar_idx, creation_data)
