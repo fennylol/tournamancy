@@ -98,5 +98,12 @@ ClassID = 4
 button_color = Color(1, 0.5687833, 0.98551124, 1)
 
 [node name="SimplePrism" parent="." unique_id=1103879490 instance=ExtResource("4_sdsrs")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.488354, 1.4550233, 2.0091224)
-PrismShape = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.488354, 1.2, 2.0091224)
+
+[node name="SimplePrism2" parent="." unique_id=575747947 instance=ExtResource("4_sdsrs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2884703, 1.2, -0.21941268)
+PrismShape = 2
+
+[node name="SimplePrism3" parent="." unique_id=1613869526 instance=ExtResource("4_sdsrs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.088189, 1.2, -2.6144605)
+PrismShape = 4

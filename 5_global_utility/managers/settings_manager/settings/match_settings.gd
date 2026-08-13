@@ -4,6 +4,7 @@ class_name MatchSettings
 # ==================== #
 #    WIN CONDITIONS    #
 # ==================== #
+
 static func _WIN_CONDITION_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## A player wins the match when they have this many points.
 var POINTS_TO_WIN : int = 10
@@ -29,20 +30,22 @@ var POINT_RULES : Dictionary = {
 # ==================== #
 #    ARENA CREATION    #
 # ==================== #
+
 static func _ARENA_CREATION_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## future
 
 # =================== #
 #    ARENA EFFECTS    #
 # =================== #
+
 static func _ARENA_EFFECTS_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## future
 
 # ===================== #
 #    PLAYER SPAWNING    #
 # ===================== #
-static func _PLAYER_SPAWNING_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 
+static func _PLAYER_SPAWNING_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## A list of possible "sets of locations" which are considered valid spots for player spawning
 enum PlayerSpawnLocationOptions {
    ## Any point in the arena is a valid spawn location
@@ -86,6 +89,7 @@ var RETURNING_PLAYER_OVERHEALTH : float = 100.0
 # ============ #
 #    PRISMS    #
 # ============ #
+
 static func _PRISM_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## The number of seconds in between new prisms spawning into the arena
 var NEW_PRISM_COOLDOWN : float = 45.0
@@ -134,7 +138,7 @@ var MAX_PRISM_REROLL_LOCK : int = 1
 ## If true, a prism will force active abilities to appear a set percentage of the time.
 var PRISM_FORCE_ACTIVE_ABILITIES : bool = true
 ## If [member PRISM_FORCE_ACTIVE_ABILITIES] is true, the percent chance of an active ability to be shown. 1.0 is 100%.
-var ACTIVE_ABILITIES_PERCENT : float = 0.0
+var ACTIVE_ABILITIES_PERCENT : float = 0.1
 ## [b]The spell weights for active spells.[/b][br][br]Each spell will be more or less likely to appear depending on its associated value in this property. If one spell has a weight of 2 and another spell has a weight of 1, the first spell will be twice as likely to appear.[br][br]Negative weight values are treated the same as values of 0 - neither will appear at all.
 var ACTIVE_SPELL_WEIGHTS : Dictionary = {
    SpellData.ActiveSpellIDs.GreatBallOfFire : 1,
@@ -183,6 +187,7 @@ var MAX_MERCY_WEIGHT_APPLICATION : int = -1
 # ============= #
 #    PLAYERS    #
 # ============= #
+
 static func _PLAYER_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## Determines the base statistics of all players (such as hearts and speed) without modifying passive loadouts.
 var PLAYER_BASE_STATS : Dictionary = {
@@ -219,6 +224,7 @@ var PLAYER_SPELL_WEIGHT_OVERRIDES : Dictionary = {}
 # ============== #
 #    GAMEPLAY    #
 # ============== #
+
 static func _GAMEPLAY_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## After all players have spawned in, the number of seconds that must pass before the match begins
 var MATCH_START_COUNTDOWN : float = 5.0
@@ -263,3 +269,25 @@ enum PrismRelocationOptions {
 ## Determines what occurs to a prism that finds itself outside the bounds of the arena.
 var PRISM_RELOCATION : PrismRelocationOptions = PrismRelocationOptions.destroy
 ##
+
+# ================== #
+#  STATIC FUNCTIONS  #
+# ================== #
+
+static func _MATCH_SETTING_FUNCTIONS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
+## For each spell listed in ACTIVE_SPELL_WEIGHTS, adds one copy to an array and returns said array.
+func get_world_prism_actives() -> Array[ActiveSpell]:
+   var spells : Array[ActiveSpell] = []
+   spells.resize(ACTIVE_SPELL_WEIGHTS.keys().size())
+   for i in range(ACTIVE_SPELL_WEIGHTS.keys().size()):
+      var new_spell : ActiveSpell = ActiveSpell.new(ACTIVE_SPELL_WEIGHTS.keys()[i])
+      spells[i] = new_spell
+   return spells
+## For each spell listed in PASSIVE_SPELL_WEIGHTS, adds one copy to an array and returns said array.
+func get_world_prism_passives() -> Array[PassiveSpell]:
+   var spells : Array[PassiveSpell] = []
+   spells.resize(PASSIVE_SPELL_WEIGHTS.keys().size())
+   for i in range(PASSIVE_SPELL_WEIGHTS.keys().size()):
+      var new_spell : PassiveSpell = PassiveSpell.new(1, PASSIVE_SPELL_WEIGHTS.keys()[i])
+      spells[i] = new_spell
+   return spells

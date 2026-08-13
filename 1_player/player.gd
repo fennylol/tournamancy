@@ -188,7 +188,7 @@ func close_prism(prism : Prism):
    prism_is_open = false
    PRISMMENU.visible = false
    Enabled = true
-   prism.destroy_self()
+   prism.destroy_self_if_limit()
 
 # =================== #
 #  data manipulation  #

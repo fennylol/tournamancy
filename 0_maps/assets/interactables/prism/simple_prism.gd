@@ -16,40 +16,45 @@ func _on_interact(interacter: Player) -> void:
    if crack_count >= SettingsManager.match_settings.PRISM_CRACK_COUNT: return
    crack_count += 1
    interacter.open_prism(self)
-func destroy_self(): self.queue_free()
+func destroy_self_if_limit(): 
+   if crack_count >= SettingsManager.match_settings.PRISM_CRACK_COUNT: self.queue_free()
 
 # ================ #
 #  spell handling  #
 # ================ #
 
-var ActiveSpellList : Array[SpellData.ActiveSpellIDs] = [0,1,2,3,4]
-var PassiveSpellList : Array[SpellData.PassiveSpellIDs] = [SpellData.PassiveSpellIDs.Heart,SpellData.PassiveSpellIDs.Damage,SpellData.PassiveSpellIDs.Speed,SpellData.PassiveSpellIDs.Sprint,SpellData.PassiveSpellIDs.Jump,SpellData.PassiveSpellIDs.Gravity,SpellData.PassiveSpellIDs.MoonJump]
-var PassiveSpellStacks : Array[int] = [4,3,1,1,2,1,1]
+var ActiveSpellList : Array[ActiveSpell] = []
+var PassiveSpellList : Array[PassiveSpell] = []
 
+func clear_spells():
+   ActiveSpellList.clear()
+   PassiveSpellList.clear()
 func load_spells_from_world():
-   pass
-func load_spells_from_player(actives : Array[SpellData.ActiveSpellIDs], passives : Array[SpellData.PassiveSpellIDs]):
+   ActiveSpellList = SettingsManager.match_settings.get_world_prism_actives()
+   PassiveSpellList = SettingsManager.match_settings.get_world_prism_passives()
+func load_spells_from_player(actives : Array[ActiveSpell], passives : Array[PassiveSpell]):
    ActiveSpellList = actives
    PassiveSpellList = passives
-func get_active_spells() -> Array[SpellData.ActiveSpellIDs]: return ActiveSpellList
-func get_passive_spells() -> Array[SpellData.PassiveSpellIDs]: return PassiveSpellList
-func get_passive_stacks() -> Array[int]: return PassiveSpellStacks
+func get_active_spells() -> Array[ActiveSpell]: return ActiveSpellList
+func get_passive_spells() -> Array[PassiveSpell]: return PassiveSpellList
 
 # ============= #
 #   animation   #
 # ============= #
 
-const ROTATE_SPEED  : float = 0.6
+const ROTATE_SPEED  : float = 1.0
 const BOBBING_SPEED : float = 1.3
-const BOBBING_DEPTH : float = 0.1
+const BOBBING_DEPTH : float = 0.006
 var time : float = 0.0
 
 func _ready() -> void:
+   clear_spells()
+   load_spells_from_world()
    for i in range(5):
       if PrismShape == i: PRISMBODY.get_child(i).visible = true
       else: PRISMBODY.get_child(i).visible = false
 
 func _process(delta: float) -> void:
    time += delta
-   PRISMBODY.rotate(Vector3.UP, delta * ROTATE_SPEED)
-   PRISMBODY.position.y = -0.25 + (sin(time * BOBBING_SPEED) * BOBBING_DEPTH)
+   PRISMBODY.rotate(Vector3.UP, delta * ROTATE_SPEED * ( 1 / ( float(PrismShape) + 1 ) ) )
+   PRISMBODY.position.y += (sin(time * BOBBING_SPEED) * BOBBING_DEPTH)
