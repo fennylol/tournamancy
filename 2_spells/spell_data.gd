@@ -420,9 +420,12 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       ## PLATFORMER JUMPS. While the "jump" button is held, gravity is low. When the "jump" button is released, gravity is high.
       StatTypes.GRAVITY:        influenced_stat = base_value * pow( 2.0 , ( -( stat_value * 0.25 ) / 2 ) ) if Input.is_action_pressed("jump") else base_value * pow( 2.0 , ( ( stat_value * 0.25 ) / 2 ) )
       StatTypes.STEADFASTNESS:  influenced_stat = base_value * stat_value ##🧑‍🔧
-      StatTypes.MELEE_DAMAGE:   influenced_stat = base_value * stat_value ##🧑‍🔧
-      StatTypes.MELEE_RANGE:    influenced_stat = base_value * stat_value ##🧑‍🔧
-      StatTypes.MELEE_FORCE:    influenced_stat = base_value * stat_value ##🧑‍🔧
+      ## ONE-TO-ONE. Each additional point is one (1.0) additional point of damage.
+      StatTypes.MELEE_DAMAGE:   influenced_stat = base_value + stat_value ##🧑‍🔧
+      ## ADDITIVE. Each additional point of range increases the Area3D by 0.5m
+      StatTypes.MELEE_RANGE:    influenced_stat = base_value + ( stat_value * 0.5 ) ##🧑‍🔧
+      ## IDK
+      StatTypes.MELEE_FORCE:    influenced_stat = base_value + stat_value ##🧑‍🔧
       StatTypes.MELEE_COOLDOWN: influenced_stat = base_value * stat_value ##🧑‍🔧
    if influenced_stat == -999.0: 
       printerr("SpellData.get_influenced_stat() STAT ", id, " NOT FOUND. RETURNING 0.")

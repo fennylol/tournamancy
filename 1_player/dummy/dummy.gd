@@ -85,6 +85,17 @@ func on_effect_state_data(spell_id: int, is_active: bool, spell_state: int) -> v
 func on_damage_data(package : DamagePackage):
    HEALTHBAR.on_damage_data(package)
    _sync_healthbar()
+func on_knockout_reset():
+   ## CLEAR ALL EFFECTS
+   pass
+   ## RESET HEALTH
+   var default_health : Array[float] = [
+      SettingsManager.match_settings.PLAYER_BASE_STATS.get(SpellData.StatTypes.HEARTS), \
+      SettingsManager.match_settings.PLAYER_BASE_STATS.get(SpellData.StatTypes.ARMOR), \
+      SettingsManager.match_settings.PLAYER_BASE_STATS.get(SpellData.StatTypes.WARD), \
+      SettingsManager.match_settings.PLAYER_BASE_STATS.get(SpellData.StatTypes.OVERHEALTH)]
+   HEALTHBAR.set_health(default_health)
+   _sync_healthbar()
 
 func _sync_healthbar():
    HB_DISPLAY.update_display(HEALTHBAR.get_health())

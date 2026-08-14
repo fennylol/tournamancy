@@ -11,10 +11,9 @@ func change_state(new_state: ThunderwaveSpell.States) -> void:
          if i.get_parent() is Dummy: send_damage(i.get_parent())
 
 func send_damage(enemy : Dummy):
-   var stat_influenced_damage : float = SPELL_DAMAGE * SpellData.get_influenced_stat(SpellData.StatTypes.DAMAGE, ThePlayer.BASE_DAMAGE, ThePlayer.SpellBook.get_stat(SpellData.StatTypes.DAMAGE))
-   var stat_influenced_force  : float = SPELL_FORCE  * SpellData.get_influenced_stat(SpellData.StatTypes.FORCE, ThePlayer.BASE_FORCE, ThePlayer.SpellBook.get_stat(SpellData.StatTypes.FORCE))
+   var stat_influenced_damage : float = SPELL_DAMAGE * SpellData.get_influenced_stat(SpellData.StatTypes.DAMAGE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.DAMAGE], ThePlayer.SpellBook.get_stat(SpellData.StatTypes.DAMAGE))
+   var stat_influenced_force  : float = SPELL_FORCE  * SpellData.get_influenced_stat(SpellData.StatTypes.FORCE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.FORCE], ThePlayer.SpellBook.get_stat(SpellData.StatTypes.FORCE))
    
-   #enemy.recieve_damage(stat_influenced_damage) ## this should probably route through mpm and tournamancy instead of being called directly
    var new_damage_package = DamagePackage.new()
    new_damage_package.id_from = ThePlayer.MY_NETWORK_ID
    new_damage_package.id_to = enemy.NETWORK_ID

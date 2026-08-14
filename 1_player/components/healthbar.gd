@@ -8,6 +8,8 @@ const NUMBER_OF_HEALTH_TYPES : int = 4
 var total_health : Array[float] = [ 0.0 , 0.0 , 0.0 , 0.0 ]
 var damage_taken : float = 0.0
 
+signal health_reached_zero(killer_id : int)
+
 func _ready():
    pass
 
@@ -28,6 +30,13 @@ func on_damage_data(package : DamagePackage):
       else:
          total_health[j] -= unallocated_damage
          unallocated_damage = 0.0
+   
+   ## SIGNAL WHEN HEALTH REACHES ZERO
+   var health_sum : float = 0
+   for i in range(NUMBER_OF_HEALTH_TYPES): health_sum += total_health[i]
+   if health_sum <= 0.0: 
+      var killer_id = package.id_owner if package.id_owner != 0 else package.id_from
+      health_reached_zero.emit(killer_id)
 
 func get_health() -> Array[float]: return total_health
 func set_health(health_array : Array[float], add : bool = false):

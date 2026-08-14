@@ -6,16 +6,18 @@ const TRANSFORM_DATA_SIZE: int = (4*9)+1
 ## NODES
 @onready var CAMERA    : Camera3D        = $Eyes
 @onready var LOOK_DIR  : RayCast3D       = $Eyes/RayCast3D
+@onready var MELEEBOX  : Area3D          = $Eyes/quickmelee
+
 @onready var LEFT_ARM  : Node3D          = $Eyes/LEFTARM
 @onready var RIGHT_ARM : Node3D          = $Eyes/RIGHTARM
+@onready var HAT_MESH  : MeshInstance3D  = $Eyes/HAT
+@onready var ARM_L_MESH: MeshInstance3D  = $Eyes/LEFTARM/ARM_L
+@onready var ARM_R_MESH: MeshInstance3D  = $Eyes/RIGHTARM/ARM_R
+
 @onready var EFFECTORY : Effectory       = $Effectory
 @onready var HEALTHBAR : HealthComponent = $Healthbar
 @onready var HUD       : Control         = $CanvasLayer/DefaultHud
 @onready var PRISMMENU : PrismMenu       = $CanvasLayer/PrismMenu
-
-@onready var HAT_MESH: MeshInstance3D = $Eyes/HAT
-@onready var ARM_L_MESH: MeshInstance3D = $Eyes/LEFTARM/ARM_L
-@onready var ARM_R_MESH: MeshInstance3D = $Eyes/RIGHTARM/ARM_R
 var HUD_LEFT_ACTIVE    : Node2D
 var HUD_RIGHT_ACTIVE   : Node2D
 var HUD_PASSIVEBOX     : Node2D
@@ -110,6 +112,14 @@ func _process(delta):
       RIGHT_ARM.rotation.x = 0.0
       HUD_RIGHT_ACTIVE._release()
    
+   if Input.is_action_just_pressed("quick_melee") and Enabled:
+      LEFT_ARM.rotation.x = -80.0
+      RIGHT_ARM.rotation.x = -80.0
+      _melee_attack()
+   elif Input.is_action_just_released("quick_melee") and Enabled:
+      LEFT_ARM.rotation.x = 0.0
+      RIGHT_ARM.rotation.x = 0.0
+   
    ## PASSIVE PROCESSES, BEGIN
    if Enabled: SpellBook.process_end(delta, self)
    
@@ -123,6 +133,28 @@ func _unhandled_input(event):
       rotate_y(-event.relative.x * .005 * personal_settings.MOUSE_SENSITIVITY)
       CAMERA.rotate_x(-event.relative.y * .005 * personal_settings.MOUSE_SENSITIVITY)
       CAMERA.rotation.x = clamp(CAMERA.rotation.x, -PI/2, PI/2)
+
+func _melee_attack():
+   ## RESIZE MELEE AREA
+   var stat_influenced_melee_range : float = SpellData.get_influenced_stat(SpellData.StatTypes.MELEE_RANGE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.MELEE_RANGE], SpellBook.get_stat(SpellData.StatTypes.MELEE_RANGE))
+   MELEEBOX.get_child(0).position.z = -( ( stat_influenced_melee_range / 2 ) + 0.5 )
+   MELEEBOX.get_child(0).shape.size = Vector3( stat_influenced_melee_range , stat_influenced_melee_range , stat_influenced_melee_range )
+   
+   ## CHECK FOR ENEMIES AND CONSTRUCT DAMAGE PACKAGE
+   for i in MELEEBOX.get_overlapping_bodies():
+      if i.get_parent() is Dummy:
+         var enemy : Dummy = i.get_parent()
+         var stat_influenced_damage : float = SpellData.get_influenced_stat(SpellData.StatTypes.MELEE_DAMAGE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.MELEE_DAMAGE], SpellBook.get_stat(SpellData.StatTypes.MELEE_DAMAGE))
+         var stat_influenced_force  : float = SpellData.get_influenced_stat(SpellData.StatTypes.MELEE_FORCE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.MELEE_FORCE], SpellBook.get_stat(SpellData.StatTypes.MELEE_FORCE))
+         var new_damage_package = DamagePackage.new()
+         new_damage_package.id_from = MY_NETWORK_ID
+         new_damage_package.id_to = enemy.NETWORK_ID
+         new_damage_package.location_source = global_position
+         new_damage_package.location_receipt = enemy.global_position
+         new_damage_package.amount = stat_influenced_damage
+         new_damage_package.type = DamagePackage.DamageType.ZAP
+         new_damage_package.force = stat_influenced_force
+         send_damage_package(new_damage_package)
 
 # =================== #
 #   simple movement   #

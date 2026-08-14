@@ -10,6 +10,8 @@ signal peer_disconnected(network_id: int)
 signal connection_established(network_id: int)
 signal transform_data(network_id: int, data: PackedByteArray)
 signal damage_data(network_id: int, package: DamagePackage)
+signal knockout_data(network_id: int, KO_player_id : int)
+signal victory_point_data(network_id: int, points_delta : int)
 signal identity_data(network_id: int, new_name: String, primary_color: float, secondary_color: float)
 signal effect_equipped_data(network_id: int, spell_id: int, is_active: bool)
 #signal effect_erased_data(network_id: int, spell_id: int, is_active: bool)
@@ -91,8 +93,10 @@ func open_connection_menu(show_menu: bool) -> void:
 # ============ #
 #IMPLEMMENMT CHILD NODE DATA
 enum DataTypes { 
+   # do not use #
+   pingus = 0xC0,
    # gameplay data #
-   TransformData = 0x20, DamageData = 0xDA,
+   TransformData = 0x20, DamageData = 0xDA, KnockoutData = 0xE0, VictoryPointsData = 0x01,
    # connection state #
    ConnectionData = 0xCD, DisconnectionData = 0xDD, IdentityData = 0x15, 
    # inventory #
@@ -115,6 +119,8 @@ func _recieve_data(_sender_id: int, data_type: int, data: PackedByteArray) -> vo
    match data_type:
       DataTypes.TransformData    : _recieve_transform_data     (data)
       DataTypes.DamageData       : _recieve_damage_data        (data)
+      DataTypes.KnockoutData     : _recieve_knockout_data      (data)
+      DataTypes.VictoryPointsData: _recieve_victory_point_data (data)
       DataTypes.ConnectionData   : _recieve_connection_data    (data)
       DataTypes.DisconnectionData: _recieve_disconnection_data (data)
       DataTypes.IdentityData     : _recieve_identity_data      (data)
@@ -133,20 +139,18 @@ func _recieve_transform_data     (data: PackedByteArray) -> void:
    var trans_data: PackedByteArray = data.slice(OneTruePingus.NETWORK_ID_SIZE)
    transform_data.emit(peer_id, trans_data)
 func _recieve_damage_data        (data: PackedByteArray) -> void:
-   ## Note that DataTypes.DamageData == 0xDA. I don't know if that needs to change.
-   var peer_id : int = data.decode_u32(0)
-   var ID_OFFSET_SIZE         : int = OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE
-   var ID_AND_LOC_OFFSET_SIZE : int = OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE
-   var new_damage_instance := DamagePackage.new()
-   new_damage_instance.id_from          = data.decode_u32(OneTruePingus.NETWORK_ID_SIZE)
-   new_damage_instance.id_owner         = data.decode_u32(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE)
-   new_damage_instance.id_to            = data.decode_u32(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE)
-   new_damage_instance.location_source  = Vector3(data.decode_float(ID_OFFSET_SIZE),  data.decode_float(ID_OFFSET_SIZE + 4),  data.decode_float(ID_OFFSET_SIZE + 8))
-   new_damage_instance.location_receipt = Vector3(data.decode_float(ID_OFFSET_SIZE + DamagePackage.LOCATION_SOURCE_SIZE), data.decode_float(ID_OFFSET_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 4), data.decode_float(ID_OFFSET_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 8))
-   new_damage_instance.amount           = data.decode_float(ID_AND_LOC_OFFSET_SIZE)
-   new_damage_instance.type             = data.decode_u8(ID_AND_LOC_OFFSET_SIZE + DamagePackage.AMOUNT_SIZE) as DamagePackage.DamageType
-   new_damage_instance.force            = data.decode_float(ID_AND_LOC_OFFSET_SIZE + DamagePackage.AMOUNT_SIZE + DamagePackage.TYPE_SIZE)
-   damage_data.emit(peer_id, new_damage_instance)
+   var peer_id: int = data.decode_u32(0)
+   var package_data: PackedByteArray = data.slice(OneTruePingus.NETWORK_ID_SIZE)
+   var package : DamagePackage = DamagePackage.from_PackedByteArray(package_data)
+   damage_data.emit(peer_id, package)
+func _recieve_knockout_data      (data: PackedByteArray) -> void:
+   var killer_id    : int = data.decode_u32(0)
+   var KO_player_id : int = data.decode_u32(OneTruePingus.NETWORK_ID_SIZE)
+   knockout_data.emit(killer_id, KO_player_id)
+func _recieve_victory_point_data (data: PackedByteArray) -> void:
+   var peer_id      : int = data.decode_u32(0)
+   var points_delta : int = data.decode_s8(OneTruePingus.NETWORK_ID_SIZE)
+   victory_point_data.emit(peer_id, points_delta)
 func _recieve_connection_data    (data: PackedByteArray) -> void:
    var peer_id = data.decode_u32(0)
    var peer_port = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
@@ -199,38 +203,38 @@ func send_player_transform_data(data: PackedByteArray, owner_id: int = _OTP.Netw
    data_with_id.encode_u32(0, owner_id)
    data_with_id.append_array(data)
    _OTP.send_data(DataTypes.TransformData, data_with_id)
-func send_damage_data(package : DamagePackage, owner_id: int = _OTP.NetworkID) -> void:
+func send_damage_data          (package : DamagePackage, owner_id: int = _OTP.NetworkID) -> void:
    # TODO: when client/server changed made fix who add the ID
    var data: PackedByteArray = []
-   ## Note that DataTypes.DamageData == 0xDA. I don't know if that needs to change.
-   data.resize(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE + DamagePackage.TYPE_SIZE + DamagePackage.FORCE_SIZE)
-   data.encode_u32(0,                                                                                                                                                                                                                                                      owner_id)
-   data.encode_u32(OneTruePingus.NETWORK_ID_SIZE,                                                                                                                                                                                                                          package.id_from)
-   data.encode_u32(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE,                                                                                                                                                                                             package.id_owner)
-   data.encode_u32(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE,                                                                                                                                                               package.id_to)
-   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE,                                                                                                                                  package.location_source.x)
-   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + 4,                                                                                                                              package.location_source.y)
-   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + 8,                                                                                                                              package.location_source.z)
-   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE,                                                                                             package.location_receipt.x)
-   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 4,                                                                                         package.location_receipt.y)
-   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + 8,                                                                                         package.location_receipt.z)
-   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE,                                                       package.amount)
-   data.encode_u8(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE,                              package.type)
-   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + DamagePackage.ID_FROM_SIZE + DamagePackage.ID_OWNER_SIZE + DamagePackage.ID_TO_SIZE + DamagePackage.LOCATION_SOURCE_SIZE + DamagePackage.LOCATION_RECEIPT_SIZE + DamagePackage.AMOUNT_SIZE + DamagePackage.TYPE_SIZE, package.force)
+   data.resize(OneTruePingus.NETWORK_ID_SIZE)
+   data.encode_u32(0,owner_id)
+   data.append_array(package.to_PackedByteArray())
    _OTP.send_data(DataTypes.DamageData, data)
-func _send_connection_data(network_id: int, peer_address: String, peer_port: int) -> void:
+func send_knockout_data        (killer_player_id : int, KO_player_id: int = _OTP.NetworkID) -> void:
+   var data: PackedByteArray = []
+   data.resize(OneTruePingus.NETWORK_ID_SIZE + OneTruePingus.NETWORK_ID_SIZE)
+   data.encode_u32(0, killer_player_id)
+   data.encode_u32(OneTruePingus.NETWORK_ID_SIZE , KO_player_id)
+   _OTP.send_data(DataTypes.KnockoutData, data)
+func send_victory_point_data   (points : int, owner_id: int = _OTP.NetworkID) -> void:
+   var data: PackedByteArray = []
+   data.resize(OneTruePingus.NETWORK_ID_SIZE + SettingsManager.match_settings.NETWORK_POINTS_SIZE)
+   data.encode_u32(0 , owner_id)
+   data.encode_s8(OneTruePingus.NETWORK_ID_SIZE , points)
+   _OTP.send_data(DataTypes.VictoryPointsData, data)
+func _send_connection_data     (network_id: int, peer_address: String, peer_port: int) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + OneTruePingus.PORT_SIZE)
    data.encode_u32(0, network_id)
    data.encode_u16(OneTruePingus.NETWORK_ID_SIZE, peer_port)
    data.append_array(peer_address.to_utf8_buffer())
    _OTP.send_data(DataTypes.ConnectionData, data)
-func _send_disconnection_data(disconnecting_id: int = _OTP.NetworkID) -> void:
+func _send_disconnection_data  (disconnecting_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE)
    data.encode_u32(0, disconnecting_id)
    _OTP.send_data(DataTypes.DisconnectionData, data)
-func _send_identity_data(owner_id: int = _OTP.NetworkID) -> void:
+func _send_identity_data       (owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.COLOR_SIZE + PersonalSettings.COLOR_SIZE)
    data.encode_u32(0, owner_id)
@@ -238,18 +242,18 @@ func _send_identity_data(owner_id: int = _OTP.NetworkID) -> void:
    data.encode_float(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.COLOR_SIZE, SettingsManager.personal_settings.get_color(false))
    data.append_array(SettingsManager.personal_settings.NICKNAME.to_utf8_buffer())
    _OTP.send_data(DataTypes.IdentityData, data)
-func send_effect_equip_data(spell_id: int, is_active: bool, owner_id: int = _OTP.NetworkID) -> void:
+func send_effect_equip_data    (spell_id: int, is_active: bool, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE)
    data.encode_u32(0, owner_id)
    data.encode_u16(OneTruePingus.NETWORK_ID_SIZE, spell_id)
    data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE, is_active)
    _OTP.send_data(DataTypes.EffectEquip, data)
-func _send_effect_erase_data(spell_id: int, is_active: bool) -> void:
+func _send_effect_erase_data   (spell_id: int, is_active: bool) -> void:
    print("ERASE EFFECT DATA SENT BUT NO DATA REALLY EXISTS")
    var data: PackedByteArray = []
    _OTP.send_data(DataTypes.EffectErase, data)
-func send_effect_state_data(spell_id: int, is_active: bool, spell_state: int, owner_id: int = _OTP.NetworkID) -> void:
+func send_effect_state_data    (spell_id: int, is_active: bool, spell_state: int, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE + SpellData.SPELL_STATE_SIZE)
    data.encode_u32(0, owner_id)
@@ -257,7 +261,7 @@ func send_effect_state_data(spell_id: int, is_active: bool, spell_state: int, ow
    data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE, is_active)
    data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE, spell_state)
    _OTP.send_data(DataTypes.EffectState, data)
-func send_spawn_familiar_data(spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray, owner_id: int = _OTP.NetworkID) -> void:
+func send_spawn_familiar_data  (spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE + SpellData.FAMILIAR_IDX_SIZE)
    data.encode_u32(0, owner_id)

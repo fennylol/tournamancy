@@ -1,6 +1,12 @@
 extends Resource
 class_name MatchSettings
 
+# =============== #
+#    CONSTANTS    #
+# =============== #
+
+const NETWORK_POINTS_SIZE : int = 1
+
 # ==================== #
 #    WIN CONDITIONS    #
 # ==================== #
@@ -135,7 +141,7 @@ var PRISM_REROLL_COUNT : int = 2
 var PRISM_REROLL_DECREMENT : int = 1
 ## The maximum number of spells a player can "lock," which will remain in place during a reroll.
 var MAX_PRISM_REROLL_LOCK : int = 1
-## If true, a prism will force active abilities to appear a set percentage of the time.
+## If true, a prism will force active abilities to appear a set percentage of the time.[br]If false, the likelihood of an active ability being shown in a given slot is equal to the ratio of actives to passives in the spell pool (for example, 2 active abilities and 10 passive abilities will have a likelihood of 2/10 or 1/5 to show an active)
 var PRISM_FORCE_ACTIVE_ABILITIES : bool = true
 ## If [member PRISM_FORCE_ACTIVE_ABILITIES] is true, the percent chance of an active ability to be shown. 1.0 is 100%.
 var ACTIVE_ABILITIES_PERCENT : float = 0.1
@@ -210,7 +216,7 @@ var PLAYER_BASE_STATS : Dictionary = {
    SpellData.StatTypes.GRAVITY        : 9.8,
    SpellData.StatTypes.STEADFASTNESS  : 0.0,
    SpellData.StatTypes.MELEE_DAMAGE   : 2.0,
-   SpellData.StatTypes.MELEE_RANGE    : 1.0,
+   SpellData.StatTypes.MELEE_RANGE    : 1.5,
    SpellData.StatTypes.MELEE_FORCE    : 0.0,
    SpellData.StatTypes.MELEE_COOLDOWN : 0.0
 }
@@ -268,7 +274,6 @@ enum PrismRelocationOptions {
 }
 ## Determines what occurs to a prism that finds itself outside the bounds of the arena.
 var PRISM_RELOCATION : PrismRelocationOptions = PrismRelocationOptions.destroy
-##
 
 # ================== #
 #  STATIC FUNCTIONS  #
