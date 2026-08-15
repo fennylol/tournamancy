@@ -1,0 +1,76 @@
+[gd_scene format=3 uid="uid://dijyime6b78x1"]
+
+[ext_resource type="Script" uid="uid://dmuhoqi4g6dqs" path="res://0_maps/game_map/game_map.gd" id="1_0ylow"]
+[ext_resource type="Texture2D" uid="uid://d1pqvt4xng076" path="res://_RAWS/qwantani_moonrise_puresky_2k.hdr" id="1_2vu8a"]
+[ext_resource type="PackedScene" uid="uid://bn2hnjsbj6jjw" path="res://0_maps/rough_city_01/rought_city_01.tscn" id="2_3tyep"]
+[ext_resource type="PackedScene" uid="uid://c73in64nqv3jt" path="res://0_maps/rough_library_01/Library.tscn" id="4_df7h0"]
+[ext_resource type="PackedScene" uid="uid://c56fevj40b86v" path="res://0_maps/assets/interactables/prism/simple_prism.tscn" id="4_sdsrs"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_3tyep"]
+size = Vector2(500, 500)
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_sdsrs"]
+panorama = ExtResource("1_2vu8a")
+energy_multiplier = 0.05
+
+[sub_resource type="Sky" id="Sky_xvh3c"]
+sky_material = SubResource("PanoramaSkyMaterial_sdsrs")
+radiance_size = 1
+
+[sub_resource type="Environment" id="Environment_df7h0"]
+background_mode = 2
+sky = SubResource("Sky_xvh3c")
+ambient_light_source = 3
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0ylow"]
+size = Vector3(5, 5, 3)
+
+[node name="GameMap" type="Node3D" unique_id=55400169]
+script = ExtResource("1_0ylow")
+
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=1727629165]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("PlaneMesh_3tyep")
+
+[node name="Environment" type="Node3D" parent="." unique_id=832433088]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment" unique_id=1101888293]
+transform = Transform3D(0.91461605, 0.35015446, -0.20216177, 2.7805944e-08, 0.4999999, 0.8660255, 0.40432355, -0.79208076, 0.45730793, 0, 0, 0)
+light_energy = 0.15
+shadow_enabled = true
+sky_mode = 1
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment" unique_id=605521768]
+environment = SubResource("Environment_df7h0")
+
+[node name="Map" type="Node3D" parent="." unique_id=977463461]
+
+[node name="RoughtCity01" parent="Map" unique_id=1341565703 instance=ExtResource("2_3tyep")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, -61.637024, 0, 20.89)
+
+[node name="Prisms" type="Node3D" parent="." unique_id=1444556417]
+
+[node name="SimplePrism" parent="Prisms" unique_id=1103879490 instance=ExtResource("4_sdsrs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1978598, 1.2, -14.185532)
+
+[node name="SimplePrism2" parent="Prisms" unique_id=575747947 instance=ExtResource("4_sdsrs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.422855, 1.200001, -3.9397478)
+PrismShape = 2
+
+[node name="SimplePrism3" parent="Prisms" unique_id=1613869526 instance=ExtResource("4_sdsrs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.045638, 1.2, 1.771982)
+PrismShape = 4
+
+[node name="Library" parent="." unique_id=1578454167 instance=ExtResource("4_df7h0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -150)
+
+[node name="ExitWindow2" type="Area3D" parent="Library" unique_id=116289206]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 14)
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Library/ExitWindow2" unique_id=991182410]
+shape = SubResource("BoxShape3D_0ylow")
+
+[connection signal="body_entered" from="Library/ExitWindow2" to="." method="_on_exit_window_body_entered"]

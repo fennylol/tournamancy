@@ -61,11 +61,19 @@ enum PlayerSpawnLocationOptions {
    ## all points within a few meters of the arena's edge are valid spawn locations
    edge}
 ## if PLAYER_SPAWN_LOCATION is set to "list," this determines the list of valid points.
-var PLAYER_SPAWN_LOCATION_LIST : Array[Vector3] = []
+var PLAYER_SPAWN_LOCATION_LIST : Array[Vector3] = [
+   Vector3(-43,0.25,19),
+   Vector3(27,0.25,-30),
+   Vector3(-50,9,-65),
+   Vector3(17,9.5,-55),
+   Vector3(-50,0.25,-28),
+   Vector3(26,6.5,4),
+   Vector3(-8,0.25,-67)
+]
 ## if PLAYER_SPAWN_LOCATION is set to "edge," this determines the distance (in meters) to the edge which is valid for spawning.
 var PLAYER_SPAWN_LOCATION_EDGE : float = 1.0
 ## Determines where in the map is a valid spot for player spawning
-var PLAYER_SPAWN_LOCATION : PlayerSpawnLocationOptions = PlayerSpawnLocationOptions.any
+var PLAYER_SPAWN_LOCATION : PlayerSpawnLocationOptions = PlayerSpawnLocationOptions.list
 ## A list of possible "methods of choosing" which valid spawn location will actually recieve the spawned player.
 enum PlayerSpawnLocationChooser {
    ## The spawn location is chosen randomly from the valid points.
