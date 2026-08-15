@@ -102,4 +102,3 @@ A full list of spells and their effects can be found [here](SpellList.md)
 Made in Godot 4 with assets created using Blender, Aesprite, and Procreate. All code and assets were made by humans. No generative artificial intelligence (GenAI) was used in the creation of this project.
 
 [Special Thanks](ThanksTo.txt)
-

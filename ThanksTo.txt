@@ -5,6 +5,12 @@ https://polyhaven.com/a/qwantani_moonrise_puresky
 [*] Valley 3D Model
 "Valley" (https://skfb.ly/6vwyG) by Adil.Fell is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
+[0] Always on Stun Server List
+Pradt2 on Github
+https://github.com/pradt2/always-online-stun
+Used by OneTruePingus
+
 [1] Fireball Shader Effect
-Clear Code
+Clear Code on YouTube
 https://youtu.be/AoGOIiBo4Eg?si=ECNrluw-NdCDZt0L
+Used by GreatBallOFireFamiliar

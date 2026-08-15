@@ -1,10 +1,10 @@
 extends Node3D
 class_name Effect
 
+@warning_ignore("unused_signal")
+signal state_changed(new_state: int)
+var CurrentState: int = 0
+
 var ThePlayer : Player
 
-func change_state(_new_state: int) -> void:
-   printerr("ERROR: change_state() not overridden but called.")
-
-## Called by the Effectory in equip_effect() when the effect is placed on a player (not on a dummy) so the effect has a reference to the local Player node if necessary.
-func find_the_player(player : Player): ThePlayer = player
+func change_state(new_state: int) -> void: CurrentState = new_state

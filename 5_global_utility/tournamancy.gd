@@ -8,7 +8,7 @@ class_name Tournamancy
 
 const DummyScene  : PackedScene = preload("res://1_player/dummy/dummy.tscn")
 
-const SPAWN_POS_IN_LIBRARY := Vector3(0,0,150)
+@onready var SPAWN_POS_IN_LIBRARY := LIBRARY.position
 const drag_player_to : Vector3 = Vector3(0,100,-10)
 var drag_player_from : Vector3 = Vector3.ZERO
 var is_dragging : bool = false

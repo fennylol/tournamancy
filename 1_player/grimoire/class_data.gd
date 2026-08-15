@@ -1,7 +1,7 @@
 class_name ClassData
 
 
-enum ClassIDs {NakedManChallenge, Tank, Ranger, Speedster, Test_A, Test_B}
+enum ClassIDs {NakedManChallenge, Tank, Ranger, Speedster, Test_A,}
 enum ClassFields {ACTIVES, PASSIVES}
 
 const ClassRecipes: Dictionary = {
@@ -26,6 +26,13 @@ const ClassRecipes: Dictionary = {
          SpellData.PassiveSpellIDs.Speed : 5,
          SpellData.PassiveSpellIDs.Gravity : 5,
          SpellData.PassiveSpellIDs.MoonJump : 1
+      }
+   },
+   
+   ClassIDs.Ranger : {
+      ClassFields.ACTIVES  : [SpellData.ActiveSpellIDs.GreatBallOfFire, SpellData.ActiveSpellIDs.GreatBallOfFire],
+      ClassFields.PASSIVES : {
+         SpellData.PassiveSpellIDs.PhantomFlight: 1
       }
    },
    

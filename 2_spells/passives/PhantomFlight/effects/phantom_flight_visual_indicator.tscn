@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://b80jy5wwqnm6l"]
+
+[ext_resource type="Script" uid="uid://inlrcaurddl8" path="res://2_spells/passives/PhantomFlight/effects/phantom_flight_visual_indicator.gd" id="1_xm0h4"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_bsava"]
+inner_radius = 9.99
+outer_radius = 10.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c1rww"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.078431375)
+
+[node name="PhantomFlightVisualIndicator" type="Node3D" unique_id=1600930705]
+script = ExtResource("1_xm0h4")
+metadata/_custom_type_script = "uid://di2eqcff4s48f"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=518210759]
+transform = Transform3D(1, 0, 0, 0, 100, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("TorusMesh_bsava")
+surface_material_override/0 = SubResource("StandardMaterial3D_c1rww")

@@ -1,6 +1,9 @@
 extends Node3D
 class_name Effectory
 
+signal effect_state_changed(spell_id: int, is_active: bool, new_state: int)
+
+# export so we can set the effectory in the player scene to not dummy mode
 @export var IsDummy: bool = true
 
 func sync_effects(list_of_actives : Array[SpellData.ActiveSpellIDs], list_of_passives : Array[SpellData.PassiveSpellIDs]):
@@ -27,7 +30,9 @@ func equip_effect(spell_id: int, is_active: bool) -> void:
    for effect in effect_list:
       var effect_node: Effect = load(effect).instantiate()
       container_node.add_child(effect_node)
-      if not IsDummy: effect_node.find_the_player(get_parent())
+      if not IsDummy:
+         effect_node.state_changed.connect(func(new_state: int): effect_state_changed.emit(spell_id, is_active, new_state))
+         effect_node.ThePlayer = get_parent()
    
    add_child(container_node)
 func erase_effect(spell_id: int, is_active: bool) -> void:

@@ -70,7 +70,7 @@ func add_passive(id: SpellData.PassiveSpellIDs, stacks: int) -> void:
       ## ADD THE SPELL IF NOT EXTANT
       if not spell_extant:
          PassiveSpells.append(spell)
-         spell.StateChanged.connect(func(new_state: int): spell_change_state.emit(id, false, new_state))
+         spell.state_changed.connect(func(new_state: int): spell_change_state.emit(id, false, new_state))
          StatModifiers = calculate_stats()
          spell._on_equip(ThePlayer)
          spell_equipped.emit(id, false)
@@ -81,7 +81,7 @@ func add_active(id: SpellData.ActiveSpellIDs, slot: int) -> void:
       var capped_slot: int = clampi(slot, 0, ActiveSlots)
       var spell: ActiveSpell = load(data[SpellData.SpellFields.ScriptPath]).new()
       ActiveSpells[capped_slot] = spell
-      spell.StateChanged.connect(func(new_state: int): spell_change_state.emit(id, true, new_state))
+      spell.state_changed.connect(func(new_state: int): spell_change_state.emit(id, true, new_state))
       spell_equipped.emit(id, true)
 func adopt_class(id: ClassData.ClassIDs) -> void:
    ## CLEAR CLASS
@@ -106,3 +106,11 @@ func adopt_class(id: ClassData.ClassIDs) -> void:
    for a in ActiveSpells: if a is ActiveSpell: list_of_active_spells.append(a.SpellID)
    for p in PassiveSpells: list_of_passive_spells.append(p.SpellID)
    ThePlayer.sync_effectory(list_of_active_spells,list_of_passive_spells)
+
+func change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
+   var spell_array: Array = ActiveSpells if is_active else PassiveSpells
+   for spell:Spell in spell_array:
+      if spell.SpellID == spell_id:
+         spell.change_state(spell_state)
+
+   

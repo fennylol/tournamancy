@@ -4,7 +4,6 @@ class_name GreatBallOFireFamiliar
 const FIREBALL_MESH: Mesh = preload("res://2_spells/actives/GreatBallOFire/familiar/new_fireball_mesh.tres")
 const FIREBALL_SHADER: Shader = preload("res://2_spells/actives/GreatBallOFire/familiar/fireball_shader.gdshader")
 const FIREBALL_NOISE: NoiseTexture2D = preload("res://2_spells/actives/GreatBallOFire/familiar/fireball_noise.tres")
-const FIREBALL_GRADIENT: GradientTexture1D = preload("res://2_spells/actives/GreatBallOFire/familiar/fireball_gradient.tres")
 
 const MAX_LIFE_TIME: float = 15
 const SPEED: float = 15.0

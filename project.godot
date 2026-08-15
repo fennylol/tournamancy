@@ -27,7 +27,9 @@ window/size/viewport_height=720
 
 [layer_names]
 
+3d_physics/layer_1="world"
 3d_physics/layer_2="interactables"
+3d_physics/layer_3="players"
 
 [physics]
 

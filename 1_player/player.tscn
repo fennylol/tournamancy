@@ -191,6 +191,8 @@ bottom_radius = 0.0
 height = 0.001
 
 [node name="Player" type="CharacterBody3D" unique_id=1131720607]
+collision_layer = 4
+collision_mask = 5
 floor_max_angle = 1.0471976
 script = ExtResource("1_8s5v1")
 

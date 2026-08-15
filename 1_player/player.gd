@@ -58,7 +58,8 @@ func _ready() -> void:
    SpellBook.ThePlayer = self
    SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
    SpellBook.passive_spell_updated.connect(_on_grimoire_spell_updated)
-   SpellBook.spell_change_state.connect(_on_grimoire_change_effect_state)
+   SpellBook.spell_change_state.connect(_on_change_effect_state)
+   EFFECTORY.effect_state_changed.connect(_on_change_effect_state)
    PRISMMENU.close_menu.connect(close_prism)
    PRISMMENU.visible = false
    set_colors()
@@ -308,8 +309,11 @@ func _on_grimoire_spell_updated(spell_id : int):
    pass
 func _on_grimoire_spell_erase(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.erase_effect(spell_id, is_active)
-func _on_grimoire_change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
+func _on_change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
    EFFECTORY.change_effect_state(spell_id, is_active, spell_state)
+   SpellBook.change_effect_state(spell_id, is_active, spell_state)
    player_spell_change_state.emit(spell_id, is_active, spell_state)
+
+
 func spawn_familiar(is_active: bool, spell_id: int, familiar_idx: int, creation_data: PackedByteArray) -> void:
    familiar_spawned.emit(is_active, spell_id, familiar_idx, creation_data)

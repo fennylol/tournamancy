@@ -8,4 +8,4 @@ func _init() -> void: super(SpellData.ActiveSpellIDs.Thunderwave)
 func _on_activate(activator: Player) -> void:
    if _can_activate():
       TimeSinceActivation = 0.0
-      StateChanged.emit(States.DAMAGE_WAVE)
+      state_changed.emit(States.DAMAGE_WAVE)
