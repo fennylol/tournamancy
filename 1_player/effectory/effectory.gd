@@ -1,7 +1,7 @@
 extends Node3D
 class_name Effectory
 
-signal effect_state_changed(spell_id: int, is_active: bool, new_state: int)
+signal spell_state_changed(spell_id: int, is_active: bool, new_state: int)
 
 # export so we can set the effectory in the player scene to not dummy mode
 @export var IsDummy: bool = true
@@ -16,6 +16,7 @@ func sync_effects(list_of_actives : Array[SpellData.ActiveSpellIDs], list_of_pas
    ## ADD NODES FOR NEW SPELLS
    for active in list_of_actives: equip_effect(active, true)
    for passive in list_of_passives: equip_effect(passive, false)
+
 func equip_effect(spell_id: int, is_active: bool) -> void:
    if _get_effect_container(spell_id, is_active):
       return
@@ -31,12 +32,15 @@ func equip_effect(spell_id: int, is_active: bool) -> void:
       var effect_node: Effect = load(effect).instantiate()
       container_node.add_child(effect_node)
       if not IsDummy:
-         effect_node.state_changed.connect(func(new_state: int): effect_state_changed.emit(spell_id, is_active, new_state))
+         effect_node.state_changed.connect(func(new_state: int): spell_state_changed.emit(spell_id, is_active, new_state))
          effect_node.ThePlayer = get_parent()
    
    add_child(container_node)
 func erase_effect(spell_id: int, is_active: bool) -> void:
-   if not _get_effect_container(spell_id, is_active): return
+   var container: Node3D = _get_effect_container(spell_id, is_active)
+   if container: 
+      remove_child(container)
+      container.queue_free()
 func change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
    var effect_container: Node3D = _get_effect_container(spell_id, is_active)
    if not effect_container: return
@@ -44,6 +48,9 @@ func change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> vo
       if not child is Effect: continue
       child.change_state(spell_state)
 
+# ======= #
+# utility #
+# ======= #
 func _get_effect_container(spell_id: int, is_active: bool) -> Node3D:
    var node_title: String = _get_effect_spell_name(spell_id, is_active)
    for child:Node3D in get_children():

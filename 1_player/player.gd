@@ -41,8 +41,12 @@ var Enabled: bool = false:
 
 ## SIGNALS
 signal open_connection_menu_please(show_menu:bool)
+
 signal spell_equipped(spell_id: int, is_active: bool)
-signal player_spell_change_state(spell_id: int, is_active: bool, new_state: int)
+signal spell_erased(spell_id: int, is_active: bool)
+signal spell_updated(spell_id: int, is_active: bool)
+signal spell_changed_state(spell_id: int, is_active: bool, new_state: int)
+
 signal damage_dealt(package : DamagePackage)
 signal familiar_spawned(spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray)
 
@@ -57,9 +61,10 @@ func _ready() -> void:
    HUD_HEALTHBAR = HUD.find_child("HealthPoints").find_child("HealthDisplay")
    SpellBook.ThePlayer = self
    SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
-   SpellBook.passive_spell_updated.connect(_on_grimoire_spell_updated)
-   SpellBook.spell_change_state.connect(_on_change_effect_state)
-   EFFECTORY.effect_state_changed.connect(_on_change_effect_state)
+   SpellBook.spell_erased.connect(_on_grimoire_spell_erased)
+   SpellBook.spell_updated.connect(_on_grimoire_spell_updated)
+   SpellBook.spell_change_state.connect(_on_change_spell_state)
+   EFFECTORY.spell_state_changed.connect(_on_change_spell_state)
    PRISMMENU.close_menu.connect(close_prism)
    PRISMMENU.visible = false
    set_colors()
@@ -255,7 +260,6 @@ func _update_heath_display(new_health : Array[float]) -> void:
    HEALTHBAR.set_health(new_health)
    HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
 
-
 func set_colors() -> void:
    var primary_mat := StandardMaterial3D.new()
    primary_mat.albedo_color = SettingsManager.personal_settings.PRIMARY_COLOR
@@ -300,20 +304,21 @@ func send_damage_package(package : DamagePackage):
 func on_damage_data(package : DamagePackage):
    HEALTHBAR.on_damage_data(package)
    HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
+
 func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.equip_effect(spell_id, is_active)
    spell_equipped.emit(spell_id, is_active)
    if SpellBook.ActiveSpells[0]: SpellBook.ActiveSpells[0].identify_player(self)
    if SpellBook.ActiveSpells[1]: SpellBook.ActiveSpells[1].identify_player(self)
-func _on_grimoire_spell_updated(spell_id : int):
-   pass
-func _on_grimoire_spell_erase(spell_id: int, is_active: bool) -> void: 
+func _on_grimoire_spell_erased(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.erase_effect(spell_id, is_active)
-func _on_change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
+   spell_erased.emit(spell_id, is_active)
+func _on_grimoire_spell_updated(spell_id: int, is_active: bool):
+   spell_updated.emit(spell_id, is_active)
+func _on_change_spell_state(spell_id: int, is_active: bool, spell_state: int) -> void:
    EFFECTORY.change_effect_state(spell_id, is_active, spell_state)
-   SpellBook.change_effect_state(spell_id, is_active, spell_state)
-   player_spell_change_state.emit(spell_id, is_active, spell_state)
-
+   SpellBook.change_spell_state(spell_id, is_active, spell_state)
+   spell_changed_state.emit(spell_id, is_active, spell_state)
 
 func spawn_familiar(is_active: bool, spell_id: int, familiar_idx: int, creation_data: PackedByteArray) -> void:
    familiar_spawned.emit(is_active, spell_id, familiar_idx, creation_data)

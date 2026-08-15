@@ -28,13 +28,15 @@ func _ready() -> void:
    MPM.knockout_data.connect(_on_mpm_knockout_data)
    MPM.victory_point_data.connect(_on_mpm_victory_point_data)
    MPM.effect_equipped_data.connect(_on_mpm_effect_equipped_data)
-   MPM.effect_state_data.connect(_on_mpm_effect_state_data)
+   MPM.effect_erased_data.connect(_on_mpm_effect_erased_data)
+   MPM.spell_state_data.connect(_on_mpm_spell_state_data)
    MPM.spawn_familiar_data.connect(_on_mpm_spawn_familiar_data)
    LIBRARY.player_exited.connect(_on_library_player_exited)
    PLAYER_CHARACTER.HEALTHBAR.health_reached_zero.connect(_on_player_knocked_out)
    PLAYER_CHARACTER.open_connection_menu_please.connect(MPM.open_connection_menu)
    PLAYER_CHARACTER.spell_equipped.connect(MPM.send_effect_equip_data)
-   PLAYER_CHARACTER.player_spell_change_state.connect(MPM.send_effect_state_data)
+   PLAYER_CHARACTER.spell_erased.connect(MPM.send_effect_erase_data)
+   PLAYER_CHARACTER.spell_changed_state.connect(MPM.send_spell_state_data)
    PLAYER_CHARACTER.damage_dealt.connect(_on_player_damage_dealt)
    PLAYER_CHARACTER.familiar_spawned.connect(_on_player_familiar_spawned)
    PLAYER_CHARACTER.MY_NETWORK_ID = MPM.get_local_player_id()
@@ -118,10 +120,13 @@ func _on_mpm_ready_button_pressed  () -> void:
    PLAYER_CHARACTER.Enabled = true
 func _on_mpm_effect_equipped_data  (network_id: int, spell_id: int, is_active: bool) -> void:
    if SettingsManager.peer_settings.has(network_id):
-     SettingsManager.peer_settings[network_id].dummy.on_effect_equip_data(spell_id, is_active)
-func _on_mpm_effect_state_data     (network_id: int, spell_id: int, is_active: bool, spell_state: int) -> void:
+     SettingsManager.peer_settings[network_id].dummy.on_effect_equipped_data(spell_id, is_active)
+func _on_mpm_effect_erased_data    (network_id: int, spell_id: int, is_active: bool) -> void:
    if SettingsManager.peer_settings.has(network_id):
-     SettingsManager.peer_settings[network_id].dummy.on_effect_state_data(spell_id, is_active, spell_state)
+     SettingsManager.peer_settings[network_id].dummy.on_effect_erased_data(spell_id, is_active)
+func _on_mpm_spell_state_data      (network_id: int, spell_id: int, is_active: bool, spell_state: int) -> void:
+   if SettingsManager.peer_settings.has(network_id):
+     SettingsManager.peer_settings[network_id].dummy.on_spell_state_data(spell_id, is_active, spell_state)
 func _on_mpm_spawn_familiar_data   (network_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
    _spawn_familiar(network_id, spell_id, is_active, familiar_idx, creation_data)
 
@@ -139,7 +144,6 @@ func _on_player_knocked_out        (killer_id : int):
    PLAYER_CHARACTER.SpellBook.adopt_class(ClassData.ClassIDs.NakedManChallenge)
    PLAYER_CHARACTER.update_HUD_icons()
    PLAYER_CHARACTER.sync_health()
-
 func _on_player_familiar_spawned   (spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
    _spawn_familiar(MPM.get_local_player_id(), spell_id, is_active, familiar_idx, creation_data)
    MPM.send_spawn_familiar_data(spell_id, is_active, familiar_idx, creation_data)

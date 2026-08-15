@@ -6,7 +6,7 @@
 height = 0.125
 radius = 0.125
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_644s3"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1frvs"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_b4fhg"]
 top_radius = 0.125
@@ -23,5 +23,5 @@ transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
 shape = SubResource("CylinderShape3D_2vu8a")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D" unique_id=419496444]
-material_override = SubResource("StandardMaterial3D_644s3")
+material_override = SubResource("StandardMaterial3D_1frvs")
 mesh = SubResource("CylinderMesh_b4fhg")

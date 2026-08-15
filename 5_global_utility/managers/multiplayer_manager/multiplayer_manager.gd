@@ -14,8 +14,8 @@ signal knockout_data(network_id: int, KO_player_id : int)
 signal victory_point_data(network_id: int, points_delta : int)
 signal identity_data(network_id: int, new_name: String, primary_color: float, secondary_color: float)
 signal effect_equipped_data(network_id: int, spell_id: int, is_active: bool)
-#signal effect_erased_data(network_id: int, spell_id: int, is_active: bool)
-signal effect_state_data(network_id: int, spell_id: int, is_active: bool, spell_state: int)
+signal effect_erased_data(network_id: int, spell_id: int, is_active: bool)
+signal spell_state_data(network_id: int, spell_id: int, is_active: bool, spell_state: int)
 signal spawn_familiar_data(network_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray)
 
 var _OTP     : OneTruePingus = OneTruePingus.new()
@@ -100,7 +100,7 @@ enum DataTypes {
    # connection state #
    ConnectionData = 0xCD, DisconnectionData = 0xDD, IdentityData = 0x15, 
    # inventory #
-   EffectEquip = 0xEC, EffectErase = 0x0C, EffectState = 0xC5,
+   EffectEquip = 0xEC, EffectErase = 0x0C, SpellState = 0x55,
    # familiars #
    SpawnFamiliar = 0x5F
 }
@@ -126,7 +126,7 @@ func _recieve_data(_sender_id: int, data_type: int, data: PackedByteArray) -> vo
       DataTypes.IdentityData     : _recieve_identity_data      (data)
       DataTypes.EffectEquip      : _recieve_effect_equip_data  (data)
       DataTypes.EffectErase      : _recieve_effect_erase_data  (data)
-      DataTypes.EffectState      : _recieve_effect_state_data  (data)
+      DataTypes.SpellState       : _recieve_spell_state_data   (data)
       DataTypes.SpawnFamiliar    : _recieve_spawn_familiar_data(data)
       OneTruePingus.DataTypes.CONTROL:
          if DEBUG_PRINT_CONTROL_MESSAGES: print(data.get_string_from_utf8())
@@ -182,13 +182,16 @@ func _recieve_effect_equip_data  (data: PackedByteArray) -> void:
    var is_active: bool = data.decode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE)
    effect_equipped_data.emit(peer_id, spell_id, is_active)
 func _recieve_effect_erase_data  (data: PackedByteArray) -> void:
-   print("ERASE EFFECT DATA RECIEVED BUT NO HANDLER EXISTS")
-func _recieve_effect_state_data  (data: PackedByteArray) -> void:
+   var peer_id: int    = data.decode_u32(0)
+   var spell_id: int   = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
+   var is_active: bool = data.decode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE)
+   effect_erased_data.emit(peer_id, spell_id, is_active)
+func _recieve_spell_state_data   (data: PackedByteArray) -> void:
    var network_id : int = data.decode_u32(0) 
    var spell_id   : int = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
    var is_active  : int = data.decode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE)
    var spell_state: int = data.decode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE)
-   effect_state_data.emit(network_id, spell_id, is_active, spell_state)
+   spell_state_data.emit(network_id, spell_id, is_active, spell_state)
 func _recieve_spawn_familiar_data(data: PackedByteArray) -> void:
    var network_id  : int = data.decode_u32(0) 
    var spell_id    : int = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
@@ -249,18 +252,21 @@ func send_effect_equip_data    (spell_id: int, is_active: bool, owner_id: int = 
    data.encode_u16(OneTruePingus.NETWORK_ID_SIZE, spell_id)
    data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE, is_active)
    _OTP.send_data(DataTypes.EffectEquip, data)
-func _send_effect_erase_data   (spell_id: int, is_active: bool) -> void:
-   print("ERASE EFFECT DATA SENT BUT NO DATA REALLY EXISTS")
+func send_effect_erase_data   (spell_id: int, is_active: bool, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
+   data.resize(OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE)
+   data.encode_u32(0, owner_id)
+   data.encode_u16(OneTruePingus.NETWORK_ID_SIZE, spell_id)
+   data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE, is_active)
    _OTP.send_data(DataTypes.EffectErase, data)
-func send_effect_state_data    (spell_id: int, is_active: bool, spell_state: int, owner_id: int = _OTP.NetworkID) -> void:
+func send_spell_state_data     (spell_id: int, is_active: bool, spell_state: int, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE + SpellData.SPELL_STATE_SIZE)
    data.encode_u32(0, owner_id)
    data.encode_u16(OneTruePingus.NETWORK_ID_SIZE, spell_id)
    data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE, is_active)
    data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE, spell_state)
-   _OTP.send_data(DataTypes.EffectState, data)
+   _OTP.send_data(DataTypes.SpellState, data)
 func send_spawn_familiar_data  (spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE + SpellData.FAMILIAR_IDX_SIZE)

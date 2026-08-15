@@ -3,8 +3,6 @@ extends Interactable
 class_name ClassBook
 
 @onready var book_box : MeshInstance3D = $MeshInstance3D
-var meshalbedo
-
 @export var ClassID: ClassData.ClassIDs = ClassData.ClassIDs.NakedManChallenge
 @export var book_color : Color = Color.WHITE:
    set(value):
@@ -19,7 +17,7 @@ const BOOK_WAIT_TIME : float = 2.0
 const BOOK_PUSH_TIME : float = 0.5
 
 
-var pull_time: float = 100.0
+var pull_time: float = -1.0
 
 func _ready() -> void:
    if book_box:
@@ -34,7 +32,7 @@ func _process(delta: float) -> void:
    elif pull_time <= BOOK_PULL_TIME: book_box.position.z += delta * BOOK_MOVE_SPEED
 
 func _on_interact(interacter: Player) -> void:
-   super._on_interact(interacter)
+   if pull_time > 0: return
    interacter.SpellBook.adopt_class(ClassID)
    interacter.update_HUD_icons()
    
