@@ -12,6 +12,9 @@ signal transform_data(network_id: int, data: PackedByteArray)
 signal damage_data(network_id: int, package: DamagePackage)
 signal knockout_data(network_id: int, KO_player_id : int)
 signal victory_point_data(network_id: int, points_delta : int)
+signal spawned_prism_data(prismdata : PackedByteArray)
+signal updated_prism_data(prismdata : PackedByteArray)
+signal removed_prism_data(id : int)
 signal identity_data(network_id: int, new_name: String, primary_color: float, secondary_color: float)
 signal effect_equipped_data(network_id: int, spell_id: int, is_active: bool)
 signal effect_erased_data(network_id: int, spell_id: int, is_active: bool)
@@ -93,10 +96,12 @@ func open_connection_menu(show_menu: bool) -> void:
 # ============ #
 #IMPLEMMENMT CHILD NODE DATA
 enum DataTypes { 
-   # do not use #
-   pingus = 0xC0,
+   # do not use 0xC0 #
+   
    # gameplay data #
    TransformData = 0x20, DamageData = 0xDA, KnockoutData = 0xE0, VictoryPointsData = 0x01,
+   # prism data #
+   SpawnedPrismData = 0x04, UpdatedPrismData = 0x06, RemovedPrismData = 0x08,
    # connection state #
    ConnectionData = 0xCD, DisconnectionData = 0xDD, IdentityData = 0x15, 
    # inventory #
@@ -121,6 +126,9 @@ func _recieve_data(_sender_id: int, data_type: int, data: PackedByteArray) -> vo
       DataTypes.DamageData       : _recieve_damage_data        (data)
       DataTypes.KnockoutData     : _recieve_knockout_data      (data)
       DataTypes.VictoryPointsData: _recieve_victory_point_data (data)
+      DataTypes.SpawnedPrismData : _recieve_spawned_prism_data (data)
+      DataTypes.UpdatedPrismData : _recieve_updated_prism_data (data)
+      DataTypes.RemovedPrismData : _recieve_removed_prism_data (data)
       DataTypes.ConnectionData   : _recieve_connection_data    (data)
       DataTypes.DisconnectionData: _recieve_disconnection_data (data)
       DataTypes.IdentityData     : _recieve_identity_data      (data)
@@ -151,6 +159,10 @@ func _recieve_victory_point_data (data: PackedByteArray) -> void:
    var peer_id      : int = data.decode_u32(0)
    var points_delta : int = data.decode_s8(OneTruePingus.NETWORK_ID_SIZE)
    victory_point_data.emit(peer_id, points_delta)
+func _recieve_spawned_prism_data (data: PackedByteArray) -> void: 
+   spawned_prism_data.emit(data)
+func _recieve_updated_prism_data (data: PackedByteArray) -> void: pass
+func _recieve_removed_prism_data (data: PackedByteArray) -> void: pass
 func _recieve_connection_data    (data: PackedByteArray) -> void:
    var peer_id = data.decode_u32(0)
    var peer_port = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
@@ -225,6 +237,10 @@ func send_victory_point_data   (points : int, owner_id: int = _OTP.NetworkID) ->
    data.encode_u32(0 , owner_id)
    data.encode_s8(OneTruePingus.NETWORK_ID_SIZE , points)
    _OTP.send_data(DataTypes.VictoryPointsData, data)
+func send_spawned_prism_data   (prism_data : PackedByteArray) -> void: 
+   _OTP.send_data(DataTypes.SpawnedPrismData, prism_data)
+func send_updated_prism_data   (prism_data : PackedByteArray) -> void: pass
+func send_removed_prism_data   (id : int) -> void: pass
 func _send_connection_data     (network_id: int, peer_address: String, peer_port: int) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + OneTruePingus.PORT_SIZE)

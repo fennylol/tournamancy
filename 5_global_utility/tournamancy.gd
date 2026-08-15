@@ -22,11 +22,17 @@ func _ready() -> void:
    MPM.damage_data.connect(_on_mpm_damage_data)
    MPM.knockout_data.connect(_on_mpm_knockout_data)
    MPM.victory_point_data.connect(_on_mpm_victory_point_data)
+   MPM.spawned_prism_data.connect(_on_mpm_spawned_prism_data)
+   MPM.updated_prism_data.connect(_on_mpm_updated_prism_data)
+   MPM.removed_prism_data.connect(_on_mpm_removed_prism_data)
    MPM.effect_equipped_data.connect(_on_mpm_effect_equipped_data)
    MPM.effect_erased_data.connect(_on_mpm_effect_erased_data)
    MPM.spell_state_data.connect(_on_mpm_spell_state_data)
    MPM.spawn_familiar_data.connect(_on_mpm_spawn_familiar_data)
    GAME_MAP.force_player_location.connect(force_player_position)
+   GAME_MAP.spawned_prism.connect(MPM.send_spawned_prism_data)
+   GAME_MAP.updated_prism.connect(MPM.send_updated_prism_data)
+   GAME_MAP.removed_prism.connect(MPM.send_removed_prism_data)
    PLAYER_CHARACTER.HEALTHBAR.health_reached_zero.connect(_on_player_knocked_out)
    PLAYER_CHARACTER.open_connection_menu_please.connect(MPM.open_connection_menu)
    PLAYER_CHARACTER.spell_equipped.connect(MPM.send_effect_equip_data)
@@ -102,21 +108,23 @@ func _on_mpm_transform_data        (network_id: int, data: PackedByteArray) -> v
 func _on_mpm_identity_data         (network_id: int, new_name: String, primary_color: float, secondary_color: float) -> void:
    if SettingsManager.peer_settings.has(network_id):
       SettingsManager.peer_settings[network_id].dummy.on_identity_data(new_name, primary_color, secondary_color)
-func _on_mpm_damage_data           (_network_id: int, package: DamagePackage):
+func _on_mpm_damage_data           (_network_id: int, package: DamagePackage) -> void:
    if package.id_to == MPM.get_local_player_id():
       PLAYER_CHARACTER.on_damage_data(package)
    elif SettingsManager.peer_settings.has(package.id_to):
       SettingsManager.peer_settings[package.id_to].dummy.on_damage_data(package)
-func _on_mpm_knockout_data         (killer_id: int, KO_player_id : int): 
+func _on_mpm_knockout_data         (killer_id: int, KO_player_id : int) -> void: 
    if SettingsManager.peer_settings.has(KO_player_id):
       SettingsManager.peer_settings[KO_player_id].dummy.on_knockout_reset()
    if killer_id == MPM.get_local_player_id() and KO_player_id != MPM.get_local_player_id():
       check_VP_for_self_KO_opponent()
-func _on_mpm_victory_point_data    (network_id: int, points_delta : int): 
+func _on_mpm_victory_point_data    (network_id: int, points_delta : int) -> void: 
    if network_id == MPM.get_local_player_id(): return
    update_opponent_VP(network_id, points_delta)
-func _on_mpm_ready_button_pressed  () -> void:
-   PLAYER_CHARACTER.Enabled = true
+func _on_mpm_spawned_prism_data    (prismdata : PackedByteArray) -> void: 
+   GAME_MAP.spawn_prism_from_network(prismdata)
+func _on_mpm_updated_prism_data    (prismdata : PackedByteArray) -> void: pass
+func _on_mpm_removed_prism_data    (id : int) -> void: pass
 func _on_mpm_effect_equipped_data  (network_id: int, spell_id: int, is_active: bool) -> void:
    if SettingsManager.peer_settings.has(network_id):
      SettingsManager.peer_settings[network_id].dummy.on_effect_equipped_data(spell_id, is_active)
@@ -128,7 +136,15 @@ func _on_mpm_spell_state_data      (network_id: int, spell_id: int, is_active: b
      SettingsManager.peer_settings[network_id].dummy.on_spell_state_data(spell_id, is_active, spell_state)
 func _on_mpm_spawn_familiar_data   (network_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
    _spawn_familiar(network_id, spell_id, is_active, familiar_idx, creation_data)
+func _on_mpm_ready_button_pressed  () -> void:
+   PLAYER_CHARACTER.Enabled = true
 
+# game map
+func _on_gamemap_prism_spawned     (): pass
+func _on_gamemap_prism_updated     (): pass
+func _on_gamemap_prism_removed     (): pass
+
+# player
 func _on_player_damage_dealt       (package : DamagePackage) -> void:
    MPM.send_damage_data(package)
    if SettingsManager.peer_settings.has(package.id_to):
@@ -138,6 +154,8 @@ func _on_player_knocked_out        (killer_id : int):
    MPM.send_knockout_data(killer_id)
    if killer_id == MPM._OTP.NetworkID: check_VP_for_self_KO_self()
    else: check_VP_for_opponent_KO_self()
+   ## SPAWN PRISM
+   GAME_MAP.spawn_player_prism_from_self(PLAYER_CHARACTER.position, PLAYER_CHARACTER)
    ## RESET PLAYER
    PLAYER_CHARACTER.position = GAME_MAP.get_library_spawn_pos()
    PLAYER_CHARACTER.SpellBook.adopt_class(ClassData.ClassIDs.NakedManChallenge)

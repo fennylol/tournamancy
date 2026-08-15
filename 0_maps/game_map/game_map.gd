@@ -1,9 +1,15 @@
 extends Node3D
 class_name GameMap
 
-const LIBRARY_SPAWN_POS := Vector3(0,0,-150)
+@onready var PRISMS_NODE : Node3D = $Prisms
+
+# ===================== #
+#    PLAYER SPAWNING    #
+# ===================== #
 
 signal force_player_location(pos : Vector3)
+
+const LIBRARY_SPAWN_POS := Vector3(0,0,-150)
 
 enum DragPoints {NONE, FLY, HOVER, LANDING}
 var dragging_towards : DragPoints = DragPoints.NONE
@@ -60,3 +66,60 @@ func _on_exit_window_body_entered(body: Node3D) -> void:
       dragtime = 0.0
 
 func get_library_spawn_pos() -> Vector3: return LIBRARY_SPAWN_POS + Vector3(randf(), 0, randf())
+
+# =================== #
+#    PRISM SPAWNING   #
+# =================== #
+
+const vertical_prism_offset := Vector3(0,1,0)
+
+var new_prism_instance = preload("res://0_maps/assets/interactables/prism/simple_prism.tscn")
+
+signal spawned_prism(contents : PackedByteArray)
+signal updated_prism()
+signal removed_prism()
+
+var PrismList : Dictionary[int,Prism] = {}
+
+func spawn_natural_prism():
+   pass
+
+func spawn_player_prism_from_self(KO_pos : Vector3, player : Player):
+   ## If there are no actives OR passives, return and don't bother spawning or sending anything
+   ## (make sure not to pass empty slots ("null") as ActiveSpells)
+   var active_spell_array : Array[ActiveSpell]
+   for i in player.SpellBook.ActiveSpells:
+      if i is ActiveSpell: active_spell_array.append(i)
+   if active_spell_array.is_empty() and player.SpellBook.PassiveSpells.is_empty(): return
+   
+   ## Basic Instantiation
+   var KO_prism : Prism = new_prism_instance.instantiate()
+   PRISMS_NODE.add_child(KO_prism)
+   KO_prism.position = KO_pos + vertical_prism_offset
+   KO_prism.PrismShape = KO_prism.determine_prism_shape()
+   
+   ## Spell Synchronization 
+   KO_prism.load_spells_from_player(active_spell_array, player.SpellBook.PassiveSpells)
+   
+   ## Set a new PrismID (used to sending prism_removal_data later)
+   var new_prism_id : int = randi() % 100
+   while PrismList.keys().has(new_prism_id):
+      new_prism_id = randi() % 100
+   KO_prism.set_prism_id(new_prism_id)
+   
+   ## Add to Prism list and emit as a PackedByteArray
+   PrismList.merge({new_prism_id:KO_prism})
+   spawned_prism.emit(KO_prism.to_PackedByteArray())
+
+func spawn_prism_from_network(prismdata : PackedByteArray):
+   var new_prism : Prism = new_prism_instance.instantiate()
+   ## I don't know a better way to do this, so i am creating a "phantom prism" from the PackedByteArray and then setting the instantiated prisms data to match
+   var check_prism = Prism.from_PackedByteArray(prismdata)
+   new_prism.PRISM_ID = check_prism.PRISM_ID
+   new_prism.PrismShape = check_prism.PrismShape
+   new_prism.is_player_prism = check_prism.is_player_prism
+   new_prism.position = check_prism.position
+   new_prism.ActiveSpellList = check_prism.ActiveSpellList
+   new_prism.PassiveSpellList = check_prism.PassiveSpellList
+   PRISMS_NODE.add_child(new_prism)
+   PrismList.merge({new_prism.PRISM_ID:new_prism})
