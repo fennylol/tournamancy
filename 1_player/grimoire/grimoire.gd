@@ -99,23 +99,14 @@ func remove_active(id: SpellData.ActiveSpellIDs) -> void:
          spell_erased.emit(id, true)
          return
 
-func clear_spells() -> void:
+
+func adopt_class(id: ClassData.ClassIDs) -> void:
+   ## CLEAR SPELLS
    for spell:ActiveSpell  in ActiveSpells:
-      if spell: 
-         remove_active(spell.SpellID) 
+      if spell: remove_active(spell.SpellID) 
    for spell:PassiveSpell in PassiveSpells:
       remove_passive(spell.SpellID)
    StatModifiers = {}
-
-
-func adopt_class(id: ClassData.ClassIDs) -> void:
-   ### CLEAR CLASS
-   #var trust_me_this_is_the_best_way_to_do_it: int = ActiveSlots
-   #ActiveSlots = 0
-   #ActiveSlots = trust_me_this_is_the_best_way_to_do_it
-   #PassiveSpells.clear()
-   clear_spells()
-   
    
    ## ADOPT SPELLS
    var class_data: Dictionary = ClassData.get_class_data(id)
@@ -124,14 +115,6 @@ func adopt_class(id: ClassData.ClassIDs) -> void:
          add_active(class_data[ClassData.ClassFields.ACTIVES][i], i)
       for spell_id in class_data[ClassData.ClassFields.PASSIVES]:
          add_passive(spell_id, class_data[ClassData.ClassFields.PASSIVES][spell_id])
-   
-   
-   ## SYNC EFFECTORY
-   var list_of_active_spells : Array[SpellData.ActiveSpellIDs]
-   var list_of_passive_spells : Array[SpellData.PassiveSpellIDs]
-   for a in ActiveSpells: if a is ActiveSpell: list_of_active_spells.append(a.SpellID)
-   for p in PassiveSpells: list_of_passive_spells.append(p.SpellID)
-   #ThePlayer.sync_effectory(list_of_active_spells,list_of_passive_spells)
 
 func change_spell_state(spell_id: int, is_active: bool, spell_state: int) -> void:
    var spell_array: Array = (ActiveSpells as Array) if is_active else (PassiveSpells as Array)

@@ -252,7 +252,7 @@ func send_effect_equip_data    (spell_id: int, is_active: bool, owner_id: int = 
    data.encode_u16(OneTruePingus.NETWORK_ID_SIZE, spell_id)
    data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE, is_active)
    _OTP.send_data(DataTypes.EffectEquip, data)
-func send_effect_erase_data   (spell_id: int, is_active: bool, owner_id: int = _OTP.NetworkID) -> void:
+func send_effect_erase_data    (spell_id: int, is_active: bool, owner_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE)
    data.encode_u32(0, owner_id)
@@ -276,5 +276,3 @@ func send_spawn_familiar_data  (spell_id: int, is_active: bool, familiar_idx: in
    data.encode_u8 (OneTruePingus.NETWORK_ID_SIZE + SpellData.SPELL_ID_SIZE + SpellData.IS_ACTIVE_SIZE, familiar_idx)
    data.append_array(creation_data)
    _OTP.send_data(DataTypes.SpawnFamiliar, data)
-   
-   

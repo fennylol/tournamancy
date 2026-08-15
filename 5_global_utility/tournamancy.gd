@@ -93,6 +93,7 @@ func _on_mpm_connection_established(network_id: int) -> void:
    dummy.NETWORK_ID = network_id
    dummy.set_name("dummy_" + str(network_id))
    SettingsManager.peer_settings[network_id] = SettingsManager.PeerSettings.new(dummy, str(network_id), Color.WHITE, Color.WHITE)
+   PLAYER_CHARACTER.announce_inventory()
 func _on_mpm_peer_discconected     (network_id: int) -> void:
    if SettingsManager.peer_settings.has(network_id):
       SettingsManager.peer_settings[network_id].dummy.queue_free()

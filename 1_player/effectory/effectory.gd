@@ -6,16 +6,6 @@ signal spell_state_changed(spell_id: int, is_active: bool, new_state: int)
 # export so we can set the effectory in the player scene to not dummy mode
 @export var IsDummy: bool = true
 
-func sync_effects(list_of_actives : Array[SpellData.ActiveSpellIDs], list_of_passives : Array[SpellData.PassiveSpellIDs]):
-   ## REMOVE LOOSE NODES
-   for child : Node3D in get_children():
-      var shall_be_deleted := true
-      for active in list_of_actives: if _get_effect_spell_name(active, true) == child.name: shall_be_deleted = false
-      for passive in list_of_passives: if _get_effect_spell_name(passive, false) == child.name: shall_be_deleted = false
-      if shall_be_deleted: child.queue_free()
-   ## ADD NODES FOR NEW SPELLS
-   for active in list_of_actives: equip_effect(active, true)
-   for passive in list_of_passives: equip_effect(passive, false)
 
 func equip_effect(spell_id: int, is_active: bool) -> void:
    if _get_effect_container(spell_id, is_active):

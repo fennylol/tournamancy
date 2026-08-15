@@ -296,9 +296,7 @@ func request_new_active_spell(id : SpellData.ActiveSpellIDs, slot : int):
 func request_new_passive_spell(id: SpellData.PassiveSpellIDs, stacks : int):
    SpellBook.add_passive(id, stacks)
    update_HUD_icons()
-## Passes a list of actives and passives to the Effectory. That's it. Effectory takes it from there.
-func sync_effectory(list_of_actives : Array[SpellData.ActiveSpellIDs], list_of_passives : Array[SpellData.PassiveSpellIDs]): 
-   EFFECTORY.sync_effects(list_of_actives, list_of_passives)
+
 func send_damage_package(package : DamagePackage):
    damage_dealt.emit(package)
 func on_damage_data(package : DamagePackage):
@@ -322,3 +320,9 @@ func _on_change_spell_state(spell_id: int, is_active: bool, spell_state: int) ->
 
 func spawn_familiar(is_active: bool, spell_id: int, familiar_idx: int, creation_data: PackedByteArray) -> void:
    familiar_spawned.emit(is_active, spell_id, familiar_idx, creation_data)
+
+func announce_inventory() -> void:
+   for spell:ActiveSpell in SpellBook.ActiveSpells:
+      if spell: spell_equipped.emit(spell.SpellID, true)
+   for spell:PassiveSpell in SpellBook.PassiveSpells:
+      spell_equipped.emit(spell.SpellID, false)
