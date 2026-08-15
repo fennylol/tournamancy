@@ -319,7 +319,7 @@ func _on_change_spell_state(spell_id: int, is_active: bool, spell_state: int) ->
    spell_changed_state.emit(spell_id, is_active, spell_state)
 
 func spawn_familiar(is_active: bool, spell_id: int, familiar_idx: int, creation_data: PackedByteArray) -> void:
-   familiar_spawned.emit(is_active, spell_id, familiar_idx, creation_data)
+   familiar_spawned.emit(spell_id, is_active, familiar_idx, creation_data)
 
 func announce_inventory() -> void:
    for spell:ActiveSpell in SpellBook.ActiveSpells:

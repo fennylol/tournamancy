@@ -76,10 +76,8 @@ func on_identity_data(new_name: String, primary_color: float, secondary_color: f
    dummy_settings.secondary_color = new_secondary_color
    
 func on_effect_equipped_data(spell_id: int, is_active: bool) -> void:
-   print("recieved equip data")
    EFFECTS.equip_effect(spell_id, is_active)
 func on_effect_erased_data(spell_id: int, is_active: bool) -> void:
-   print("recieved erase data")
    EFFECTS.erase_effect(spell_id, is_active)
 func on_spell_state_data(spell_id: int, is_active: bool, spell_state: int) -> void:
    EFFECTS.change_effect_state(spell_id, is_active, spell_state)
