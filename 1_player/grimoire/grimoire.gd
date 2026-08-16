@@ -104,8 +104,11 @@ func adopt_class(id: ClassData.ClassIDs) -> void:
    ## CLEAR SPELLS
    for spell:ActiveSpell  in ActiveSpells:
       if spell: remove_active(spell.SpellID) 
-   for spell:PassiveSpell in PassiveSpells:
-      remove_passive(spell.SpellID)
+   ## there was an issue with the below implimentation where the loop would count up from 0 -> 1 -> 2, but the remove_passive() function would be removing spells in the middle of the loop, causing, for example, loop 1 to reference spell 2 (because spell 0 was removed already)
+   #for spell:PassiveSpell in PassiveSpells:
+      #remove_passive(spell.SpellID)
+   ## i replaced the above with just a simple array.clear()
+   PassiveSpells.clear()
    StatModifiers = {}
    
    ## ADOPT SPELLS

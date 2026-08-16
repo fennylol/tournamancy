@@ -77,9 +77,17 @@ var new_prism_instance = preload("res://0_maps/assets/interactables/prism/simple
 
 signal spawned_prism(contents : PackedByteArray)
 signal updated_prism()
-signal removed_prism()
+signal removed_prism(id: int)
 
 var PrismList : Dictionary[int,Prism] = {}
+
+func prism_destroyed_here(id : int):
+   removed_prism.emit(id)
+   PrismList.erase(id)
+func prism_destroyed_from_network(id : int):
+   var rem_prism : Prism = PrismList.get(id)
+   PrismList.erase(id)
+   rem_prism.force_destroy()
 
 func spawn_natural_prism():
    pass
@@ -111,10 +119,12 @@ func spawn_player_prism_from_self(KO_pos : Vector3, pre_actives : Array[ActiveSp
       new_prism_id = randi() % 100
    KO_prism.set_prism_id(new_prism_id)
    
-   ## Add to Prism list and emit as a PackedByteArray
+   ## Add to Prism list and connect signals
    PrismList.merge({new_prism_id:KO_prism})
+   KO_prism.destroy_prism.connect(prism_destroyed_here)
+   
+   ## emit as PackedByteArray
    spawned_prism.emit(KO_prism.to_PackedByteArray())
-
 func spawn_prism_from_network(prismdata : PackedByteArray):
    var new_prism : Prism = new_prism_instance.instantiate()
    ## I don't know a better way to do this, so i am creating a "phantom prism" from the PackedByteArray and then setting the instantiated prisms data to match
@@ -127,3 +137,4 @@ func spawn_prism_from_network(prismdata : PackedByteArray):
    new_prism.PassiveSpellList = check_prism.PassiveSpellList
    PRISMS_NODE.add_child(new_prism)
    PrismList.merge({new_prism.PRISM_ID:new_prism})
+   new_prism.destroy_prism.connect(prism_destroyed_here)

@@ -72,7 +72,7 @@ func _init(_id_from : int = 0, _id_familiar : int = 0, _id_to : int = 0, _locati
 
 ## Rounds the float value new_val to the nearest N decimal places, where N is determined by this class' ROUNDING_PLACES value.
 func _round_damage_to_decimal(new_val : float) -> float: return round( new_val * pow( 10 , ROUNDING_PLACES ) ) / pow( 10 , ROUNDING_PLACES )
-## Returns a PackedByteArray containing all the necessary data in the DamagePackage to be sent over the wire. Can be unpacked using DamagePackage.from_PackedByteArray().
+## Returns a PackedByteArray containing all the necessary data in the DamagePackage to be sent over the network. Can be unpacked using DamagePackage.from_PackedByteArray().
 func to_PackedByteArray() -> PackedByteArray:
    var data: PackedByteArray = []
    data.resize(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE + TYPE_SIZE + FORCE_SIZE)

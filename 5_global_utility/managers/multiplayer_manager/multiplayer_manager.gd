@@ -172,7 +172,9 @@ func _recieve_victory_point_data (data: PackedByteArray) -> void:
 func _recieve_spawned_prism_data (data: PackedByteArray) -> void: 
    spawned_prism_data.emit(data)
 func _recieve_updated_prism_data (data: PackedByteArray) -> void: pass
-func _recieve_removed_prism_data (data: PackedByteArray) -> void: pass
+func _recieve_removed_prism_data (data: PackedByteArray) -> void: 
+   var prism_id : int = data.decode_u8(0)
+   removed_prism_data.emit(prism_id)
 func _recieve_connection_data    (data: PackedByteArray) -> void:
    var peer_id = data.decode_u32(0)
    var peer_port = data.decode_u16(OneTruePingus.NETWORK_ID_SIZE)
@@ -259,7 +261,11 @@ func send_victory_point_data   (points : int, owner_id: int = _OTP.NetworkID) ->
 func send_spawned_prism_data   (prism_data : PackedByteArray) -> void: 
    _OTP.send_data(DataTypes.SpawnedPrismData, prism_data)
 func send_updated_prism_data   (prism_data : PackedByteArray) -> void: pass
-func send_removed_prism_data   (id : int) -> void: pass
+func send_removed_prism_data   (id : int) -> void: 
+   var data : PackedByteArray
+   data.resize(Prism.PRISM_ID_SIZE)
+   data.encode_u8(0, id)
+   _OTP.send_data(DataTypes.RemovedPrismData, data)
 func _send_connection_data     (network_id: int, peer_address: String, peer_port: int) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + OneTruePingus.PORT_SIZE)
