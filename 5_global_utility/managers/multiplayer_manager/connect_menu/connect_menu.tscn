@@ -71,6 +71,7 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 0.1
 
 [node name="Host_vs_Client_box" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo" unique_id=795674627]
+visible = false
 layout_mode = 2
 
 [node name="client_button" type="Button" parent="VBoxContainer/HBoxContainer/YourInfo/Host_vs_Client_box" unique_id=576900257]
