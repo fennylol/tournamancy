@@ -96,9 +96,8 @@ func _ready() -> void:
       look_at(global_position + Velocity, Vector3.UP)
 
 func _on_body_entered(body: Node3D) -> void:
-   if not ThePlayer: return
    var parent_node: Node3D = body.get_parent()
-   if parent_node and parent_node is Dummy and parent_node.NETWORK_ID != OwnerID:
+   if ThePlayer and parent_node and parent_node is Dummy and parent_node.NETWORK_ID != OwnerID:
       var stat_influenced_damage : float = GreatBallOFire.SPELL_DAMAGE * SpellData.get_influenced_stat(SpellData.StatTypes.DAMAGE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.DAMAGE], ThePlayer.SpellBook.get_stat(SpellData.StatTypes.DAMAGE))
       
       var new_damage_package = DamagePackage.new()
