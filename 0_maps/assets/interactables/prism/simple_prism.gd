@@ -2,7 +2,8 @@ extends Interactable
 class_name Prism
 
 var PRISM_ID : int = 0
-@onready var PRISMBODY : Node3D = $PrismBody
+@onready var PRISMBODY : Node3D      = $PrismBody
+@onready var OMNILIGHT : OmniLight3D = $OmniLight3D
 @export_range(0,4) var PrismShape : int = 0
 enum PrismShapes { tetrahedron , cube , octahedron , dodecahedron , icosahedron }
 
@@ -38,6 +39,7 @@ func _process(delta: float) -> void:
 func set_prism_id(id : int): PRISM_ID = id
 func get_prism_id() -> int: return PRISM_ID
 func determine_prism_shape() -> int:
+   ## TODO: make the shape mean something
    PrismShape = randi_range(0,4)
    _set_shape()
    return PrismShape
@@ -107,6 +109,7 @@ func _process_animation(delta: float) -> void:
    time += delta
    PRISMBODY.rotate(Vector3.UP, delta * ROTATE_SPEED * ( 1 / ( float(PrismShape) + 1 ) ) )
    PRISMBODY.position.y += (sin(time * BOBBING_SPEED) * BOBBING_DEPTH)
+   OMNILIGHT.position.y += (sin(time * BOBBING_SPEED) * BOBBING_DEPTH)
 
 # ================= #
 #   network bytes   #

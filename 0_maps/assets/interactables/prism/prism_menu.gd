@@ -20,18 +20,6 @@ var CurrentActivePrism : Prism
 
 signal close_menu()
 
-#var SlotTextureList   : Array[TextureRect]
-#var SlotButtonList    : Array[TextureButton]
-#var SlotLabelList     : Array[Label]
-#var SlotIsActive_List : Array[bool]
-#var SlotIDList        : Array[int]
-#var ActiveSpellList           : Array[SpellData.ActiveSpellIDs]  = []
-#var PassiveSpellList          : Array[SpellData.PassiveSpellIDs] = []
-#var PassiveSpellStacks        : Array[int]                       = []
-#var selected_active_list      : Array[SpellData.ActiveSpellIDs]  = []
-#var selected_passive_list     : Array[SpellData.PassiveSpellIDs] = []
-#var selected_passive_stacks   : Array[int]                       = []
-
 var SpellList    : Array[PrismSlotCounter] = []
 var SlotPointers : Array[PrismSlotCounter] = []
 var passive_spell_offset : int = 0
@@ -176,13 +164,23 @@ func roll_slots():
 # =============== #
 
 func _process(_delta: float) -> void:
-   if Input.is_action_just_pressed("select"):
+   if self.visible == false: return
+   
+   if Input.is_action_just_released("select"):
       if CurrentButton is Button: CurrentButton.pressed.emit()
       if CurrentButton is TextureButton: 
          if selecting_active:
             pass
          else:
             _on_spell_icon_button_pressed()
+   if Input.is_action_just_released("cancel"): _on_button_cancel_pressed()
+   if Input.is_action_just_released("lock"): pass
+   if Input.is_action_just_released("reroll"): _on_button_reroll_pressed()
+   
+   if Input.is_action_just_pressed("cursor_left"): pass
+   if Input.is_action_just_pressed("cursor_down"): pass
+   if Input.is_action_just_pressed("cursor_right"): pass
+   if Input.is_action_just_pressed("cursor_up"): pass
 func _on_spell_icon_button_pressed() ->void:
    ## DON'T ALLOW SELECTION IF YOU'VE SELECTED TO MANY, OTHERWISE TOGGLE SELECTED SYMBOL
    var selected_count : int = 0
@@ -202,6 +200,8 @@ func _on_spell_icon_button_pressed() ->void:
    BUTTON_CONFIRM.text = "CONFIRM (" + str(SettingsManager.match_settings.MAX_SPELL_FROM_PRISM - selected_count ) + ")" if (SettingsManager.match_settings.MAX_SPELL_FROM_PRISM - selected_count ) != 0 else "CONFIRM"
    BUTTON_CONFIRM.disabled = true if ( selected_count < SettingsManager.match_settings.MIN_SPELL_FROM_PRISM ) or ( selected_count > SettingsManager.match_settings.MAX_SPELL_FROM_PRISM ) else false
 func _is_this_button_current(slot : PrismSlotCounter, expected : TextureButton): return slot.IconTextureButton == expected
+func _clear_selection() -> void:
+   pass
 
 func _on_button_reroll_pressed() -> void:
    if reroll_count < SettingsManager.match_settings.PRISM_REROLL_COUNT:

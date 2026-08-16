@@ -85,7 +85,7 @@ enum PlayerSpawnLocationChooser {
    ## From the valid points, the point nearest the most number of "points of interest" (wellsprings, prisms, other players) is chosen.
    nearest}
 ## Determines which point from the list of valid spawn points will be chosen for player spawning
-var PLAYER_SPAWN_CHOICE : PlayerSpawnLocationChooser = PlayerSpawnLocationChooser.furthest
+var PLAYER_SPAWN_CHOICE : PlayerSpawnLocationChooser = PlayerSpawnLocationChooser.random
 ## The default number of seconds a knocked-out player must remain in the class selection lobby before they are allowed to return to the match.
 var MIN_RESPAWN_LOBBY_TIME : float = 10.0
 ## A list of circumstances which might affect how long a player must remain in the lobby
@@ -106,7 +106,7 @@ var RETURNING_PLAYER_OVERHEALTH : float = 100.0
 
 static func _PRISM_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## The number of seconds in between new prisms spawning into the arena
-var NEW_PRISM_COOLDOWN : float = 45.0
+var NEW_PRISM_COOLDOWN : float = 20.0 #45.0
 ## A list of possible "sets of locations" which are considered valid spots for prism spawning
 enum PrismSpawnLocationOptions {
    ## Any point in the arena is a valid spawn location
@@ -165,12 +165,12 @@ var ACTIVE_SPELL_WEIGHTS : Dictionary = {
 var PASSIVE_SPELL_WEIGHTS : Dictionary = {
    ## STAT PASSIVES
    SpellData.PassiveSpellIDs.Heart          : 1,
-   SpellData.PassiveSpellIDs.Armor          : 1,
-   SpellData.PassiveSpellIDs.Ward           : 1,
-   SpellData.PassiveSpellIDs.Overhealth     : 1,
-   SpellData.PassiveSpellIDs.Armor_Strength : 1,
-   SpellData.PassiveSpellIDs.Ward_Strength  : 1,
-   SpellData.PassiveSpellIDs.Lifesteal      : 1,
+   SpellData.PassiveSpellIDs.Armor          : 0,
+   SpellData.PassiveSpellIDs.Ward           : 0,
+   SpellData.PassiveSpellIDs.Overhealth     : 0,
+   SpellData.PassiveSpellIDs.Armor_Strength : 0,
+   SpellData.PassiveSpellIDs.Ward_Strength  : 0,
+   SpellData.PassiveSpellIDs.Lifesteal      : 0,
    SpellData.PassiveSpellIDs.Damage         : 1,
    SpellData.PassiveSpellIDs.Attack_Range   : 1,
    SpellData.PassiveSpellIDs.Cooldown       : 1,
@@ -178,7 +178,7 @@ var PASSIVE_SPELL_WEIGHTS : Dictionary = {
    SpellData.PassiveSpellIDs.Crit           : 1,
    SpellData.PassiveSpellIDs.Luck           : 1,
    SpellData.PassiveSpellIDs.Speed          : 1,
-   SpellData.PassiveSpellIDs.Sprint         : 1,
+   SpellData.PassiveSpellIDs.Sprint         : 0,
    SpellData.PassiveSpellIDs.Jump           : 1,
    SpellData.PassiveSpellIDs.Gravity        : 1,
    SpellData.PassiveSpellIDs.Steadfastness  : 1,
@@ -218,8 +218,8 @@ var PLAYER_BASE_STATS : Dictionary = {
    SpellData.StatTypes.FORCE          : 0.0,
    SpellData.StatTypes.CRIT           : 5.0,
    SpellData.StatTypes.LUCK           : 2.0,
-   SpellData.StatTypes.SPEED          : 5.0,
-   SpellData.StatTypes.SPRINT         : 2.0,
+   SpellData.StatTypes.SPEED          : 10.0,
+   SpellData.StatTypes.SPRINT         : 0.0,
    SpellData.StatTypes.JUMP           : 4.5,
    SpellData.StatTypes.GRAVITY        : 9.8,
    SpellData.StatTypes.STEADFASTNESS  : 0.0,

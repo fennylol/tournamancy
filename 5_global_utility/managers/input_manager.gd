@@ -57,9 +57,11 @@ static func init_inputs() -> void:
    register_keyboard_input.call("cursor_right", KEY_A)
    register_keyboard_input.call("cursor_up",    KEY_W)
    register_keyboard_input.call("select", KEY_ENTER)
+   register_keyboard_input.call("select", KEY_E)
    register_keyboard_input.call("cancel", KEY_ESCAPE)
    register_keyboard_input.call("lock", KEY_SHIFT)
    register_keyboard_input.call("reroll", KEY_TAB)
+   register_keyboard_input.call("reroll", KEY_R)
    
    # ================ #
    #    CONTROLLER    #

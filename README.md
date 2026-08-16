@@ -30,11 +30,6 @@ Future updates will allow users to rebind controls. For now, default controls ar
     <td>A (down action)</td>
   </tr>
   <tr>
-    <td>Sprint</td>
-    <td>Shift</td>
-    <td>B (right action)</td>
-  </tr>
-  <tr>
     <td>Use Left Spell</td>
     <td>Left Mouse Button</td>
     <td>Left Trigger</td>
@@ -55,9 +50,9 @@ Future updates will allow users to rebind controls. For now, default controls ar
     <td>X (left action)</td>
   </tr>
   <tr>
-    <td>Inspect / Free Mouse</td>
-    <td>Tab</td>
-    <td>Y (up action)</td>
+    <td style="color:grey">Inspect / Free Mouse</td>
+    <td style="color:grey">Tab</td>
+    <td style="color:grey">Y (up action)</td>
   </tr>
   <tr>
     <td>Menu</td>
@@ -80,17 +75,17 @@ Future updates will allow users to rebind controls. For now, default controls ar
   </tr>
   <tr>
     <td>Select / Confirm</td>
-    <td>Left Mouse Button or Enter</td>
+    <td>Enter or E</td>
     <td>A (down action)</td>
   </tr>
   <tr>
     <td>Reroll</td>
-    <td>R</td>
+    <td>Tab or R</td>
     <td>X (left action)</td>
   </tr>
   <tr>
     <td>Cancel / Back</td>
-    <td>Tab or Esc</td>
+    <td>Esc</td>
     <td>B (right action)</td>
   </tr>
 </table>

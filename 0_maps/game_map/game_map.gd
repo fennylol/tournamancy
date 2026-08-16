@@ -2,6 +2,10 @@ extends Node3D
 class_name GameMap
 
 @onready var PRISMS_NODE : Node3D = $Prisms
+@onready var FLOOR_CHECK_RAYCAST : RayCast3D = $Prisms/RayCast3D
+
+func _ready() -> void:
+   reset_prism_spawn_cooldown()
 
 # ===================== #
 #    PLAYER SPAWNING    #
@@ -50,17 +54,21 @@ func _physics_process(delta: float) -> void:
 
 ## Searches through available points from SettingsManager.match_settings and returns the best available spawn location as a Vector3
 func _find_player_spawn_point() -> Vector3:
+   var return_options : Array[Vector3] = []
    var return_pos := Vector3.ZERO
    match SettingsManager.match_settings.PLAYER_SPAWN_LOCATION:
       SettingsManager.match_settings.PlayerSpawnLocationOptions.any: pass
-      SettingsManager.match_settings.PlayerSpawnLocationOptions.list:
-         return_pos = SettingsManager.match_settings.PLAYER_SPAWN_LOCATION_LIST.pick_random()
+      SettingsManager.match_settings.PlayerSpawnLocationOptions.list: return_options = SettingsManager.match_settings.PLAYER_SPAWN_LOCATION_LIST
       SettingsManager.match_settings.PlayerSpawnLocationOptions.edge: pass
+   match SettingsManager.match_settings.PLAYER_SPAWN_CHOICE:
+      SettingsManager.match_settings.PlayerSpawnLocationChooser.random: return_pos = return_options.pick_random()
+      SettingsManager.match_settings.PlayerSpawnLocationChooser.player_select: pass
+      SettingsManager.match_settings.PlayerSpawnLocationChooser.furthest: pass
+      SettingsManager.match_settings.PlayerSpawnLocationChooser.nearest: pass
    return return_pos
 
 func _on_exit_window_body_entered(body: Node3D) -> void:
    if body is Player:
-      print("exited")
       drag_player_from = body.position
       dragging_towards = DragPoints.FLY
       dragtime = 0.0
@@ -80,6 +88,14 @@ signal updated_prism()
 signal removed_prism(id: int)
 
 var PrismList : Dictionary[int,Prism] = {}
+var RANDOMIZED_PRISM_COOLDOWN : float = 0.0
+var natural_prism_cooldown : float = 0.0
+
+func _process(delta: float) -> void:
+   natural_prism_cooldown += delta
+   if natural_prism_cooldown >= RANDOMIZED_PRISM_COOLDOWN:
+      spawn_natural_prism()
+      reset_prism_spawn_cooldown()
 
 func prism_destroyed_here(id : int):
    removed_prism.emit(id)
@@ -90,8 +106,41 @@ func prism_destroyed_from_network(id : int):
    rem_prism.force_destroy()
 
 func spawn_natural_prism():
-   pass
-
+   ## Basic Instantiation
+   var new_prism : Prism = new_prism_instance.instantiate()
+   PRISMS_NODE.add_child(new_prism)
+   new_prism.PrismShape = new_prism.determine_prism_shape()
+   new_prism.load_spells_from_world()
+   
+   ## Randomized Position
+   ## I will have to deal with MatchSettings later, but for now I am hardcoding it as ANY -> RANDOM
+   var MapBoundryNeg     := Vector3(-61,0,-78)
+   var MapBoundryPos     := Vector3(38,25,20)
+   var pick_random_point := Vector3(randf_range(MapBoundryNeg.x,MapBoundryPos.x),randf_range(MapBoundryNeg.y,MapBoundryPos.y),randf_range(MapBoundryNeg.z,MapBoundryPos.z))
+   var spawn_point       := Vector3.ZERO
+   ## Snap to Floor
+   FLOOR_CHECK_RAYCAST.position = pick_random_point
+   FLOOR_CHECK_RAYCAST.target_position = Vector3(0,30,0)
+   if FLOOR_CHECK_RAYCAST.is_colliding() and FLOOR_CHECK_RAYCAST.get_collision_normal() == Vector3.ZERO: 
+      spawn_point = FLOOR_CHECK_RAYCAST.get_collision_point()
+      FLOOR_CHECK_RAYCAST.position = spawn_point + vertical_prism_offset
+   FLOOR_CHECK_RAYCAST.target_position = Vector3(0,-30,0)
+   if FLOOR_CHECK_RAYCAST.is_colliding():
+      spawn_point = FLOOR_CHECK_RAYCAST.get_collision_point()
+   new_prism.position = spawn_point + vertical_prism_offset
+   
+   ## Set a new PrismID (used to sending prism_removal_data later)
+   var new_prism_id : int = randi() % 100
+   while PrismList.keys().has(new_prism_id):
+      new_prism_id = randi() % 100
+   new_prism.set_prism_id(new_prism_id)
+   
+   ## Add to Prism list and connect signals
+   PrismList.merge({new_prism_id:new_prism})
+   new_prism.destroy_prism.connect(prism_destroyed_here)
+   
+   ## emit as PackedByteArray
+   spawned_prism.emit(new_prism.to_PackedByteArray())
 func spawn_player_prism_from_self(KO_pos : Vector3, pre_actives : Array[ActiveSpell], pre_passives : Array[PassiveSpell]):
    ## If there are no actives OR passives, return and don't bother spawning or sending anything
    ## (make sure not to pass empty slots ("null") as ActiveSpells)
@@ -109,6 +158,7 @@ func spawn_player_prism_from_self(KO_pos : Vector3, pre_actives : Array[ActiveSp
    PRISMS_NODE.add_child(KO_prism)
    KO_prism.position = KO_pos + vertical_prism_offset
    KO_prism.PrismShape = KO_prism.determine_prism_shape()
+   KO_prism.is_player_prism = true
    
    ## Spell Synchronization 
    KO_prism.load_spells_from_player(actives, passives)
@@ -129,12 +179,20 @@ func spawn_prism_from_network(prismdata : PackedByteArray):
    var new_prism : Prism = new_prism_instance.instantiate()
    ## I don't know a better way to do this, so i am creating a "phantom prism" from the PackedByteArray and then setting the instantiated prisms data to match
    var check_prism = Prism.from_PackedByteArray(prismdata)
+   if not check_prism.is_player_prism: 
+      reset_prism_spawn_cooldown()
    new_prism.PRISM_ID = check_prism.PRISM_ID
    new_prism.PrismShape = check_prism.PrismShape
    new_prism.is_player_prism = check_prism.is_player_prism
    new_prism.position = check_prism.position
    new_prism.ActiveSpellList = check_prism.ActiveSpellList
    new_prism.PassiveSpellList = check_prism.PassiveSpellList
+   
+   ## Add to Prism list and connect signals
    PRISMS_NODE.add_child(new_prism)
    PrismList.merge({new_prism.PRISM_ID:new_prism})
    new_prism.destroy_prism.connect(prism_destroyed_here)
+
+func reset_prism_spawn_cooldown():
+   natural_prism_cooldown = 0.0
+   RANDOMIZED_PRISM_COOLDOWN = SettingsManager.match_settings.NEW_PRISM_COOLDOWN + randfn(1,1.5)

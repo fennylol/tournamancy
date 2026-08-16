@@ -82,7 +82,6 @@ func _ready() -> void:
 # =================== #
 
 func _process(delta):
-   
    ## MOUSE CAPTURE
    if Input.is_action_just_pressed("menu"):
       if prism_is_open: return
@@ -169,7 +168,7 @@ func _melee_attack():
 func _physics_process(delta):
    ## GET RELEVANT INFLUENCED STATS
    var influenced_speed   : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPEED,   SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.SPEED],   SpellBook.get_stat(SpellData.StatTypes.SPEED))
-   var influenced_sprint  : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPRINT,  SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.SPRINT],  SpellBook.get_stat(SpellData.StatTypes.SPRINT))
+   #var influenced_sprint  : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPRINT,  SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.SPRINT],  SpellBook.get_stat(SpellData.StatTypes.SPRINT))
    var influenced_jump    : float = SpellData.get_influenced_stat(SpellData.StatTypes.JUMP,    SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.JUMP],    SpellBook.get_stat(SpellData.StatTypes.JUMP))
    var influenced_gravity : float = SpellData.get_influenced_stat(SpellData.StatTypes.GRAVITY, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.GRAVITY], SpellBook.get_stat(SpellData.StatTypes.GRAVITY))
    
@@ -178,20 +177,20 @@ func _physics_process(delta):
    if Input.is_action_pressed("jump") and is_on_floor() and Enabled: velocity.y = influenced_jump
    
    ## PLAYER SPRINTS IF THEY A) ARE ALREADY SPRINTING OR B) PRESS THE "SPRINT" BUTTON. STOP SPRINTING WHEN STOP MOVING. CANNOT START/STOP SPRINTING IN THE AIR.
-   var sprint_multi : float = 1.0
-   if velocity.x == 0 and velocity.z == 0: is_sprinting = false
-   if not is_on_floor():
-      sprint_multi = influenced_sprint if is_sprinting else 1.0
-   else:
-      if Input.is_action_pressed("sprint"): is_sprinting = true
-      if is_sprinting: sprint_multi = influenced_sprint
+   #var sprint_multi : float = 1.0
+   #if velocity.x == 0 and velocity.z == 0: is_sprinting = false
+   #if not is_on_floor():
+      #sprint_multi = influenced_sprint if is_sprinting else 1.0
+   #else:
+      #if Input.is_action_pressed("sprint"): is_sprinting = true
+      #if is_sprinting: sprint_multi = influenced_sprint
    
    ## HORIZONTAL MOVEMENT
    var input_dir := Input.get_vector("left", "right", "up", "down")
    var direction : Vector3 = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
    if direction and Enabled:
-      velocity.x = direction.x * influenced_speed * sprint_multi
-      velocity.z = direction.z * influenced_speed * sprint_multi
+      velocity.x = direction.x * influenced_speed# * sprint_multi
+      velocity.z = direction.z * influenced_speed# * sprint_multi
    else:
       velocity.x = move_toward(velocity.x, 0, influenced_speed)
       velocity.z = move_toward(velocity.z, 0, influenced_speed)
