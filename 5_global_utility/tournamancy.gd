@@ -20,6 +20,7 @@ func _ready() -> void:
    MPM.transform_data.connect(_on_mpm_transform_data)
    MPM.identity_data.connect(_on_mpm_identity_data)
    MPM.damage_data.connect(_on_mpm_damage_data)
+   MPM.health_update_data.connect(_on_mpm_health_update_data)
    MPM.knockout_data.connect(_on_mpm_knockout_data)
    MPM.victory_point_data.connect(_on_mpm_victory_point_data)
    MPM.spawned_prism_data.connect(_on_mpm_spawned_prism_data)
@@ -33,6 +34,7 @@ func _ready() -> void:
    GAME_MAP.spawned_prism.connect(MPM.send_spawned_prism_data)
    GAME_MAP.updated_prism.connect(MPM.send_updated_prism_data)
    GAME_MAP.removed_prism.connect(MPM.send_removed_prism_data)
+   PLAYER_CHARACTER.HEALTHBAR.health_updated.connect(MPM.send_health_update_data)
    PLAYER_CHARACTER.HEALTHBAR.health_reached_zero.connect(_on_player_knocked_out)
    PLAYER_CHARACTER.open_connection_menu_please.connect(MPM.open_connection_menu)
    PLAYER_CHARACTER.spell_equipped.connect(MPM.send_effect_equip_data)
@@ -113,6 +115,9 @@ func _on_mpm_damage_data           (_network_id: int, package: DamagePackage) ->
       PLAYER_CHARACTER.on_damage_data(package)
    elif SettingsManager.peer_settings.has(package.id_to):
       SettingsManager.peer_settings[package.id_to].dummy.on_damage_data(package)
+func _on_mpm_health_update_data    (network_id: int, health : Array[float]) -> void:
+   if SettingsManager.peer_settings.has(network_id):
+      SettingsManager.peer_settings[network_id].dummy.on_mpm_sync_healthbar(health)
 func _on_mpm_knockout_data         (killer_id: int, KO_player_id : int) -> void: 
    if SettingsManager.peer_settings.has(KO_player_id):
       SettingsManager.peer_settings[KO_player_id].dummy.on_knockout_reset()
@@ -155,7 +160,7 @@ func _on_player_knocked_out        (killer_id : int):
    if killer_id == MPM._OTP.NetworkID: check_VP_for_self_KO_self()
    else: check_VP_for_opponent_KO_self()
    ## SPAWN PRISM
-   GAME_MAP.spawn_player_prism_from_self(PLAYER_CHARACTER.position, PLAYER_CHARACTER)
+   GAME_MAP.spawn_player_prism_from_self(PLAYER_CHARACTER.position, PLAYER_CHARACTER.SpellBook.ActiveSpells, PLAYER_CHARACTER.SpellBook.PassiveSpells)
    ## RESET PLAYER
    PLAYER_CHARACTER.position = GAME_MAP.get_library_spawn_pos()
    PLAYER_CHARACTER.SpellBook.adopt_class(ClassData.ClassIDs.NakedManChallenge)

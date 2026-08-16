@@ -9,6 +9,7 @@ var total_health : Array[float] = [ 0.0 , 0.0 , 0.0 , 0.0 ]
 var damage_taken : float = 0.0
 
 signal health_reached_zero(killer_id : int)
+signal health_updated(new_health : Array[float])
 
 func _ready():
    pass
@@ -18,7 +19,7 @@ func _process(_delta):
 
 func on_damage_data(package : DamagePackage):
    damage_taken += package.amount
-
+   
    ## REMOVE INCOMING DAMAGE FROM TOTAL HEALTH
    ## TODO: MAKE ARMOR AND WARD REDUCE DAMAGE
    var unallocated_damage = package.amount
@@ -31,12 +32,13 @@ func on_damage_data(package : DamagePackage):
          total_health[j] -= unallocated_damage
          unallocated_damage = 0.0
    
+   health_updated.emit(total_health)
+   
    ## SIGNAL WHEN HEALTH REACHES ZERO
    var health_sum : float = 0
    for i in range(NUMBER_OF_HEALTH_TYPES): health_sum += total_health[i]
    if health_sum <= 0.0: 
-      var killer_id = package.id_owner if package.id_owner != 0 else package.id_from
-      health_reached_zero.emit(killer_id)
+      health_reached_zero.emit(package.id_from)
 
 func get_health() -> Array[float]: return total_health
 func set_health(health_array : Array[float], add : bool = false):
@@ -46,3 +48,4 @@ func set_health(health_array : Array[float], add : bool = false):
          total_health[i] += health_array[i]
    else:
       total_health = health_array
+   health_updated.emit(total_health)

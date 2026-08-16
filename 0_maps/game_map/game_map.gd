@@ -84,13 +84,17 @@ var PrismList : Dictionary[int,Prism] = {}
 func spawn_natural_prism():
    pass
 
-func spawn_player_prism_from_self(KO_pos : Vector3, player : Player):
+func spawn_player_prism_from_self(KO_pos : Vector3, pre_actives : Array[ActiveSpell], pre_passives : Array[PassiveSpell]):
    ## If there are no actives OR passives, return and don't bother spawning or sending anything
    ## (make sure not to pass empty slots ("null") as ActiveSpells)
-   var active_spell_array : Array[ActiveSpell]
-   for i in player.SpellBook.ActiveSpells:
-      if i is ActiveSpell: active_spell_array.append(i)
-   if active_spell_array.is_empty() and player.SpellBook.PassiveSpells.is_empty(): return
+   ## (also if we don't do the pre_passives -> passives, the array deletes itself when the original player's class is reset before the prism is opened)
+   var actives : Array[ActiveSpell]
+   var passives : Array[PassiveSpell]
+   for i in pre_actives:
+      if i is ActiveSpell: actives.append(i)
+   for i in pre_passives:
+      if i is PassiveSpell: passives.append(i)
+   if actives.is_empty() and passives.is_empty(): return
    
    ## Basic Instantiation
    var KO_prism : Prism = new_prism_instance.instantiate()
@@ -99,7 +103,7 @@ func spawn_player_prism_from_self(KO_pos : Vector3, player : Player):
    KO_prism.PrismShape = KO_prism.determine_prism_shape()
    
    ## Spell Synchronization 
-   KO_prism.load_spells_from_player(active_spell_array, player.SpellBook.PassiveSpells)
+   KO_prism.load_spells_from_player(actives, passives)
    
    ## Set a new PrismID (used to sending prism_removal_data later)
    var new_prism_id : int = randi() % 100

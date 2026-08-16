@@ -10,6 +10,7 @@ signal peer_disconnected(network_id: int)
 signal connection_established(network_id: int)
 signal transform_data(network_id: int, data: PackedByteArray)
 signal damage_data(network_id: int, package: DamagePackage)
+signal health_update_data(network_id: int, health : Array[float])
 signal knockout_data(network_id: int, KO_player_id : int)
 signal victory_point_data(network_id: int, points_delta : int)
 signal spawned_prism_data(prismdata : PackedByteArray)
@@ -99,7 +100,7 @@ enum DataTypes {
    # do not use 0xC0 #
    
    # gameplay data #
-   TransformData = 0x20, DamageData = 0xDA, KnockoutData = 0xE0, VictoryPointsData = 0x01,
+   TransformData = 0x20, DamageData = 0xDA, HealthUpdateData = 0x88, KnockoutData = 0xE0, VictoryPointsData = 0x01,
    # prism data #
    SpawnedPrismData = 0x04, UpdatedPrismData = 0x06, RemovedPrismData = 0x08,
    # connection state #
@@ -124,6 +125,7 @@ func _recieve_data(_sender_id: int, data_type: int, data: PackedByteArray) -> vo
    match data_type:
       DataTypes.TransformData    : _recieve_transform_data     (data)
       DataTypes.DamageData       : _recieve_damage_data        (data)
+      DataTypes.HealthUpdateData : _recieve_health_update_data (data)
       DataTypes.KnockoutData     : _recieve_knockout_data      (data)
       DataTypes.VictoryPointsData: _recieve_victory_point_data (data)
       DataTypes.SpawnedPrismData : _recieve_spawned_prism_data (data)
@@ -151,6 +153,14 @@ func _recieve_damage_data        (data: PackedByteArray) -> void:
    var package_data: PackedByteArray = data.slice(OneTruePingus.NETWORK_ID_SIZE)
    var package : DamagePackage = DamagePackage.from_PackedByteArray(package_data)
    damage_data.emit(peer_id, package)
+func _recieve_health_update_data (data: PackedByteArray) -> void: 
+   var player_id = data.decode_u32(0)
+   var health : Array[float] = [0,0,0,0]
+   health[0] = data.decode_float(OneTruePingus.NETWORK_ID_SIZE)
+   health[1] = data.decode_float(OneTruePingus.NETWORK_ID_SIZE + 4)
+   health[2] = data.decode_float(OneTruePingus.NETWORK_ID_SIZE + 8)
+   health[3] = data.decode_float(OneTruePingus.NETWORK_ID_SIZE + 12)
+   health_update_data.emit(player_id, health)
 func _recieve_knockout_data      (data: PackedByteArray) -> void:
    var killer_id    : int = data.decode_u32(0)
    var KO_player_id : int = data.decode_u32(OneTruePingus.NETWORK_ID_SIZE)
@@ -225,6 +235,15 @@ func send_damage_data          (package : DamagePackage, owner_id: int = _OTP.Ne
    data.encode_u32(0,owner_id)
    data.append_array(package.to_PackedByteArray())
    _OTP.send_data(DataTypes.DamageData, data)
+func send_health_update_data   (health : Array[float], owner_id : int = _OTP.NetworkID) -> void:
+   var data : PackedByteArray
+   data.resize(OneTruePingus.NETWORK_ID_SIZE + 16)
+   data.encode_u32(0, owner_id)
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE     , health[0])
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + 4 , health[1])
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + 8 , health[2])
+   data.encode_float(OneTruePingus.NETWORK_ID_SIZE + 12, health[3])
+   _OTP.send_data(DataTypes.HealthUpdateData, data)
 func send_knockout_data        (killer_player_id : int, KO_player_id: int = _OTP.NetworkID) -> void:
    var data: PackedByteArray = []
    data.resize(OneTruePingus.NETWORK_ID_SIZE + OneTruePingus.NETWORK_ID_SIZE)

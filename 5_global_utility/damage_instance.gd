@@ -2,10 +2,10 @@ extends Node
 ## An object that contains all data for a single instance of damage.
 class_name DamagePackage
 
-## The object that dealt damage. For example: a player, turret, or familiar.
+## The player responsible for dealing the damage, whether or not it came from them or from a familiar.
 var id_from : int
-## The damaging object's owner. If the object that dealt damage is a turret or another “spawnable” damaging object, this represents that object's owner. If the object that dealt damage is a player, this should be 0.
-var id_owner : int
+## If the object that dealt damage is a turret or another “spawnable” damaging object, this represents that object. Otherwise it is 0.
+var id_familiar : int
 ## The object recieving damage. For example: an enemy player, or their turret.
 var id_to : int
 ## The global position of the object dealing damage.
@@ -23,8 +23,8 @@ var force : float
 
 ## size in bytes of a [member id_from].
 const ID_FROM_SIZE          : int = 4
-## size in bytes of a [member id_owner].
-const ID_OWNER_SIZE         : int = 4
+## size in bytes of a [member id_familiar].
+const ID_FAMILIAR_SIZE      : int = 4
 ## size in bytes of a [member id_to].
 const ID_TO_SIZE            : int = 4
 ## size in bytes of a [member location_source].
@@ -60,9 +60,9 @@ enum DamageType {
    ## Damage done as a result of depriving the body. Bleeding, suffocation, etc.
    NATURAL}
 
-func _init(_id_from : int = 0, _id_owner : int = 0, _id_to : int = 0, _location_source : Vector3 = Vector3.ZERO, _location_receipt : Vector3 = Vector3.ZERO, _amount : float = 0.0, _type : DamageType = DamageType.IMPACT, _force : float = 0.0) -> void:
+func _init(_id_from : int = 0, _id_familiar : int = 0, _id_to : int = 0, _location_source : Vector3 = Vector3.ZERO, _location_receipt : Vector3 = Vector3.ZERO, _amount : float = 0.0, _type : DamageType = DamageType.IMPACT, _force : float = 0.0) -> void:
    id_from = _id_from
-   id_owner = _id_owner
+   id_familiar = _id_familiar
    id_to = _id_to
    location_source = _location_source
    location_receipt = _location_receipt
@@ -75,33 +75,33 @@ func _round_damage_to_decimal(new_val : float) -> float: return round( new_val *
 ## Returns a PackedByteArray containing all the necessary data in the DamagePackage to be sent over the wire. Can be unpacked using DamagePackage.from_PackedByteArray().
 func to_PackedByteArray() -> PackedByteArray:
    var data: PackedByteArray = []
-   data.resize(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE + TYPE_SIZE + FORCE_SIZE)
-   data.encode_u32  (0,                                                                                                                id_from)
-   data.encode_u32  (ID_FROM_SIZE,                                                                                                    id_owner)
-   data.encode_u32  (ID_FROM_SIZE + ID_OWNER_SIZE,                                                                                       id_to)
-   data.encode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE,                                                              location_source.x)
-   data.encode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + 4,                                                          location_source.y)
-   data.encode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + 8,                                                          location_source.z)
-   data.encode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE,                                      location_receipt.x)
-   data.encode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + 4,                                  location_receipt.y)
-   data.encode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + 8,                                  location_receipt.z)
-   data.encode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE,                          amount)
-   data.encode_u8   (ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE,              type)
-   data.encode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE + TYPE_SIZE, force)
+   data.resize(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE + TYPE_SIZE + FORCE_SIZE)
+   data.encode_u32  (0,                                                                                                                   id_from)
+   data.encode_u32  (ID_FROM_SIZE,                                                                                                    id_familiar)
+   data.encode_u32  (ID_FROM_SIZE + ID_FAMILIAR_SIZE,                                                                                       id_to)
+   data.encode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE,                                                              location_source.x)
+   data.encode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + 4,                                                          location_source.y)
+   data.encode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + 8,                                                          location_source.z)
+   data.encode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE,                                      location_receipt.x)
+   data.encode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + 4,                                  location_receipt.y)
+   data.encode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + 8,                                  location_receipt.z)
+   data.encode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE,                          amount)
+   data.encode_u8   (ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE,              type)
+   data.encode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE + TYPE_SIZE, force)
    return data
 ## From a given PackedByteArray - packed using DamagePackage.to_PackedByteArray() - constructs and returns a valid DamagePackage with all the same data.
 static func from_PackedByteArray(data : PackedByteArray) -> DamagePackage:
    var package := DamagePackage.new()
    package.id_from            = data.decode_u32  (0)
-   package.id_owner           = data.decode_u32  (ID_FROM_SIZE)
-   package.id_to              = data.decode_u32  (ID_FROM_SIZE + ID_OWNER_SIZE)
-   package.location_source.x  = data.decode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE)
-   package.location_source.y  = data.decode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + 4)
-   package.location_source.z  = data.decode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + 8)
-   package.location_receipt.x = data.decode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE)
-   package.location_receipt.y = data.decode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + 4)
-   package.location_receipt.z = data.decode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + 8)
-   package.amount             = data.decode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE)
-   package.type               = data.decode_u8   (ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE) as DamageType
-   package.force              = data.decode_float(ID_FROM_SIZE + ID_OWNER_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE + TYPE_SIZE)
+   package.id_familiar        = data.decode_u32  (ID_FROM_SIZE)
+   package.id_to              = data.decode_u32  (ID_FROM_SIZE + ID_FAMILIAR_SIZE)
+   package.location_source.x  = data.decode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE)
+   package.location_source.y  = data.decode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + 4)
+   package.location_source.z  = data.decode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + 8)
+   package.location_receipt.x = data.decode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE)
+   package.location_receipt.y = data.decode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + 4)
+   package.location_receipt.z = data.decode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + 8)
+   package.amount             = data.decode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE)
+   package.type               = data.decode_u8   (ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE) as DamageType
+   package.force              = data.decode_float(ID_FROM_SIZE + ID_FAMILIAR_SIZE + ID_TO_SIZE + LOCATION_SOURCE_SIZE + LOCATION_RECEIPT_SIZE + AMOUNT_SIZE + TYPE_SIZE)
    return package

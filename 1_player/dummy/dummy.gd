@@ -96,6 +96,9 @@ func on_knockout_reset():
    HEALTHBAR.set_health(default_health)
    _sync_healthbar()
 
+func on_mpm_sync_healthbar(health : Array[float]):
+   HEALTHBAR.set_health(health)
+   _sync_healthbar()
 func _sync_healthbar():
    HB_DISPLAY.update_display(HEALTHBAR.get_health())
    HB_VIEWPORT.size.x = HB_DISPLAY.get_bar_size() * 24

@@ -22,7 +22,7 @@ const PRISM_PASSIVESPELL_SIZE : int = 4
 # ========== #
 
 func _ready() -> void:
-   _ready_animation()
+   _set_shape()
 
 func _process(delta: float) -> void:
    _process_animation(delta)
@@ -63,10 +63,12 @@ func clear_spells():
    ActiveSpellList.clear()
    PassiveSpellList.clear()
 func load_spells_from_world():
+   clear_spells()
    is_player_prism = false
    ActiveSpellList = SettingsManager.match_settings.get_world_prism_actives()
    PassiveSpellList = SettingsManager.match_settings.get_world_prism_passives()
 func load_spells_from_player(actives : Array[ActiveSpell], passives : Array[PassiveSpell]):
+   clear_spells()
    is_player_prism = true
    ActiveSpellList = actives
    PassiveSpellList = passives
@@ -82,9 +84,6 @@ const BOBBING_SPEED : float = 1.3
 const BOBBING_DEPTH : float = 0.006
 var time : float = 0.0
 
-func _ready_animation() -> void:
-   clear_spells()
-   _set_shape() 
 func _set_shape() -> void:
    for i in range(5):
       if PrismShape == i: PRISMBODY.get_child(i).visible = true
@@ -111,19 +110,14 @@ func to_PackedByteArray() -> PackedByteArray:
    data.encode_float (PRISM_ID_SIZE + PRISM_SHAPE_SIZE + 8                               , position.z)
    data.encode_u16   (PRISM_ID_SIZE + PRISM_SHAPE_SIZE + PRISM_LOC_SIZE                  , active_list_size)
    data.encode_u16   (PRISM_ID_SIZE + PRISM_SHAPE_SIZE + PRISM_LOC_SIZE + PRISM_ACLS_SIZE, passive_list_size)
-   
-   print("A ", active_list_size)
-   print("B ", passive_list_size)
-   
+
    for i in range(active_list_size):
       if active_list_size == 0: continue
-      print("a ", i)
       var encoded_spell_offset : int = PRISM_ID_SIZE + PRISM_SHAPE_SIZE + PRISM_LOC_SIZE + PRISM_ACLS_SIZE + PRISM_PSLS_SIZE + ( PRISM_ACTIVESPELL_SIZE * i )
       var encoded_spell_id     : int = ActiveSpellList[i].SpellID
       data.encode_s16(encoded_spell_offset, encoded_spell_id)
    for i in range(passive_list_size):
       if passive_list_size == 0: continue
-      print("b ", i)
       var encoded_spell_offset : int = PRISM_ID_SIZE + PRISM_SHAPE_SIZE + PRISM_LOC_SIZE + PRISM_ACLS_SIZE + PRISM_PSLS_SIZE + ( PRISM_ACTIVESPELL_SIZE * active_list_size ) + ( PRISM_PASSIVESPELL_SIZE * i )
       var encoded_spell_id     : int = PassiveSpellList[i].SpellID
       var encoded_spell_stacks : int = PassiveSpellList[i].Stacks
