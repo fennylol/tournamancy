@@ -4,6 +4,7 @@ class_name GreatBallOFireFamiliar
 const FIREBALL_MESH: Mesh = preload("res://2_spells/actives/GreatBallOFire/familiar/new_fireball_mesh.tres")
 const FIREBALL_SHADER: Shader = preload("res://2_spells/actives/GreatBallOFire/familiar/fireball_shader.gdshader")
 const FIREBALL_NOISE: NoiseTexture2D = preload("res://2_spells/actives/GreatBallOFire/familiar/fireball_noise.tres")
+const FIREBALL_SHAPE: CapsuleShape3D = preload("res://2_spells/actives/GreatBallOFire/familiar/fireball_collision_shape.tres")
 
 const MAX_LIFE_TIME: float = 15
 const SPEED: float = 15.0
@@ -75,10 +76,39 @@ func _init(owner_id: int, fireball_pos: Vector3, fireball_velocity: Vector3) -> 
    mesh_inst.material_override = shader_mat
    add_child(mesh_inst)
    
+   var area := Area3D.new()
+   var col_shape := CollisionShape3D.new()
+   col_shape.shape = FIREBALL_SHAPE
+   col_shape.position.z = 0.375
+   col_shape.rotation_degrees.x = 90
+   area.add_child(col_shape)
+   area.collision_mask = 5
+   area.body_entered.connect(_on_body_entered)
+   add_child(area)
+   
+   
    #var packed = PackedScene.new()
-   #packed.pack(mesh_inst)
+   #packed.pack(self)
    #ResourceSaver.save(packed, "res://saved_branch.tscn")
 
 func _ready() -> void:
    if Velocity.length_squared() > 0.001:
       look_at(global_position + Velocity, Vector3.UP)
+
+func _on_body_entered(body: Node3D) -> void:
+   if not ThePlayer: return
+   var parent_node: Node3D = body.get_parent()
+   if parent_node and parent_node is Dummy and parent_node.NETWORK_ID != OwnerID:
+      var stat_influenced_damage : float = GreatBallOFire.SPELL_DAMAGE * SpellData.get_influenced_stat(SpellData.StatTypes.DAMAGE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.DAMAGE], ThePlayer.SpellBook.get_stat(SpellData.StatTypes.DAMAGE))
+      
+      var new_damage_package = DamagePackage.new()
+      new_damage_package.id_from = OwnerID
+      new_damage_package.id_to = parent_node.NETWORK_ID
+      new_damage_package.location_source = global_position
+      new_damage_package.location_receipt = parent_node.global_position
+      new_damage_package.amount = stat_influenced_damage
+      new_damage_package.type = DamagePackage.DamageType.ZAP
+      new_damage_package.force = 0.0
+      ThePlayer.send_damage_package(new_damage_package)
+   elif body is CollisionObject3D and body.collision_layer == 1:
+      self.queue_free()

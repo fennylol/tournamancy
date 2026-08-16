@@ -81,7 +81,7 @@ const ActiveSpells: Dictionary = {
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
       SpellFields.IconRect     : Rect2(32,64,32,32),
       SpellFields.ScriptPath   : "res://2_spells/actives/GreatBallOFire/great_ball_o_fire_script.gd",
-      SpellFields.Cooldown     : 0.0,
+      SpellFields.Cooldown     : 0.5,
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],
       SpellFields.Familiars    : ["res://2_spells/actives/GreatBallOFire/familiar/great_ball_of_fire_familiar.gd"]
@@ -420,7 +420,7 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       StatTypes.WARD_STRENGTH:  influenced_stat = base_value * stat_value ##🧑‍🔧
       StatTypes.LIFESTEAL:      influenced_stat = base_value * stat_value ##🧑‍🔧
       ## NATURAL LOG. Slow growth as points are added. You need about ~7 stacks for double damage. Not sure if this is a good idea (🧑‍🔧), but it feels decent for now. Needs playtesting.
-      StatTypes.DAMAGE:         influenced_stat = log( base_value + stat_value )
+      StatTypes.DAMAGE:         influenced_stat = base_value + log( stat_value if stat_value != 0 else 1.0 )
       StatTypes.RANGE:          influenced_stat = base_value * stat_value ##🧑‍🔧
       ## ADD FIVE PERCENT. Each additional point causes active ability cooldowns to go 5% faster (20 stacks needed for a 1/2 reduction).
       StatTypes.COOLDOWN:       influenced_stat = 1 + ( ( base_value + stat_value ) * 0.05 )

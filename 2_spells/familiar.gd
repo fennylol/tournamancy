@@ -4,6 +4,7 @@ class_name Familiar
 
 var LifeTime: float
 var OwnerID: int
+var ThePlayer: Player
 
 
 static func create_from_byte_array(owner_id: int, _data: PackedByteArray) -> Familiar: 

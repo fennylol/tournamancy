@@ -56,6 +56,9 @@ func _spawn_familiar(owner_id: int, spell_id: int, is_active: bool, familiar_idx
    if familiar_list.size() <= familiar_idx: return
    
    var familiar: Familiar = load(familiar_list[familiar_idx]).create_from_byte_array(owner_id, creation_data)
+   if owner_id == PLAYER_CHARACTER.MY_NETWORK_ID: 
+      # TODO: REALLY cludgy way to do this but idk man
+      familiar.ThePlayer = PLAYER_CHARACTER
    FAMILIARS.add_child(familiar)
 
 # ===================== #
