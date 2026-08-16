@@ -50,9 +50,9 @@ Future updates will allow users to rebind controls. For now, default controls ar
     <td>X (left action)</td>
   </tr>
   <tr>
-    <td style="color:grey">Inspect / Free Mouse</td>
-    <td style="color:grey">Tab</td>
-    <td style="color:grey">Y (up action)</td>
+    <td>~~Inspect / Free Mouse~~</td>
+    <td>~~Tab~~</td>
+    <td>~~Y (up action)~~</td>
   </tr>
   <tr>
     <td>Menu</td>

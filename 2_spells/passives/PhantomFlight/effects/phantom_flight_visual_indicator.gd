@@ -12,7 +12,7 @@ func _ready() -> void:
 func change_state(new_state: int) -> void:
    super(new_state)
    var mat: StandardMaterial3D = ring_mesh.get_surface_override_material(0)
-   if new_state == PhantomFlight.States.Alone:
+   if new_state == PhantomFlightSpell.States.Alone:
       mat.albedo_color = ALONE_COLOR
    else:
       mat.albedo_color = NEARBY_COLOR

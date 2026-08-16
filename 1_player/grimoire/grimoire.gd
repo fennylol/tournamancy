@@ -84,13 +84,17 @@ func add_active(id: SpellData.ActiveSpellIDs, slot: int) -> void:
       spell.state_changed.connect(func(new_state: int): spell_change_state.emit(id, true, new_state))
       spell_equipped.emit(id, true)
 
-func remove_passive(id: SpellData.PassiveSpellIDs) -> void:
-   for spell:PassiveSpell in PassiveSpells:
-      if spell.SpellID == id:
-         PassiveSpells.erase(spell)
+func remove_passive_step_one(id: SpellData.PassiveSpellIDs) -> void:
+   for i in range(PassiveSpells.size()):
+      if PassiveSpells[i].SpellID == id:
+         PassiveSpells[i].SpellID = SpellData.PassiveSpellIDs.ERROR
          spell_erased.emit(id, false)
          return
-
+func remove_passive_step_two():
+   var locked_size : int = PassiveSpells.size() - 1
+   for i in range(locked_size + 1):
+      if PassiveSpells[locked_size - i].SpellID == SpellData.PassiveSpellIDs.ERROR:
+         PassiveSpells.remove_at(locked_size - i)
 func remove_active(id: SpellData.ActiveSpellIDs) -> void:
    for i in ActiveSlots:
       var spell:ActiveSpell = ActiveSpells[i]
@@ -99,16 +103,13 @@ func remove_active(id: SpellData.ActiveSpellIDs) -> void:
          spell_erased.emit(id, true)
          return
 
-
 func adopt_class(id: ClassData.ClassIDs) -> void:
    ## CLEAR SPELLS
    for spell:ActiveSpell  in ActiveSpells:
       if spell: remove_active(spell.SpellID) 
-   ## there was an issue with the below implimentation where the loop would count up from 0 -> 1 -> 2, but the remove_passive() function would be removing spells in the middle of the loop, causing, for example, loop 1 to reference spell 2 (because spell 0 was removed already)
-   #for spell:PassiveSpell in PassiveSpells:
-      #remove_passive(spell.SpellID)
-   ## i replaced the above with just a simple array.clear()
-   PassiveSpells.clear()
+   for spell:PassiveSpell in PassiveSpells:
+      remove_passive_step_one(spell.SpellID)
+   remove_passive_step_two()
    StatModifiers = {}
    
    ## ADOPT SPELLS

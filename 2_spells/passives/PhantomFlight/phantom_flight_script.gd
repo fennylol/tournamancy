@@ -1,5 +1,5 @@
 extends PassiveSpell
-class_name PhantomFlight
+class_name PhantomFlightSpell
 
 enum States {Alone, EnemyNearby}
 
