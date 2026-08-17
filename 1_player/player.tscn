@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://cuueb1u2pkixq" path="res://1_player/effectory/effectory.gd" id="4_lbqfs"]
 [ext_resource type="PackedScene" uid="uid://b2f6ccnpk7mrl" path="res://1_player/components/healthbar.tscn" id="5_s87op"]
 [ext_resource type="PackedScene" uid="uid://dp3a6xh2ybnyy" path="res://0_maps/assets/interactables/prism/prism_menu.tscn" id="8_7yfv2"]
+[ext_resource type="PackedScene" uid="uid://v0psk4wno1qp" path="res://4_ui/RadialWheel/generic_selection_wheel.tscn" id="8_ecodu"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_25okf"]
 radius = 0.375
@@ -266,5 +267,6 @@ metadata/_custom_type_script = "uid://cuueb1u2pkixq"
 [node name="DefaultHud" parent="CanvasLayer" unique_id=1610244138 instance=ExtResource("3_qeeko")]
 visible = false
 
+[node name="GenericSelectionWheel" parent="CanvasLayer" unique_id=730570291 instance=ExtResource("8_ecodu")]
+
 [node name="PrismMenu" parent="CanvasLayer" unique_id=775943470 instance=ExtResource("8_7yfv2")]
-visible = false

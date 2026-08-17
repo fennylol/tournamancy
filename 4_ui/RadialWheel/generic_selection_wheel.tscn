@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://v0psk4wno1qp"]
+
+[ext_resource type="Script" uid="uid://bswfo6j754uu8" path="res://4_ui/RadialWheel/generic_selection_wheel.gd" id="1_3grrt"]
+
+[node name="GenericSelectionWheel" type="Control" unique_id=730570291]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3grrt")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1195714623]
+modulate = Color(1, 1, 1, 0.25098)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0.25)
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=446160669]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="the_wheel" type="Control" parent="CenterContainer" unique_id=1064174677]
+layout_mode = 2
+
+[node name="textures" type="Node2D" parent="CenterContainer" unique_id=70683563]
+
+[node name="actions" type="Node" parent="." unique_id=2011167345]
+
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]

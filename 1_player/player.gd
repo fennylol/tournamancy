@@ -17,6 +17,7 @@ const TRANSFORM_DATA_SIZE: int = (4*9)+1
 @onready var EFFECTORY : Effectory       = $Effectory
 @onready var HEALTHBAR : HealthComponent = $Healthbar
 @onready var HUD       : Control         = $CanvasLayer/DefaultHud
+@onready var THE_WHEEL : SelectionWheel  = $CanvasLayer/GenericSelectionWheel
 @onready var PRISMMENU : PrismMenu       = $CanvasLayer/PrismMenu
 var HUD_LEFT_ACTIVE    : Node2D
 var HUD_RIGHT_ACTIVE   : Node2D
@@ -67,6 +68,7 @@ func _ready() -> void:
    EFFECTORY.spell_state_changed.connect(_on_change_spell_state)
    PRISMMENU.close_menu.connect(close_prism)
    PRISMMENU.visible = false
+   THE_WHEEL.visible = false
    set_colors()
 
    var starting_health : Array[float] = [
@@ -124,6 +126,12 @@ func _process(delta):
    elif Input.is_action_just_released("quick_melee") and Enabled:
       LEFT_ARM.rotation.x = 0.0
       RIGHT_ARM.rotation.x = 0.0
+   
+   if Input.is_action_just_pressed("debug"):
+      THE_WHEEL.visible = true
+      THE_WHEEL.generate_wheel([],8)
+   if Input.is_action_just_released("debug"):
+      THE_WHEEL.visible = false
    
    ## PASSIVE PROCESSES, BEGIN
    if Enabled: SpellBook.process_end(delta, self)
