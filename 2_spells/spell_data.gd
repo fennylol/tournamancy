@@ -404,49 +404,49 @@ const PassiveSpells: Dictionary = {
    }
 }
 
+## a smooth, continuous S-shaped curve bounded by (0, INF) and crossing the point (0, base_value)
+static func _half_bounded_hyperbolic(base_value: float, stat_value: float, scaling_factor: float) -> float:
+   var core: float = (stat_value * scaling_factor)/base_value
+   return base_value + (base_value * (asinh(core) if stat_value >= 0 else tanh(core)))
+
 ## Takes a given [param StatTypes] value and returns a [b]float[/b] based on the player's base stat plus any stat contributions from actives and passives.[br][br]By default (for now), an influenced stat is simply [code]BASESTAT * CONTRIBUTION[/code], but more complicated functions are possible.[br][br]
 ## "🧑‍🔧" indicates the operation has not been checked yet, and it just in the default X*Y format.
 static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: float) -> float:
-   var influenced_stat : float = -999.0
    match id:
       ## ONE-TO-ONE. Each additional point is one (1.0) additional health.
-      StatTypes.HEARTS:         influenced_stat = base_value + stat_value
+      StatTypes.HEARTS:         return base_value + stat_value
       ## ONE-TO-ONE. Each additional point is one (1.0) additional armor.
-      StatTypes.ARMOR:          influenced_stat = base_value + stat_value
+      StatTypes.ARMOR:          return base_value + stat_value
       ## ONE-TO-ONE. Each additional point is one (1.0) additional ward.
-      StatTypes.WARD:           influenced_stat = base_value + stat_value
-      StatTypes.OVERHEALTH:     influenced_stat = base_value * stat_value ##🧑‍🔧
-      StatTypes.ARMOR_STRENGTH: influenced_stat = base_value * stat_value ##🧑‍🔧
-      StatTypes.WARD_STRENGTH:  influenced_stat = base_value * stat_value ##🧑‍🔧
-      StatTypes.LIFESTEAL:      influenced_stat = base_value * stat_value ##🧑‍🔧
-      ## NATURAL LOG. Slow growth as points are added. You need about ~7 stacks for double damage. Not sure if this is a good idea (🧑‍🔧), but it feels decent for now. Needs playtesting.
-      StatTypes.DAMAGE:         influenced_stat = base_value + log( stat_value if stat_value != 0 else 1.0 )
-      StatTypes.RANGE:          influenced_stat = base_value * stat_value ##🧑‍🔧
+      StatTypes.WARD:           return base_value + stat_value
+      StatTypes.OVERHEALTH:     return base_value * stat_value ##🧑‍🔧
+      StatTypes.ARMOR_STRENGTH: return base_value * stat_value ##🧑‍🔧
+      StatTypes.WARD_STRENGTH:  return base_value * stat_value ##🧑‍🔧
+      StatTypes.LIFESTEAL:      return base_value * stat_value ##🧑‍🔧
+      ## HALF-BOUNDED HYPERBOLIC. Diminishing growth. 2x damage at 5 stacks, 3x at 15, 4x at 40. 
+      StatTypes.DAMAGE:         return _half_bounded_hyperbolic(base_value, stat_value, 0.25)
+      StatTypes.RANGE:          return base_value * stat_value ##🧑‍🔧
       ## ADD FIVE PERCENT. Each additional point causes active ability cooldowns to go 5% faster (20 stacks needed for a 1/2 reduction).
-      StatTypes.COOLDOWN:       influenced_stat = 1 + ( ( base_value + stat_value ) * 0.05 )
-      StatTypes.FORCE:          influenced_stat = base_value * stat_value ##🧑‍🔧
-      StatTypes.CRIT:           influenced_stat = base_value * stat_value ##🧑‍🔧
-      StatTypes.LUCK:           influenced_stat = base_value * stat_value ##🧑‍🔧
+      StatTypes.COOLDOWN:       return 1 + ( ( base_value + stat_value ) * 0.05 )
+      StatTypes.FORCE:          return base_value * stat_value ##🧑‍🔧
+      StatTypes.CRIT:           return base_value * stat_value ##🧑‍🔧
+      StatTypes.LUCK:           return base_value * stat_value ##🧑‍🔧
       ## ADDITIVE. Each additional point of speed increases walk speed by ~1 m/s
-      StatTypes.SPEED:          influenced_stat = base_value + stat_value if stat_value >= 0 else base_value / abs(stat_value)
+      StatTypes.SPEED:          return base_value + stat_value if stat_value >= 0 else base_value / abs(stat_value)
       ## ADDITIVE. Each additional point increases sprint speed by an amount equal to 1/4 walk speed.
-      StatTypes.SPRINT:         influenced_stat = base_value + ( stat_value * 0.25 )
-      StatTypes.JUMP:           influenced_stat = base_value + stat_value ##🧑‍🔧
+      StatTypes.SPRINT:         return base_value + ( stat_value * 0.25 )
+      StatTypes.JUMP:           return base_value + stat_value ##🧑‍🔧
       ## PLATFORMER JUMPS. While the "jump" button is held, gravity is low. When the "jump" button is released, gravity is high.
-      StatTypes.GRAVITY:        influenced_stat = base_value * pow( 2.0 , ( -( stat_value * 0.25 ) / 2 ) ) if Input.is_action_pressed("jump") else base_value * pow( 2.0 , ( ( stat_value * 0.25 ) / 2 ) )
-      StatTypes.STEADFASTNESS:  influenced_stat = base_value * stat_value ##🧑‍🔧
+      StatTypes.GRAVITY:        return base_value * pow( 2.0 , ( -( stat_value * 0.25 ) / 2 ) ) if Input.is_action_pressed("jump") else base_value * pow( 2.0 , ( ( stat_value * 0.25 ) / 2 ) )
+      StatTypes.STEADFASTNESS:  return base_value * stat_value ##🧑‍🔧
       ## ONE-TO-ONE. Each additional point is one (1.0) additional point of damage.
-      StatTypes.MELEE_DAMAGE:   influenced_stat = base_value + stat_value ##🧑‍🔧
+      StatTypes.MELEE_DAMAGE:   return base_value + stat_value ##🧑‍🔧
       ## ADDITIVE. Each additional point of range increases the Area3D by 0.5m
-      StatTypes.MELEE_RANGE:    influenced_stat = base_value + ( stat_value * 0.5 ) ##🧑‍🔧
+      StatTypes.MELEE_RANGE:    return base_value + ( stat_value * 0.5 ) ##🧑‍🔧
       ## IDK
-      StatTypes.MELEE_FORCE:    influenced_stat = base_value + stat_value ##🧑‍🔧
-      StatTypes.MELEE_COOLDOWN: influenced_stat = base_value * stat_value ##🧑‍🔧
-   if influenced_stat == -999.0: 
-      printerr("SpellData.get_influenced_stat() STAT ", id, " NOT FOUND. RETURNING 0.")
-      return 0.0
-   else:
-      return influenced_stat
+      StatTypes.MELEE_FORCE:    return base_value + stat_value ##🧑‍🔧
+      StatTypes.MELEE_COOLDOWN: return base_value * stat_value ##🧑‍🔧
+      _: printerr("SpellData.get_influenced_stat() STAT ", id, " NOT FOUND. RETURNING 0."); return 0
 
 static func get_active_spell_data(id: ActiveSpellIDs) -> Dictionary: 
    if ActiveSpells.keys().has(id): return ActiveSpells[id]
