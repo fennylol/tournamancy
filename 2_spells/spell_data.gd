@@ -405,9 +405,18 @@ const PassiveSpells: Dictionary = {
 }
 
 ## a smooth, continuous S-shaped curve bounded by (0, INF) and crossing the point (0, base_value)
+## copy and paste the following lines into desmos: (B = base_stat, x = stat_value, S = scaling_factor)
+## B+B\operatorname{arcsinh}\left(\frac{Sx}{B}\right)\left\{0\le x\right\}
+## B+B\tanh\left(\frac{Sx}{B}\right)\ \left\{x<0\right\}
 static func _half_bounded_hyperbolic(base_value: float, stat_value: float, scaling_factor: float) -> float:
-   var core: float = (stat_value * scaling_factor)/base_value
-   return base_value + (base_value * (asinh(core) if stat_value >= 0 else tanh(core)))
+   return base_value + (base_value * (asinh((stat_value * scaling_factor)/base_value) if stat_value >= 0 else tanh((stat_value * scaling_factor)/base_value)))
+
+## a smooth, continuous L-shaped curve bounded by (0, INF) and crossing the point (0, base_value)
+## copy and paste the following lines into desmos: (B = base_stat, x = stat_value, S = scaling_factor)
+## B+Sx\left\{0\le x\right\}
+## B+B\tanh\left(\frac{Sx}{B}\right)\ \left\{x<0\right\}
+static func _half_bounded_linear(base_value: float, stat_value: float, scaling_factor: float) -> float:
+   return base_value + ((stat_value * scaling_factor) if stat_value >= 0 else tanh((stat_value * scaling_factor)/base_value))
 
 ## Takes a given [param StatTypes] value and returns a [b]float[/b] based on the player's base stat plus any stat contributions from actives and passives.[br][br]By default (for now), an influenced stat is simply [code]BASESTAT * CONTRIBUTION[/code], but more complicated functions are possible.[br][br]
 ## "🧑‍🔧" indicates the operation has not been checked yet, and it just in the default X*Y format.
@@ -432,7 +441,7 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       StatTypes.CRIT:           return base_value * stat_value ##🧑‍🔧
       StatTypes.LUCK:           return base_value * stat_value ##🧑‍🔧
       ## ADDITIVE. Each additional point of speed increases walk speed by ~1 m/s
-      StatTypes.SPEED:          return base_value + stat_value if stat_value >= 0 else base_value / abs(stat_value)
+      StatTypes.SPEED:          return _half_bounded_linear(base_value, stat_value, 1)
       ## ADDITIVE. Each additional point increases sprint speed by an amount equal to 1/4 walk speed.
       StatTypes.SPRINT:         return base_value + ( stat_value * 0.25 )
       StatTypes.JUMP:           return base_value + stat_value ##🧑‍🔧
