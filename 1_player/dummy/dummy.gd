@@ -31,7 +31,6 @@ func _ready() -> void:
    ]
    HEALTHBAR.set_health(starting_health)
    _sync_healthbar()
-   BODY.set_colors(SettingsManager.personal_settings.PRIMARY_COLOR, SettingsManager.personal_settings.SECONDARY_COLOR)
 
 func _physics_process(delta: float) -> void:
    if not _has_net_state: return
@@ -64,10 +63,7 @@ func on_transform_data(data: PackedByteArray) -> void:
    
    _has_net_state = true
    _time_since_packet = 0.0
-func on_identity_data(new_name: String, primary_color: float, secondary_color: float) -> void:
-   var new_primary_color: Color = SettingsManager.personal_settings.make_color(true, primary_color)
-   var new_secondary_color: Color = SettingsManager.personal_settings.make_color(false, secondary_color)
-   
+func on_identity_data(new_name: String, new_primary_color: Color, new_secondary_color: Color) -> void:
    NAMETAG.text = new_name
    BODY.set_colors(new_primary_color, new_secondary_color)
    var dummy_settings: SettingsManager.PeerSettings = SettingsManager.peer_settings[NETWORK_ID]

@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://q8ffrmv8akdm"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_bsava"]
+size = Vector3(0.75, 1.5, 0.05)
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_bsava"]
+viewport_path = NodePath("SubViewport")
+
+[node name="Mirror" type="Node3D" unique_id=1474970515]
+
+[node name="Mirror" type="MeshInstance3D" parent="." unique_id=1608021104]
+mesh = SubResource("BoxMesh_bsava")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=619237236]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.030452698)
+flip_h = true
+pixel_size = 0.005
+texture = SubResource("ViewportTexture_bsava")
+
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="." unique_id=1808774807]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0.03)
+remote_path = NodePath("../SubViewport/Camera3D")
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=1306695671]
+size = Vector2i(128, 256)
+
+[node name="Camera3D" type="Camera3D" parent="SubViewport" unique_id=1772841797]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0.03)

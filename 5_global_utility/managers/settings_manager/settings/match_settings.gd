@@ -218,7 +218,7 @@ var PLAYER_BASE_STATS : Dictionary = {
    SpellData.StatTypes.FORCE          : 0.0,
    SpellData.StatTypes.CRIT           : 5.0,
    SpellData.StatTypes.LUCK           : 2.0,
-   SpellData.StatTypes.SPEED          : 10.0,
+   SpellData.StatTypes.SPEED          : 2.5,
    SpellData.StatTypes.SPRINT         : 0.0,
    SpellData.StatTypes.JUMP           : 4.5,
    SpellData.StatTypes.GRAVITY        : 9.8,

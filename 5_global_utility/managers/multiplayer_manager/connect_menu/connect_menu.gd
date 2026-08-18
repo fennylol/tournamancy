@@ -22,8 +22,8 @@ class_name ConnectMenu
 @onready var SECONDARY_COLOR_DISPLAY : ColorRect = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Colors/AspectRatioContainer2/SecondaryColor
 @onready var PRIMARY_COLOR_SLIDER    : HSlider   = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Values/PrimaryHue
 @onready var SECONDARY_COLOR_SLIDER  : HSlider   = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Values/SecondaryHue
-@onready var PRIMARY_COLOR_LABEL     : Label     = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels/Label
-@onready var SECONDARY_COLOR_LABEL   : Label     = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels/Label2
+@onready var PRIMARY_LIGHT_SLIDER    : HSlider   = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Lightnesses/PrimaryLightness
+@onready var SECONDARY_LIGHT_SLIDER  : HSlider   = $VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Lightnesses/SecondaryLightness
 
 signal network_type_changed(global: bool)
 signal hosting_type_changed(client: bool)
@@ -46,10 +46,17 @@ func _ready() -> void:
    COPY_ID_BUTTON.pressed.connect(func(): DisplayServer.clipboard_set(ID_LABEL.text.strip_edges()))
    COPY_IP_BUTTON.pressed.connect(func(): DisplayServer.clipboard_set(IP_LABEL.text.strip_edges()))
    
-   PRIMARY_COLOR_SLIDER.value_changed.connect(_on_primary_slider_value_changed)
-   SECONDARY_COLOR_SLIDER.value_changed.connect(_on_secondary_slider_value_changed)
    PRIMARY_COLOR_SLIDER.value = SettingsManager.personal_settings.PRIMARY_COLOR.ok_hsl_h
    SECONDARY_COLOR_SLIDER.value = SettingsManager.personal_settings.SECONDARY_COLOR.ok_hsl_h
+   PRIMARY_LIGHT_SLIDER.value = SettingsManager.personal_settings.PRIMARY_COLOR.ok_hsl_l
+   SECONDARY_LIGHT_SLIDER.value = SettingsManager.personal_settings.SECONDARY_COLOR.ok_hsl_l
+   PRIMARY_LIGHT_SLIDER.value_changed.connect(_on_slider_value_changed)
+   SECONDARY_LIGHT_SLIDER.value_changed.connect(_on_slider_value_changed)
+   PRIMARY_COLOR_SLIDER.value_changed.connect(_on_slider_value_changed)
+   SECONDARY_COLOR_SLIDER.value_changed.connect(_on_slider_value_changed)
+   PRIMARY_COLOR_DISPLAY.color = SettingsManager.personal_settings.PRIMARY_COLOR
+   SECONDARY_COLOR_DISPLAY.color = SettingsManager.personal_settings.SECONDARY_COLOR
+
 
 # =============== #
 # button handlers #
@@ -78,18 +85,15 @@ func _on_hosting_type_changed(client: bool) -> void:
 # =============== #
 # slider handlers #
 # =============== #
-func _on_primary_slider_value_changed(new_val: float) -> void:
-   var new_color: Color = SettingsManager.personal_settings.make_color(true, new_val)
-   PRIMARY_COLOR_LABEL.text = str(snappedf(new_val, 0.01))
-   PRIMARY_COLOR_DISPLAY.color = new_color
-   SettingsManager.personal_settings.PRIMARY_COLOR = new_color
+func _on_slider_value_changed(_new_val: float) -> void:
+   var new_prim := Color.from_ok_hsl(PRIMARY_COLOR_SLIDER.value, 1.0, PRIMARY_LIGHT_SLIDER.value)
+   var new_secd := Color.from_ok_hsl(SECONDARY_COLOR_SLIDER.value, 1.0, SECONDARY_LIGHT_SLIDER.value)
+   PRIMARY_COLOR_DISPLAY.color = new_prim
+   SECONDARY_COLOR_DISPLAY.color = new_secd
+   SettingsManager.personal_settings.PRIMARY_COLOR = new_prim
+   SettingsManager.personal_settings.SECONDARY_COLOR = new_secd
    identity_changed.emit()
-func _on_secondary_slider_value_changed(new_val: float) -> void:
-   var new_color: Color = SettingsManager.personal_settings.make_color(false, new_val)
-   SECONDARY_COLOR_LABEL.text = str(snappedf(new_val, 0.01))
-   SECONDARY_COLOR_DISPLAY.color = new_color
-   SettingsManager.personal_settings.SECONDARY_COLOR = new_color
-   identity_changed.emit()
+
 # ============= #
 # label setters #
 # ============= #

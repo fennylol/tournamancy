@@ -243,37 +243,39 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.25
 
-[node name="ValueLabels" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone" unique_id=782798578]
+[node name="Lightnesses" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone" unique_id=1866124520]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.5
 
-[node name="spacer3" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=556752509]
+[node name="spacer3" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Lightnesses" unique_id=1175357581]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=977704203]
+[node name="PrimaryLightness" type="HSlider" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Lightnesses" unique_id=1643145184]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 2.0
-text = "0.0"
-horizontal_alignment = 1
+size_flags_stretch_ratio = 3.5
+max_value = 1.0
+step = 0.01
 
-[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=1922327583]
+[node name="spacer" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Lightnesses" unique_id=55047749]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
+size_flags_stretch_ratio = 1.5
 
-[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=804090456]
+[node name="SecondaryLightness" type="HSlider" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Lightnesses" unique_id=1663898204]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 2.0
-text = "0.0"
-horizontal_alignment = 1
+size_flags_stretch_ratio = 3.5
+max_value = 1.0
+step = 0.01
 
-[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/ValueLabels" unique_id=1476529549]
+[node name="spacer2" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone/ColorZone/Lightnesses" unique_id=234669221]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.25
 
 [node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/YourInfo/ColorZone" unique_id=1998529981]
 layout_mode = 2
