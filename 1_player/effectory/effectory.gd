@@ -46,7 +46,7 @@ func erase_effect(spell_id: int, is_active: bool) -> void:
       EyesEffects.remove_child(eyes_container)
       eyes_container.queue_free()
    if body_container: 
-      EyesEffects.remove_child(body_container)
+      BodyEffects.remove_child(body_container)
       body_container.queue_free()
 func change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
    var eyes_container: Node3D = _get_eyes_effect_container(spell_id, is_active)
