@@ -6,5 +6,6 @@ signal state_changed(new_state: int)
 var CurrentState: int = 0
 
 var ThePlayer : Player
+var FollowsEyes: bool = false
 
-func change_state(new_state: int) -> void: CurrentState = new_state
+func on_state_changed(new_state: int) -> void: CurrentState = new_state

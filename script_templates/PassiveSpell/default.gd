@@ -3,14 +3,16 @@
 # meta-default: true
 # meta-space-indent: 3
 extends PassiveSpell
+# TODO: name your class
+class_name NewPassiveSpell
 
 #enum States {}
-#func change_state(new_state: int) -> void:
+#enum FamiliarIDs {}
+#func on_state_changed(new_state: int) -> void:
    #super(new_state) # NOTE: keep this line if adding custom state change logic
 
-func _init(stacks: int = 1) -> void:
-   # TODO: replace ERROR with your new spell ID
-   super(stacks, SpellData.PassiveSpellIDs.ERROR)
+# TODO: replace ERROR with your new spell ID
+func _init(stacks: int = 1) -> void: super(stacks, SpellData.PassiveSpellIDs.ERROR)
 
 func _get_stat_contributions()                   -> Dictionary: return {}
 func _on_process_begin(_delta: float, _player: Player) -> void: pass

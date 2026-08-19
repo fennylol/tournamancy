@@ -4,6 +4,7 @@
 # meta-space-indent: 3
 extends Effect
 
+#func _init() -> void: FollowsEyes = true
 
-func change_state(new_state: int) -> void:
-   super(new_state)
+#func on_state_changed(new_state: int) -> void:
+   #super(new_state) # NOTE: keep this line if adding custom state change logic

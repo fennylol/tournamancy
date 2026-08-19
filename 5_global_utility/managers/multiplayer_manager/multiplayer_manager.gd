@@ -196,8 +196,8 @@ func _recieve_disconnection_data (data: PackedByteArray) -> void:
 func _recieve_identity_data      (data: PackedByteArray) -> void:
    var peer_id: int = data.decode_u32(0)
    var prim_hue: float = data.decode_float(OneTruePingus.NETWORK_ID_SIZE)
-   var secd_hue: float = data.decode_float(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.HUE_SIZE)
-   var prim_lit: float = data.decode_float(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.HUE_SIZE + PersonalSettings.LIGHTNESS_SIZE)
+   var prim_lit: float = data.decode_float(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.HUE_SIZE)
+   var secd_hue: float = data.decode_float(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.HUE_SIZE + PersonalSettings.LIGHTNESS_SIZE)
    var secd_lit: float = data.decode_float(OneTruePingus.NETWORK_ID_SIZE + PersonalSettings.HUE_SIZE + PersonalSettings.LIGHTNESS_SIZE + PersonalSettings.HUE_SIZE)
    var primary_color := Color.from_ok_hsl(prim_hue, 1.0, prim_lit)
    var secondary_color := Color.from_ok_hsl(secd_hue, 0.9, secd_lit)

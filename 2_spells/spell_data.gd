@@ -69,12 +69,24 @@ enum SpellFields {Name, Description, IconPath, IconRect, ScriptPath, Cooldown, E
 enum ActiveSpellIDs {
    GreatBallOfFire,
    IronBody,
+   PulsarsBreath,
    ShockstarDisco,
    StarlightBlink,
    Thunderwave,
    ERROR = -1
    }
 const ActiveSpells: Dictionary = {
+   #ActiveSpellIDs.:{
+      #SpellFields.Name         : "",
+      #SpellFields.Description  : "",
+      #SpellFields.IconPath     : ,
+      #SpellFields.IconRect     : Rect2(0,0,32,32),
+      #SpellFields.ScriptPath   : ,
+      #SpellFields.Cooldown     : 1.0,
+      #SpellFields.Effects      : [],
+      #SpellFields.DummyEffects : [],
+      #SpellFields.Familiars    : []
+   #}
    ActiveSpellIDs.GreatBallOfFire:{
       SpellFields.Name         : "Great Ball o' Fire",
       SpellFields.Description  : "",
@@ -129,6 +141,17 @@ const ActiveSpells: Dictionary = {
       SpellFields.Effects      : ["res://2_spells/actives/Thunderwave/ThunderwaveArea.tscn"],
       SpellFields.DummyEffects : [],
       SpellFields.Familiars    : []
+   },
+   ActiveSpellIDs.PulsarsBreath:{
+      SpellFields.Name         : "Pulsar's Breath",
+      SpellFields.Description  : "An instant beam of high energy, reaching light-years away in an instant.",
+      SpellFields.IconPath     : "res://2_spells/actives/PulsarsBreath/icon.png",
+      SpellFields.IconRect     : Rect2(0,0,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/actives/PulsarsBreath/pulsars_breath_script.gd",
+      SpellFields.Cooldown     : 1.0,
+      SpellFields.Effects      : ["res://2_spells/actives/PulsarsBreath/Effects/pulsars_breath_raycast.tscn"],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []
    }
 }
 
@@ -147,228 +170,18 @@ enum PassiveSpellIDs {
    ERROR = -1
    }
 const PassiveSpells: Dictionary = {
-   PassiveSpellIDs.Heart:{
-      SpellFields.Name         : "Heart",
-      SpellFields.Description  : "Increases the amount of damage you can take before you are knocked out.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,0,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/health_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Armor:{
-      SpellFields.Name         : "Armor",
-      SpellFields.Description  : "Adds bonus health which reduces incoming damage by a flat amount. Effective against weak, fast attacks",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,32,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/armor_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Ward:{
-      SpellFields.Name         : "Ward",
-      SpellFields.Description  : "Adds bonus health which reduces incoming damage by a percent if you haven't been damaged in some time. Effective against strong, slow attacks.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,64,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/ward_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Overhealth:{
-      SpellFields.Name         : "Overhealth",
-      SpellFields.Description  : "Adds bonus health which decays over time.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,96,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/overhealth_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Armor_Strength:{
-      SpellFields.Name         : "Armor Strength",
-      SpellFields.Description  : "Increases the amount that your 'Armor' reduces incoming damage by.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,128,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/armorstrength_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Ward_Strength:{
-      SpellFields.Name         : "Ward Strength",
-      SpellFields.Description  : "Increases the maximum percentage that your 'Ward' reduces incoming damage by.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,160,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/wardstrength_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Lifesteal:{
-      SpellFields.Name         : "Lifesteal",
-      SpellFields.Description  : "Increases how much damage you can convert into health.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,192,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/lifesteal_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Damage:{
-      SpellFields.Name         : "Damage",
-      SpellFields.Description  : "Increases how much damage your spells deal.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,224,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/damage_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Attack_Range:{
-      SpellFields.Name         : "Range",
-      SpellFields.Description  : "Increases how far your spells can reach.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,256,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/range_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Cooldown:{
-      SpellFields.Name         : "Cooldown",
-      SpellFields.Description  : "Reduces the time it takes for your active abilities to recharge.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,288,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/cooldown_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Force:{
-      SpellFields.Name         : "Force",
-      SpellFields.Description  : "Increases the effectiveness of your pushing and shoving effects.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,320,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/force_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Crit:{
-      SpellFields.Name         : "Critical",
-      SpellFields.Description  : "Causes your spells to deal additional damage on a critical hit.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,352,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/critical_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Luck:{
-      SpellFields.Name         : "Luck",
-      SpellFields.Description  : "Increases the likelyhood of chance-based effects.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,384,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/luck_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Speed:{
-      SpellFields.Name         : "Speed",
-      SpellFields.Description  : "Increases how fast you can walk.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,416,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/speed_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Sprint:{
-      SpellFields.Name         : "Sprint",
-      SpellFields.Description  : "Greatly increases how fast you can run.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,448,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/sprint_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Jump:{
-      SpellFields.Name         : "Jump Height",
-      SpellFields.Description  : "Increases how high you can jump.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,480,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/jump_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Gravity:{
-      SpellFields.Name         : "Gravity",
-      SpellFields.Description  : "Enables you to more easily control how fast you fall.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,512,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/gravity_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Steadfastness:{
-      SpellFields.Name         : "Steadfastness",
-      SpellFields.Description  : "Reduces how far enemies can push and shove you.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,544,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/steadfast_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Melee_Damage:{
-      SpellFields.Name         : "Melee Damage",
-      SpellFields.Description  : "Increases the damage of your quick melee attack.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,576,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleedamage_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Melee_Range:{
-      SpellFields.Name         : "Melee Range",
-      SpellFields.Description  : "Increases the reach of your quick melee attack.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,608,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleerange_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Melee_Force:{
-      SpellFields.Name         : "Melee Force",
-      SpellFields.Description  : "Increases the distance you shove with your quick melee attack.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,640,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleeforce_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   PassiveSpellIDs.Melee_Cooldown:{
-      SpellFields.Name         : "Melee Cooldown",
-      SpellFields.Description  : "Makes your quick melee attack faster.",
-      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
-      SpellFields.IconRect     : Rect2(0,672,32,32),
-      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleecooldown_script.gd",
-      SpellFields.Effects      : [],
-      SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
-   },
-   
-   PassiveSpellIDs.JBLSpeaker:{
+   #PassiveSpellIDs. : {
+      #SpellFields.Name         : "",
+      #SpellFields.Description  : "",
+      #SpellFields.IconPath     : ,
+      #SpellFields.IconRect     : Rect2(0,0,32,32),
+      #SpellFields.ScriptPath   : ,
+      #SpellFields.Cooldown     : 1.0,
+      #SpellFields.Effects      : [],
+      #SpellFields.DummyEffects : [],
+      #SpellFields.Familiars    : []
+   #}
+   PassiveSpellIDs.JBLSpeaker : {
       SpellFields.Name         : "BigAssSpeaker",
       SpellFields.Description  : "",
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
@@ -378,7 +191,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.DummyEffects : ["res://2_spells/passives/JBL_Speaker/JBLSpeakerSoundEffect.tscn"],
       SpellFields.Familiars    : []
    },
-   PassiveSpellIDs.MoonJump:{
+   PassiveSpellIDs.MoonJump : {
       SpellFields.Name         : "Moon Jump",
       SpellFields.Description  : "Allows you to jump in the air one additional time.",
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
@@ -388,8 +201,7 @@ const PassiveSpells: Dictionary = {
       SpellFields.DummyEffects : [],
       SpellFields.Familiars    : []
    },
-   
-   PassiveSpellIDs.PhantomFlight:{
+   PassiveSpellIDs.PhantomFlight : {
       SpellFields.Name         : "Phantom Flight",
       SpellFields.Description  : "It is wise to stay away from others...",
       SpellFields.IconPath     : "res://2_spells/passives/PhantomFlight/icon.png",
@@ -401,7 +213,209 @@ const PassiveSpells: Dictionary = {
       ],
       SpellFields.DummyEffects : ["res://2_spells/passives/PhantomFlight/effects/phantom_flight_visual_indicator.tscn"],
       SpellFields.Familiars    : []
-   }
+   },
+   
+   # ==================================== #
+   # STAT PASSIVES FROM THIS POINT ONWARD #
+   # ==================================== #
+   PassiveSpellIDs.Heart : {
+      SpellFields.Name         : "Heart",
+      SpellFields.Description  : "Increases the amount of damage you can take before you are knocked out.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,0,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/health_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Armor : {
+      SpellFields.Name         : "Armor",
+      SpellFields.Description  : "Adds bonus health which reduces incoming damage by a flat amount. Effective against weak, fast attacks",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,32,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/armor_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Ward : {
+      SpellFields.Name         : "Ward",
+      SpellFields.Description  : "Adds bonus health which reduces incoming damage by a percent if you haven't been damaged in some time. Effective against strong, slow attacks.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,64,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/ward_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Overhealth : {
+      SpellFields.Name         : "Overhealth",
+      SpellFields.Description  : "Adds bonus health which decays over time.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,96,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/overhealth_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Armor_Strength : {
+      SpellFields.Name         : "Armor Strength",
+      SpellFields.Description  : "Increases the amount that your 'Armor' reduces incoming damage by.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,128,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/armorstrength_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Ward_Strength : {
+      SpellFields.Name         : "Ward Strength",
+      SpellFields.Description  : "Increases the maximum percentage that your 'Ward' reduces incoming damage by.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,160,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/wardstrength_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Lifesteal : {
+      SpellFields.Name         : "Lifesteal",
+      SpellFields.Description  : "Increases how much damage you can convert into health.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,192,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/lifesteal_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Damage : {
+      SpellFields.Name         : "Damage",
+      SpellFields.Description  : "Increases how much damage your spells deal.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,224,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/damage_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Attack_Range : {
+      SpellFields.Name         : "Range",
+      SpellFields.Description  : "Increases how far your spells can reach.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,256,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/range_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Cooldown : {
+      SpellFields.Name         : "Cooldown",
+      SpellFields.Description  : "Reduces the time it takes for your active abilities to recharge.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,288,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/cooldown_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Force : {
+      SpellFields.Name         : "Force",
+      SpellFields.Description  : "Increases the effectiveness of your pushing and shoving effects.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,320,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/force_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Crit : {
+      SpellFields.Name         : "Critical",
+      SpellFields.Description  : "Causes your spells to deal additional damage on a critical hit.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,352,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/critical_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Luck : {
+      SpellFields.Name         : "Luck",
+      SpellFields.Description  : "Increases the likelyhood of chance-based effects.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,384,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/luck_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Speed : {
+      SpellFields.Name         : "Speed",
+      SpellFields.Description  : "Increases how fast you can walk.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,416,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/speed_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Sprint : {
+      SpellFields.Name         : "Sprint",
+      SpellFields.Description  : "Greatly increases how fast you can run.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,448,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/sprint_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Jump : {
+      SpellFields.Name         : "Jump Height",
+      SpellFields.Description  : "Increases how high you can jump.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,480,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/jump_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Gravity : {
+      SpellFields.Name         : "Gravity",
+      SpellFields.Description  : "Enables you to more easily control how fast you fall.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,512,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/gravity_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Steadfastness : {
+      SpellFields.Name         : "Steadfastness",
+      SpellFields.Description  : "Reduces how far enemies can push and shove you.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,544,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/steadfast_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Melee_Damage : {
+      SpellFields.Name         : "Melee Damage",
+      SpellFields.Description  : "Increases the damage of your quick melee attack.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,576,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleedamage_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Melee_Range : {
+      SpellFields.Name         : "Melee Range",
+      SpellFields.Description  : "Increases the reach of your quick melee attack.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,608,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleerange_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Melee_Force : {
+      SpellFields.Name         : "Melee Force",
+      SpellFields.Description  : "Increases the distance you shove with your quick melee attack.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,640,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleeforce_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Melee_Cooldown : {
+      SpellFields.Name         : "Melee Cooldown",
+      SpellFields.Description  : "Makes your quick melee attack faster.",
+      SpellFields.IconPath     : "res://2_spells/passives/00Stat_Passives/passive_icons.png",
+      SpellFields.IconRect     : Rect2(0,672,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleecooldown_script.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []}
 }
 
 ## a smooth, continuous S-shaped curve bounded by (0, INF) and crossing the point (0, base_value)

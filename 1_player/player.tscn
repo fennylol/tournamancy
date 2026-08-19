@@ -212,6 +212,8 @@ mesh = SubResource("CapsuleMesh_41u22")
 [node name="Eyes" type="Camera3D" parent="." unique_id=1504992795]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
 
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="Eyes" unique_id=1176709157]
+
 [node name="HAT" type="MeshInstance3D" parent="Eyes" unique_id=243265476]
 transform = Transform3D(-1, 1.4863144e-08, -8.615004e-08, 0, 0.98544157, 0.17001455, 8.742278e-08, 0.17001455, -0.98544157, 0, 0.165, 0)
 mesh = SubResource("ArrayMesh_phv7k")
@@ -257,9 +259,10 @@ mesh = SubResource("CylinderMesh_qeeko")
 [node name="Ears" type="AudioListener3D" parent="." unique_id=297933939]
 current = true
 
-[node name="Effectory" type="Node3D" parent="." unique_id=339117573]
+[node name="Effectory" type="Node3D" parent="." unique_id=339117573 node_paths=PackedStringArray("EyeRemote")]
 script = ExtResource("4_lbqfs")
 IsDummy = false
+EyeRemote = NodePath("../Eyes/RemoteTransform3D")
 metadata/_custom_type_script = "uid://cuueb1u2pkixq"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=890875531]

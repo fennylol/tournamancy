@@ -117,6 +117,6 @@ func change_spell_state(spell_id: int, is_active: bool, spell_state: int) -> voi
    var spell_array: Array = (ActiveSpells as Array) if is_active else (PassiveSpells as Array)
    for spell:Spell in spell_array:
       if spell.SpellID == spell_id:
-         spell.change_state(spell_state)
+         spell.on_state_changed(spell_state)
 
    

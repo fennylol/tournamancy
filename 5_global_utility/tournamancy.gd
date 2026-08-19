@@ -107,7 +107,7 @@ func _on_mpm_peer_discconected     (network_id: int) -> void:
 func _on_mpm_transform_data        (network_id: int, data: PackedByteArray) -> void:
    if SettingsManager.peer_settings.has(network_id):
      SettingsManager.peer_settings[network_id].dummy.on_transform_data(data)
-func _on_mpm_identity_data         (network_id: int, new_name: String, primary_color: float, secondary_color: float) -> void:
+func _on_mpm_identity_data         (network_id: int, new_name: String, primary_color: Color, secondary_color: Color) -> void:
    if SettingsManager.peer_settings.has(network_id):
       SettingsManager.peer_settings[network_id].dummy.on_identity_data(new_name, primary_color, secondary_color)
 func _on_mpm_damage_data           (_network_id: int, package: DamagePackage) -> void:

@@ -9,7 +9,7 @@ func _ready() -> void:
    var mat: StandardMaterial3D = ring_mesh.get_surface_override_material(0)
    mat.albedo_color = ALONE_COLOR
    
-func change_state(new_state: int) -> void:
+func on_state_changed(new_state: int) -> void:
    super(new_state)
    var mat: StandardMaterial3D = ring_mesh.get_surface_override_material(0)
    if new_state == PhantomFlightSpell.States.Alone:

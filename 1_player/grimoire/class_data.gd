@@ -30,7 +30,7 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Ranger : {
-      ClassFields.ACTIVES  : [SpellData.ActiveSpellIDs.GreatBallOfFire],
+      ClassFields.ACTIVES  : [SpellData.ActiveSpellIDs.PulsarsBreath, SpellData.ActiveSpellIDs.GreatBallOfFire],
       ClassFields.PASSIVES : {
          SpellData.PassiveSpellIDs.PhantomFlight: 1
       }

@@ -5,7 +5,7 @@ extends Effect
 var SPELL_DAMAGE : float = 3.5
 var SPELL_FORCE  : float = 1.0
 
-func change_state(new_state: ThunderwaveSpell.States) -> void:
+func on_state_changed(new_state: ThunderwaveSpell.States) -> void:
    if new_state == ThunderwaveSpell.States.DAMAGE_WAVE:
       for i in DAMAGE_AREA.get_overlapping_bodies():
          if i.get_parent() is Dummy: send_damage(i.get_parent())
