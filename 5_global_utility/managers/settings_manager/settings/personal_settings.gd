@@ -7,9 +7,9 @@ const LIGHTNESS_SIZE: int = 4
 ## The name that other players will see you as. Displayed above your head.
 var NICKNAME : String = ""
 ## The color of your wizardly robes, among other things!
-var PRIMARY_COLOR : Color = Color.from_ok_hsl(randf(), 1.0, randf())
+var PRIMARY_COLOR : Color = Color.from_ok_hsl(randf(), 1.0, clamp(randfn(0.5,0.25),0,1))
 ## the color of your wizardly hat, among other things!
-var SECONDARY_COLOR : Color = Color.from_ok_hsl(randf(), 0.9, randf())
+var SECONDARY_COLOR : Color = Color.from_ok_hsl(randf(), 0.9, clamp(randfn(0.5,0.25),0,1))
 ## The maximum view angle your camera can see while playing.
 var FIELD_OF_VIEW : float = 30.0
 ## How fast the camera moves in response to mouse input.

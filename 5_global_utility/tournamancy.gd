@@ -1,14 +1,14 @@
 extends Node3D
 class_name Tournamancy
 
+var VP_MANAGER : VictoryPointManager = VictoryPointManager.new()
+
 @onready var PLAYER_CHARACTER: Player             = $Player
 @onready var GAME_MAP        : GameMap            = $Map/GameMap
 @onready var MPM             : MultiplayerManager = $MultiplayerManager
 @onready var FAMILIARS       : Node3D             = $Familiars
 
 const DummyScene  : PackedScene = preload("res://1_player/dummy/dummy.tscn")
-
-
 
 enum DataTypes { TransformData = 0x20, ConnectionData = 0xCD, NameTagData = 0x15}
 func _ready() -> void:
@@ -30,6 +30,7 @@ func _ready() -> void:
    MPM.effect_erased_data.connect(_on_mpm_effect_erased_data)
    MPM.spell_state_data.connect(_on_mpm_spell_state_data)
    MPM.spawn_familiar_data.connect(_on_mpm_spawn_familiar_data)
+   VP_MANAGER.set_personal_id(MPM.get_local_player_id())
    GAME_MAP.force_player_location.connect(force_player_position)
    GAME_MAP.spawned_prism.connect(MPM.send_spawned_prism_data)
    GAME_MAP.updated_prism.connect(MPM.send_updated_prism_data)
@@ -46,6 +47,7 @@ func _ready() -> void:
    PLAYER_CHARACTER.position = GAME_MAP.get_library_spawn_pos()
 
 func _physics_process(_delta: float) -> void:
+   if Input.is_key_pressed(KEY_0): VP_MANAGER.self_dictionary_to_PackedByteArray()
    MPM.send_player_transform_data(PLAYER_CHARACTER.generate_transform_data())
 
 func _spawn_familiar(owner_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
@@ -72,15 +74,10 @@ func get_player_position() -> Vector3: return PLAYER_CHARACTER.position
 #  VICTORY POINT HANDLING  #
 # ======================== #
 
-func check_VP_for_self_KO_opponent():
-   var point_delta = SettingsManager.match_settings.POINT_RULES.get(SettingsManager.match_settings.PointConditions.self_KO_opponent)
-   if point_delta != null and point_delta != 0: _send_VP_data(point_delta)
-func check_VP_for_opponent_KO_self(): 
-   var point_delta = SettingsManager.match_settings.POINT_RULES.get(SettingsManager.match_settings.PointConditions.opponent_KO_self)
-   if point_delta != null and point_delta != 0: _send_VP_data(point_delta)
-func check_VP_for_self_KO_self():
-   var point_delta = SettingsManager.match_settings.POINT_RULES.get(SettingsManager.match_settings.PointConditions.self_KO_self)
-   if point_delta != null and point_delta != 0: _send_VP_data(point_delta)
+func update_VP_condition_total(condition : VictoryPointManager.PointConditions, delta : int):
+   VP_MANAGER.update_condition_total(condition, delta)
+
+## Depreciated
 func _send_VP_data(point_delta : int):
    ## TODO: UPDATE VICTORY POINTS FOR SELF
    print("You have earned ", point_delta, " Victory Point(s).")
@@ -125,7 +122,7 @@ func _on_mpm_knockout_data         (killer_id: int, KO_player_id : int) -> void:
    if SettingsManager.peer_settings.has(KO_player_id):
       SettingsManager.peer_settings[KO_player_id].dummy.on_knockout_reset()
    if killer_id == MPM.get_local_player_id() and KO_player_id != MPM.get_local_player_id():
-      check_VP_for_self_KO_opponent()
+      update_VP_condition_total(VictoryPointManager.PointConditions.self_KO_opponent, 1)
 func _on_mpm_victory_point_data    (network_id: int, points_delta : int) -> void: 
    if network_id == MPM.get_local_player_id(): return
    update_opponent_VP(network_id, points_delta)
@@ -161,8 +158,8 @@ func _on_player_damage_dealt       (package : DamagePackage) -> void:
 func _on_player_knocked_out        (killer_id : int): 
    ## SEND KNOCKOUT VICTORY POINT DATA
    MPM.send_knockout_data(killer_id)
-   if killer_id == MPM._OTP.NetworkID: check_VP_for_self_KO_self()
-   else: check_VP_for_opponent_KO_self()
+   if killer_id == MPM._OTP.NetworkID: update_VP_condition_total(VictoryPointManager.PointConditions.self_KO_self, 1)
+   else: update_VP_condition_total(VictoryPointManager.PointConditions.opponent_KO_self, 1)
    ## SPAWN PRISM
    GAME_MAP.spawn_player_prism_from_self(PLAYER_CHARACTER.position, PLAYER_CHARACTER.SpellBook.ActiveSpells, PLAYER_CHARACTER.SpellBook.PassiveSpells)
    ## RESET PLAYER

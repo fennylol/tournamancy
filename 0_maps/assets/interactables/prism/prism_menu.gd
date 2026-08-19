@@ -28,10 +28,14 @@ var CurrentButton : Control
 var current_slot_count : int = 0
 var reroll_count : int = 0
 
-var selecting_active : bool = false
-var ActiveButton_Selected : TextureButton
-var ActiveButton_Left     : TextureButton
-var ActiveButton_Right    : TextureButton
+var accept_inputs    : bool = false
+
+var selecting_active        : bool = false
+var ActiveButton_Selected   : TextureButton
+var ActiveButton_Left       : TextureButton
+var ActiveButton_Right      : TextureButton
+var remaining_active_spells : Array[SpellData.ActiveSpellIDs]
+var new_active_spell_id     : SpellData.ActiveSpellIDs
 
 # ========= #
 #   setup   #
@@ -107,6 +111,7 @@ func gridmap_setup(slot_number : int):
          SlotPointers[i].IconTextureButton.focus_next = SlotPointers[i+1].IconTextureButton.get_path()
    SlotPointers[0].IconTextureButton.grab_focus()
 func roll_slots():
+   accept_inputs = false
    for i in range(current_slot_count):
       ## IF FORCE_ACTIVE_ABILITIES, DETERMINE ACTIVE-PASSIVE
       ## the SlotIsActive array is true at a given position if the spell in that slot should be an active ability
@@ -164,13 +169,23 @@ func roll_slots():
 # =============== #
 
 func _process(_delta: float) -> void:
+   ## Prevent inputs when menu is closed or if it was *just* opened
    if self.visible == false: return
+   if accept_inputs == false and ( Input.is_action_just_released("interact") or Input.is_action_just_released("select") ): 
+      accept_inputs = true
+      _remove_all_selections()
+      return
+   if accept_inputs == false: return
    
-   if Input.is_action_just_released("select"):
+   if Input.is_action_just_pressed("select"):
       if CurrentButton is Button: CurrentButton.pressed.emit()
       if CurrentButton is TextureButton: 
          if selecting_active:
-            pass
+            if accept_inputs == false: return
+            match CurrentButton:
+               ActiveButton_Selected: _on_active_spell_chooser_button_press(-1)
+               ActiveButton_Left:     _on_active_spell_chooser_button_press(0)
+               ActiveButton_Right:    _on_active_spell_chooser_button_press(1)
          else:
             _on_spell_icon_button_pressed()
    if Input.is_action_just_released("cancel"): _on_button_cancel_pressed()
@@ -200,8 +215,11 @@ func _on_spell_icon_button_pressed() ->void:
    BUTTON_CONFIRM.text = "CONFIRM (" + str(SettingsManager.match_settings.MAX_SPELL_FROM_PRISM - selected_count ) + ")" if (SettingsManager.match_settings.MAX_SPELL_FROM_PRISM - selected_count ) != 0 else "CONFIRM"
    BUTTON_CONFIRM.disabled = true if ( selected_count < SettingsManager.match_settings.MIN_SPELL_FROM_PRISM ) or ( selected_count > SettingsManager.match_settings.MAX_SPELL_FROM_PRISM ) else false
 func _is_this_button_current(slot : PrismSlotCounter, expected : TextureButton): return slot.IconTextureButton == expected
-func _clear_selection() -> void:
-   pass
+func _remove_all_selections():
+   for i in range(SpellList.size()):
+      SpellList[i].is_selected = false
+   for i in range(SlotPointers.size()):
+      SlotPointers[i].IconTextureRect.find_child("Selected").visible = false
 
 func _on_button_reroll_pressed() -> void:
    if reroll_count < SettingsManager.match_settings.PRISM_REROLL_COUNT:
@@ -226,30 +244,34 @@ func _on_button_confirm_pressed() -> void:
       selecting_active = true
       MAIN_MENU.visible = false
       ACTIVE_MENU.visible = true
-      setup_active_spell_chooser(selected_active_list)
+      remaining_active_spells = selected_active_list
+      setup_active_spell_chooser()
    ## ... OTHERWISE, CLOSE MENU
    else:
-      close_menu.emit(CurrentActivePrism)
+      _attempt_close_menu()
 func _on_button_cancel_pressed() -> void:
    ## IF THERE IS ANYTHING SELECTED, DESELECT ALL SPELLS
    
    ## IF THERE IS NOTHING SELECTED, CLOSE THE MENU (IF ALLOWED)
    if true:#SettingsManager.match_settings.MIN_SPELL_FROM_PRISM == 0:
-      close_menu.emit(CurrentActivePrism)
+      _attempt_close_menu()
+func _attempt_close_menu():
+   accept_inputs = false
+   close_menu.emit(CurrentActivePrism)
+
 
 # ================================ #
 #  active spell selection handling #
 # ================================ #
 
-func setup_active_spell_chooser(remaining_spells : Array[SpellData.ActiveSpellIDs]):
-   print("remaining spells: ", remaining_spells)
-   var id : int = remaining_spells.pop_front()
-   print("new id to select: ", id)
+func setup_active_spell_chooser():
+   accept_inputs = false
+   new_active_spell_id = remaining_active_spells.pop_front()
    ## SELECTED SPELL TEXTURE
    var new_texture_s = AtlasTexture.new()
    new_texture_s.margin = ICONMARGIN
-   new_texture_s.atlas = load(SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.IconPath))
-   new_texture_s.region = SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.IconRect)
+   new_texture_s.atlas = load(SpellData.ActiveSpells.get(new_active_spell_id).get(SpellData.SpellFields.IconPath))
+   new_texture_s.region = SpellData.ActiveSpells.get(new_active_spell_id).get(SpellData.SpellFields.IconRect)
    ACTIVE_SEL.get_child(0).texture = new_texture_s
    
    ## CURRENT SPELLS TEXTURE
@@ -278,17 +300,17 @@ func setup_active_spell_chooser(remaining_spells : Array[SpellData.ActiveSpellID
    if ActiveButton_Selected.pressed.has_connections(): ActiveButton_Selected.pressed.disconnect(_on_active_spell_chooser_button_press)
    if ActiveButton_Left.pressed.has_connections(): ActiveButton_Left.pressed.disconnect(_on_active_spell_chooser_button_press)
    if ActiveButton_Right.pressed.has_connections(): ActiveButton_Right.pressed.disconnect(_on_active_spell_chooser_button_press)
-   ActiveButton_Selected.pressed.connect(_on_active_spell_chooser_button_press.bind(id, remaining_spells))
-   ActiveButton_Left.pressed.connect(_on_active_spell_chooser_button_press.bind(id, remaining_spells, 0))
-   ActiveButton_Right.pressed.connect(_on_active_spell_chooser_button_press.bind(id, remaining_spells, 1))
-func _on_active_spell_chooser_button_press(new_id : SpellData.ActiveSpellIDs, list : Array[SpellData.ActiveSpellIDs], slot : int = -1,):
+   ActiveButton_Selected.pressed.connect(_on_active_spell_chooser_button_press.bind(-1))
+   ActiveButton_Left.pressed.connect(_on_active_spell_chooser_button_press.bind(0))
+   ActiveButton_Right.pressed.connect(_on_active_spell_chooser_button_press.bind(1))
+   ActiveButton_Left.grab_focus()
+func _on_active_spell_chooser_button_press(slot : int = -1,):
    if slot != -1: 
-      print("place spell ", new_id, " into slot ", slot, ".")
-      get_parent().get_parent().request_new_active_spell(new_id, slot)
-   if list == []:
-      close_menu.emit(CurrentActivePrism)
+      get_parent().get_parent().request_new_active_spell(new_active_spell_id, slot)
+   if remaining_active_spells == []:
+      _attempt_close_menu()
    else:
-      setup_active_spell_chooser(list)
+      setup_active_spell_chooser()
 
 # =========================== #
 #  background button handling #

@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dmuhoqi4g6dqs" path="res://0_maps/game_map/game_map.gd" id="1_0ylow"]
 [ext_resource type="Texture2D" uid="uid://d1pqvt4xng076" path="res://_RAWS/qwantani_moonrise_puresky_2k.hdr" id="1_2vu8a"]
 [ext_resource type="PackedScene" uid="uid://bn2hnjsbj6jjw" path="res://0_maps/rough_city_01/rought_city_01.tscn" id="2_3tyep"]
+[ext_resource type="PackedScene" uid="uid://c56fevj40b86v" path="res://0_maps/assets/interactables/prism/simple_prism.tscn" id="4_0ylow"]
 [ext_resource type="PackedScene" uid="uid://c73in64nqv3jt" path="res://0_maps/rough_library_01/Library.tscn" id="4_df7h0"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_3tyep"]
@@ -59,6 +60,10 @@ target_position = Vector3(0, -30, 0)
 collision_mask = 255
 hit_from_inside = true
 collide_with_areas = true
+
+[node name="SimplePrism" parent="Prisms" unique_id=1103879490 instance=ExtResource("4_0ylow")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7366743, -159.71233)
+PrismShape = 4
 
 [node name="Library" parent="." unique_id=1578454167 instance=ExtResource("4_df7h0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -150)

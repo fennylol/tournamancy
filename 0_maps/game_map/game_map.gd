@@ -6,6 +6,9 @@ class_name GameMap
 
 func _ready() -> void:
    reset_prism_spawn_cooldown()
+   
+   ## Debug Prism
+   $Prisms/SimplePrism.load_spells_from_world()
 
 # ===================== #
 #    PLAYER SPAWNING    #

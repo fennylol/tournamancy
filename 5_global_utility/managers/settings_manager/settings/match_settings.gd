@@ -14,23 +14,13 @@ const NETWORK_POINTS_SIZE : int = 1
 static func _WIN_CONDITION_SETTINGS() -> void: print("THIS FUNCTION ONLY EXISTS TO ENABLE QUICKLY NAVIGATING match_settings.gd")
 ## A player wins the match when they have this many points.
 var POINTS_TO_WIN : int = 10
-## A list of circumstances that might affect a player's point total.
-enum PointConditions {
-   ## Occurs when the player knocks out an opposing player.
-   self_KO_opponent,
-   ## Occurs when an opposing player knocks out the player
-   opponent_KO_self,
-   ## Occurs when the player knocks themselves out.
-   self_KO_self,
-   ## Occurs when the player knocks out a player on their own team.
-   self_KO_ally,
-   ## Occurs when the player is knocked out by a player on their own team.
-   ally_KO_self}
+
+
 ## Determines how a player's points are affected by various game circumstances.
 var POINT_RULES : Dictionary = {
-   PointConditions.self_KO_opponent : 1,
-   PointConditions.opponent_KO_self : 0,
-   PointConditions.self_KO_self : -1
+   VictoryPointManager.PointConditions.self_KO_opponent : 1,
+   VictoryPointManager.PointConditions.opponent_KO_self : 0,
+   VictoryPointManager.PointConditions.self_KO_self : -1
 }
 
 # ==================== #
@@ -218,7 +208,7 @@ var PLAYER_BASE_STATS : Dictionary = {
    SpellData.StatTypes.FORCE          : 0.0,
    SpellData.StatTypes.CRIT           : 5.0,
    SpellData.StatTypes.LUCK           : 2.0,
-   SpellData.StatTypes.SPEED          : 2.5,
+   SpellData.StatTypes.SPEED          : 10.0,
    SpellData.StatTypes.SPRINT         : 0.0,
    SpellData.StatTypes.JUMP           : 4.5,
    SpellData.StatTypes.GRAVITY        : 9.8,
