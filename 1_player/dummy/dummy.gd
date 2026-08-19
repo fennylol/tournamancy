@@ -4,12 +4,13 @@ class_name Dummy
 var NETWORK_ID : int
 
 ## NODES AND TEXTURES
-@onready var BODY        : WizardBody      = $WizardBody
-@onready var NAMETAG     : Label3D         = $NameTag
-@onready var HB_VIEWPORT : SubViewport     = $SubViewport
-@onready var HB_DISPLAY  : HealthDisplay   = $SubViewport/HealthDisplay
-@onready var HEALTHBAR   : HealthComponent = $HealthComponent
-@onready var EFFECTS     : Node3D          = $Effectory
+@onready var BODY        : WizardBody       = $WizardBody
+@onready var FAKE_EYES   : RemoteTransform3D= $RemoteTransform3D
+@onready var NAMETAG     : Label3D          = $NameTag
+@onready var HB_VIEWPORT : SubViewport      = $SubViewport
+@onready var HB_DISPLAY  : HealthDisplay    = $SubViewport/HealthDisplay
+@onready var HEALTHBAR   : HealthComponent  = $HealthComponent
+@onready var EFFECTS     : Node3D           = $Effectory
 const HAND_IMG : Texture2D = preload("res://4_ui/hud/oppponent_hand.png")
 const POINT_IMG: Texture2D = preload("res://4_ui/hud/oppponent_point.png")
 
@@ -43,8 +44,9 @@ func _physics_process(delta: float) -> void:
    position = position.lerp(_net_pos, t)
    if position != _net_pos: BODY.set_walk_direction(position, _net_pos)
    BODY.update_facing_direction(_net_rot)
-   #quaternion = quaternion.slerp(Quaternion.from_euler(Vector3(0, _net_rot.y, _net_rot.z)), t)
-   #EYES.rotation.x = clamp(_net_rot.x, -PI/2, PI/2)
+
+   quaternion = quaternion.slerp(Quaternion.from_euler(Vector3(0, _net_rot.y, _net_rot.z)), t)
+   FAKE_EYES.rotation.x = clamp(_net_rot.x, -PI/2, PI/2)
    
    velocity = _net_vel
 

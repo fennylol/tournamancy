@@ -15,6 +15,9 @@ radius = 0.375
 [node name="Dummy" type="Node3D" unique_id=207561788]
 script = ExtResource("1_gb63j")
 
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="." unique_id=1816866846]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)
+
 [node name="HealthComponent" type="Node" parent="." unique_id=504310814]
 script = ExtResource("2_iiygx")
 metadata/_custom_type_script = "uid://b7hkrvtuscupp"
@@ -39,8 +42,9 @@ collision_mask = 5
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_gb63j")
 
-[node name="Effectory" type="Node3D" parent="." unique_id=1728106557]
+[node name="Effectory" type="Node3D" parent="." unique_id=1728106557 node_paths=PackedStringArray("EyeRemote")]
 script = ExtResource("5_iiygx")
+EyeRemote = NodePath("../RemoteTransform3D")
 metadata/_custom_type_script = "uid://cuueb1u2pkixq"
 
 [node name="SubViewport" type="SubViewport" parent="." unique_id=767905712]

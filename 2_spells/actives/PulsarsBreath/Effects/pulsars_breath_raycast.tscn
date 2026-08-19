@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" uid="uid://btlcj8tuxn5fu" path="res://2_spells/actives/PulsarsBreath/Effects/pulsars_breath_raycast.gd" id="1_6qn3o"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_bsava"]
+size = Vector3(0.21621704, 0.27005005, 10.713379)
+
 [node name="PulsarsBreathRaycast" type="Node3D" unique_id=1953853491]
 script = ExtResource("1_6qn3o")
 metadata/_custom_type_script = "uid://di2eqcff4s48f"
@@ -9,3 +12,8 @@ metadata/_custom_type_script = "uid://di2eqcff4s48f"
 [node name="RayCast3D" type="RayCast3D" parent="." unique_id=1158634801]
 target_position = Vector3(0, 0, -100)
 collision_mask = 5
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1954881965]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.018051147, 0.0030059814, -6.2503405)
+visible = false
+mesh = SubResource("BoxMesh_bsava")

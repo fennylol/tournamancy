@@ -150,7 +150,7 @@ const ActiveSpells: Dictionary = {
       SpellFields.ScriptPath   : "res://2_spells/actives/PulsarsBreath/pulsars_breath_script.gd",
       SpellFields.Cooldown     : 1.0,
       SpellFields.Effects      : ["res://2_spells/actives/PulsarsBreath/Effects/pulsars_breath_raycast.tscn"],
-      SpellFields.DummyEffects : [],
+      SpellFields.DummyEffects : ["res://2_spells/actives/PulsarsBreath/Effects/pulsars_breath_raycast.tscn"],
       SpellFields.Familiars    : []
    }
 }
