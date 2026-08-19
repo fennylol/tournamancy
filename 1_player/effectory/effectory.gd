@@ -18,8 +18,7 @@ func _ready() -> void:
    if EyeRemote: EyeRemote.remote_path = EyesEffects.get_path()
 
 func equip_effect(spell_id: int, is_active: bool) -> void:
-   if _get_effect_container(spell_id, is_active):
-      return
+   if _get_eyes_effect_container(spell_id, is_active) or _get_body_effect_container(spell_id, is_active): return
    
    var eyes_container_node := Node3D.new()
    var body_container_node := Node3D.new()
@@ -41,26 +40,37 @@ func equip_effect(spell_id: int, is_active: bool) -> void:
    if eyes_container_node.get_child_count(): EyesEffects.add_child(eyes_container_node)
    if body_container_node.get_child_count(): BodyEffects.add_child(body_container_node)
 func erase_effect(spell_id: int, is_active: bool) -> void:
-   var container: Node3D = _get_effect_container(spell_id, is_active)
-   if container:
-      if EyesEffects.is_ancestor_of(container): EyesEffects.remove_child(container)
-      if BodyEffects.is_ancestor_of(container): BodyEffects.remove_child(container)
-      container.queue_free()
+   var eyes_container: Node3D = _get_eyes_effect_container(spell_id, is_active)
+   var body_container: Node3D = _get_body_effect_container(spell_id, is_active)
+   if eyes_container: 
+      EyesEffects.remove_child(eyes_container)
+      eyes_container.queue_free()
+   if body_container: 
+      EyesEffects.remove_child(body_container)
+      body_container.queue_free()
 func change_effect_state(spell_id: int, is_active: bool, spell_state: int) -> void:
-   var effect_container: Node3D = _get_effect_container(spell_id, is_active)
-   if not effect_container: return
-   for child:Node3D in effect_container.get_children():
-      if not child is Effect: continue
-      child.on_state_changed(spell_state)
+   var eyes_container: Node3D = _get_eyes_effect_container(spell_id, is_active)
+   var body_container: Node3D = _get_body_effect_container(spell_id, is_active)
+   if eyes_container: 
+      for child:Node3D in eyes_container.get_children():
+         if not child is Effect: continue
+         child.on_state_changed(spell_state)
+   if body_container: 
+      for child:Node3D in body_container.get_children():
+         if not child is Effect: continue
+         child.on_state_changed(spell_state)
 
 # ======= #
 # utility #
 # ======= #
-func _get_effect_container(spell_id: int, is_active: bool) -> Node3D:
+func _get_eyes_effect_container(spell_id: int, is_active: bool) -> Node3D:
    var node_title: String = _get_effect_spell_name(spell_id, is_active)
    for child:Node3D in EyesEffects.get_children():
       if child.name == node_title:
          return child
+   return null
+func _get_body_effect_container(spell_id: int, is_active: bool) -> Node3D:
+   var node_title: String = _get_effect_spell_name(spell_id, is_active)
    for child:Node3D in BodyEffects.get_children():
       if child.name == node_title:
          return child

@@ -88,6 +88,7 @@ func remove_passive(id: SpellData.PassiveSpellIDs) -> void:
    for spell:PassiveSpell in PassiveSpells:
       if spell.SpellID == id:
          PassiveSpells.erase(spell)
+         spell_erased.emit(id, false)
 
 func remove_active(id: SpellData.ActiveSpellIDs) -> void:
    for i in ActiveSlots:
