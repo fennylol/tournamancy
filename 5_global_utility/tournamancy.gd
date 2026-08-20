@@ -76,17 +76,10 @@ func get_player_position() -> Vector3: return PLAYER_CHARACTER.position
 
 func update_VP_condition_total(condition : VictoryPointManager.PointConditions, delta : int):
    VP_MANAGER.update_condition_total(condition, delta)
-
-## Depreciated
-func _send_VP_data(point_delta : int):
-   ## TODO: UPDATE VICTORY POINTS FOR SELF
-   print("You have earned ", point_delta, " Victory Point(s).")
-   pass
-   ## SEND VICTORY POINTS
-   MPM.send_victory_point_data(point_delta)
-func update_opponent_VP(peer_id : int, point_delta : int):
-   ## TODO: UPDATE VICTORY POINTS FOR OPPONENTS
-   print("Opponent ", peer_id, " has earned ", point_delta, " Victory Point(s).")
+   MPM.send_victory_point_data(VP_MANAGER.self_dictionary_to_PackedByteArray())
+func update_opponent_VP(data : PackedByteArray):
+   var new_dict = VP_MANAGER.PackedByteArray_to_peer_Dictionary(data)
+   VP_MANAGER.import_single_peer_dict(new_dict.keys()[0],new_dict.get(new_dict.keys()[0]), true)
 
 # ===================== #
 #    SIGNAL HANDLING    #
@@ -123,9 +116,8 @@ func _on_mpm_knockout_data         (killer_id: int, KO_player_id : int) -> void:
       SettingsManager.peer_settings[KO_player_id].dummy.on_knockout_reset()
    if killer_id == MPM.get_local_player_id() and KO_player_id != MPM.get_local_player_id():
       update_VP_condition_total(VictoryPointManager.PointConditions.self_KO_opponent, 1)
-func _on_mpm_victory_point_data    (network_id: int, points_delta : int) -> void: 
-   if network_id == MPM.get_local_player_id(): return
-   update_opponent_VP(network_id, points_delta)
+func _on_mpm_victory_point_data    (data : PackedByteArray) -> void: 
+   update_opponent_VP(data)
 func _on_mpm_spawned_prism_data    (prismdata : PackedByteArray) -> void: 
    GAME_MAP.spawn_prism_from_network(prismdata)
 func _on_mpm_updated_prism_data    (prismdata : PackedByteArray) -> void: pass

@@ -105,8 +105,9 @@ func prism_destroyed_here(id : int):
    PrismList.erase(id)
 func prism_destroyed_from_network(id : int):
    var rem_prism : Prism = PrismList.get(id)
-   PrismList.erase(id)
-   rem_prism.force_destroy()
+   if rem_prism is Prism:
+      PrismList.erase(id)
+      rem_prism.force_destroy()
 
 func spawn_natural_prism():
    ## Basic Instantiation
