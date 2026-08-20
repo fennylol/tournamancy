@@ -45,8 +45,9 @@ func _physics_process(delta: float) -> void:
    if position != _net_pos: BODY.set_walk_direction(position, _net_pos)
    BODY.update_facing_direction(_net_rot)
 
-   quaternion = quaternion.slerp(Quaternion.from_euler(Vector3(0, _net_rot.y, _net_rot.z)), t)
+   #FAKE_EYES.quaternion = quaternion.slerp(Quaternion.from_euler(_net_rot), t)
    FAKE_EYES.rotation.x = clamp(_net_rot.x, -PI/2, PI/2)
+   FAKE_EYES.rotation.y = _net_rot.y
    
    velocity = _net_vel
 
