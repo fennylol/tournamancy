@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cgtqkg01jix6k"]
 
-[ext_resource type="Texture2D" uid="uid://c3ot0wht2ldx4" path="res://4_ui/HUD_2/health_icons.png" id="1_c6hmx"]
-[ext_resource type="Script" uid="uid://dqgxxsrikei0i" path="res://4_ui/HUD_2/health_display.gd" id="1_juo7i"]
+[ext_resource type="Texture2D" uid="uid://c3ot0wht2ldx4" path="res://4_ui/HUD_3/health_icons.png" id="1_c6hmx"]
+[ext_resource type="Script" uid="uid://dqgxxsrikei0i" path="res://4_ui/HUD_3/health_display.gd" id="1_juo7i"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_3br5d"]
 font_size = 32

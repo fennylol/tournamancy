@@ -87,6 +87,7 @@ const vertical_prism_offset := Vector3(0,1,0)
 var new_prism_instance = preload("res://0_maps/assets/interactables/prism/simple_prism.tscn")
 
 signal spawned_prism(contents : PackedByteArray)
+@warning_ignore("unused_signal")
 signal updated_prism()
 signal removed_prism(id: int)
 

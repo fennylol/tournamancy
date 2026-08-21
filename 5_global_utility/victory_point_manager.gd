@@ -154,7 +154,6 @@ func PackedByteArray_to_peer_Dictionary(data : PackedByteArray) -> Dictionary:
    var import_peer_dict : Dictionary[PointConditions,int] = create_new_dict_entry()
    var dict_data = data.slice(ID_SIZE)
    for i : int in range(PointConditions.size()):
-      var condition = i as PointConditions
       import_peer_dict.set(i as PointConditions, dict_data.decode_s32(VALUE_SIZE * i))
    return {import_peer_id:import_peer_dict}
 

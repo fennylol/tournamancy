@@ -3,12 +3,12 @@
 [ext_resource type="Script" uid="uid://btixegg8i4faq" path="res://1_player/player.gd" id="1_8s5v1"]
 [ext_resource type="Material" uid="uid://287a32tur6sm" path="res://1_player/character_body/mat_ROBES.tres" id="3_6utbb"]
 [ext_resource type="Material" uid="uid://dwg2qqcqwc3ob" path="res://1_player/character_body/mat_HAT.tres" id="3_ecodu"]
-[ext_resource type="PackedScene" uid="uid://cpsbgkgmeqg12" path="res://4_ui/HUD_2/Default_HUD.tscn" id="3_qeeko"]
 [ext_resource type="Material" uid="uid://l1j3fhnep4cb" path="res://1_player/character_body/mat_BODY.tres" id="4_7yfv2"]
 [ext_resource type="Script" uid="uid://cuueb1u2pkixq" path="res://1_player/effectory/effectory.gd" id="4_lbqfs"]
 [ext_resource type="PackedScene" uid="uid://b2f6ccnpk7mrl" path="res://1_player/components/healthbar.tscn" id="5_s87op"]
 [ext_resource type="PackedScene" uid="uid://dp3a6xh2ybnyy" path="res://0_maps/assets/interactables/prism/prism_menu.tscn" id="8_7yfv2"]
 [ext_resource type="PackedScene" uid="uid://v0psk4wno1qp" path="res://4_ui/RadialWheel/generic_selection_wheel.tscn" id="8_ecodu"]
+[ext_resource type="PackedScene" uid="uid://7x8vtttdpe52" path="res://4_ui/HUD_3/HeadsUpDisplay.tscn" id="10_phv7k"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_25okf"]
 radius = 0.375
@@ -267,7 +267,8 @@ metadata/_custom_type_script = "uid://cuueb1u2pkixq"
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=890875531]
 
-[node name="DefaultHud" parent="CanvasLayer" unique_id=1610244138 instance=ExtResource("3_qeeko")]
+[node name="HeadsUpDisplay" parent="CanvasLayer" unique_id=393868772 instance=ExtResource("10_phv7k")]
+process_mode = 4
 visible = false
 
 [node name="GenericSelectionWheel" parent="CanvasLayer" unique_id=730570291 instance=ExtResource("8_ecodu")]

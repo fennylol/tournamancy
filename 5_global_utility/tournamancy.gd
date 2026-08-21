@@ -120,7 +120,7 @@ func _on_mpm_victory_point_data    (data : PackedByteArray) -> void:
    update_opponent_VP(data)
 func _on_mpm_spawned_prism_data    (prismdata : PackedByteArray) -> void: 
    GAME_MAP.spawn_prism_from_network(prismdata)
-func _on_mpm_updated_prism_data    (prismdata : PackedByteArray) -> void: pass
+func _on_mpm_updated_prism_data    (_prismdata : PackedByteArray) -> void: pass
 func _on_mpm_removed_prism_data    (id : int) -> void: 
    GAME_MAP.prism_destroyed_from_network(id)
 func _on_mpm_effect_equipped_data  (network_id: int, spell_id: int, is_active: bool) -> void:

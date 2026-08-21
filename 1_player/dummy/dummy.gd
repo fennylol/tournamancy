@@ -11,8 +11,6 @@ var NETWORK_ID : int
 @onready var HB_DISPLAY  : HealthDisplay    = $SubViewport/HealthDisplay
 @onready var HEALTHBAR   : HealthComponent  = $HealthComponent
 @onready var EFFECTS     : Node3D           = $Effectory
-const HAND_IMG : Texture2D = preload("res://4_ui/hud/oppponent_hand.png")
-const POINT_IMG: Texture2D = preload("res://4_ui/hud/oppponent_point.png")
 
 ## MOVEMENT DATA
 var velocity := Vector3.ZERO

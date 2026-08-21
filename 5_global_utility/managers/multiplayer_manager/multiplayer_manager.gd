@@ -14,6 +14,7 @@ signal health_update_data(network_id: int, health : Array[float])
 signal knockout_data(network_id: int, KO_player_id : int)
 signal victory_point_data(data : PackedByteArray)
 signal spawned_prism_data(prismdata : PackedByteArray)
+@warning_ignore("unused_signal")
 signal updated_prism_data(prismdata : PackedByteArray)
 signal removed_prism_data(id : int)
 signal identity_data(network_id: int, new_name: String, primary_color: Color, secondary_color: Color)
@@ -169,7 +170,7 @@ func _recieve_victory_point_data (data: PackedByteArray) -> void:
    victory_point_data.emit(data)
 func _recieve_spawned_prism_data (data: PackedByteArray) -> void: 
    spawned_prism_data.emit(data)
-func _recieve_updated_prism_data (data: PackedByteArray) -> void: pass
+func _recieve_updated_prism_data (_data: PackedByteArray) -> void: pass
 func _recieve_removed_prism_data (data: PackedByteArray) -> void: 
    var prism_id : int = data.decode_u8(0)
    removed_prism_data.emit(prism_id)
@@ -258,7 +259,7 @@ func send_victory_point_data   (data : PackedByteArray) -> void:
    _OTP.send_data(DataTypes.VictoryPointsData, data)
 func send_spawned_prism_data   (prism_data : PackedByteArray) -> void: 
    _OTP.send_data(DataTypes.SpawnedPrismData, prism_data)
-func send_updated_prism_data   (prism_data : PackedByteArray) -> void: pass
+func send_updated_prism_data   (_prism_data : PackedByteArray) -> void: pass
 func send_removed_prism_data   (id : int) -> void: 
    var data : PackedByteArray
    data.resize(Prism.PRISM_ID_SIZE)

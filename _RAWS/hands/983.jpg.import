@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cv7j5obg5mwwk"
-path="res://.godot/imported/main_ui_sheet32.png-40148ca5379bac06ec3e85044d0cba5d.ctex"
+uid="uid://bl7lej86p7v8r"
+path="res://.godot/imported/983.jpg-1470fa03b23cf1a10957237a35d2d016.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://4_ui/HUD_2/main_ui_sheet32.png"
-dest_files=["res://.godot/imported/main_ui_sheet32.png-40148ca5379bac06ec3e85044d0cba5d.ctex"]
+source_file="res://_RAWS/hands/983.jpg"
+dest_files=["res://.godot/imported/983.jpg-1470fa03b23cf1a10957237a35d2d016.ctex"]
 
 [params]
 

@@ -16,13 +16,14 @@ const TRANSFORM_DATA_SIZE: int = (4*9)+1
 
 @onready var EFFECTORY : Effectory       = $Effectory
 @onready var HEALTHBAR : HealthComponent = $Healthbar
-@onready var HUD       : Control         = $CanvasLayer/DefaultHud
+#@onready var HUD       : Control         = $CanvasLayer/DefaultHud
+@onready var HUD       : HeadsUpDisplay  = $CanvasLayer/HeadsUpDisplay
 @onready var THE_WHEEL : SelectionWheel  = $CanvasLayer/GenericSelectionWheel
 @onready var PRISMMENU : PrismMenu       = $CanvasLayer/PrismMenu
-var HUD_LEFT_ACTIVE    : Node2D
-var HUD_RIGHT_ACTIVE   : Node2D
-var HUD_PASSIVEBOX     : Node2D
-var HUD_HEALTHBAR      : HealthDisplay
+#var HUD_LEFT_ACTIVE    : Node2D
+#var HUD_RIGHT_ACTIVE   : Node2D
+#var HUD_PASSIVEBOX     : Node2D
+#var HUD_HEALTHBAR      : HealthDisplay
 
 ## SETTINGS AND REFERENCE FILES
 var personal_settings : PersonalSettings = PersonalSettings.new()
@@ -56,10 +57,6 @@ signal familiar_spawned(spell_id: int, is_active: bool, familiar_idx: int, creat
 # =========== #
 
 func _ready() -> void:
-   HUD_LEFT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(L)")
-   HUD_RIGHT_ACTIVE = HUD.find_child("Actives").find_child("ActiveIcon(R)")
-   HUD_PASSIVEBOX = HUD.find_child("PassiveBox").find_child("PassiveIcons")
-   HUD_HEALTHBAR = HUD.find_child("HealthPoints").find_child("HealthDisplay")
    SpellBook.ThePlayer = self
    SpellBook.spell_equipped.connect(_on_grimoire_spell_equipped)
    SpellBook.spell_erased.connect(_on_grimoire_spell_erased)
@@ -103,21 +100,25 @@ func _process(delta):
    
    if Input.is_action_just_pressed("active_spell_0") and Enabled:
       LEFT_ARM.rotation.x = -80.0
-      HUD_LEFT_ACTIVE._hold()
+      HUD.hold_active(0)
+      #HUD_LEFT_ACTIVE._hold()
       if SpellBook.ActiveSpells[0]:
          SpellBook.ActiveSpells[0]._on_activate(self)
    elif Input.is_action_just_released("active_spell_0") or not Enabled: 
       LEFT_ARM.rotation.x = 0.0
-      HUD_LEFT_ACTIVE._release()
+      HUD.release_active(0)
+      #HUD_LEFT_ACTIVE._release()
    
    if Input.is_action_just_pressed("active_spell_1") and Enabled:
       RIGHT_ARM.rotation.x = -80.0
-      HUD_RIGHT_ACTIVE._hold()
+      HUD.hold_active(1)
+      #HUD_RIGHT_ACTIVE._hold()
       if SpellBook.ActiveSpells[1]:
          SpellBook.ActiveSpells[1]._on_activate(self)      
    elif Input.is_action_just_released("active_spell_1") or not Enabled: 
       RIGHT_ARM.rotation.x = 0.0
-      HUD_RIGHT_ACTIVE._release()
+      HUD.release_active(1)
+      #HUD_RIGHT_ACTIVE._release()
    
    if Input.is_action_just_pressed("quick_melee") and Enabled:
       LEFT_ARM.rotation.x = -80.0
@@ -137,8 +138,8 @@ func _process(delta):
    if Enabled: SpellBook.process_end(delta, self)
    
    ## UPDATE COOLDOWN VISUALIZERS ON HUD
-   if SpellBook.ActiveSpells[0]: HUD_LEFT_ACTIVE.update_cooldown(SpellBook.ActiveSpells[0].get_cooldown())
-   if SpellBook.ActiveSpells[1]: HUD_RIGHT_ACTIVE.update_cooldown(SpellBook.ActiveSpells[1].get_cooldown())
+   if SpellBook.ActiveSpells[0]: HUD.update_active_cooldown(0, SpellBook.ActiveSpells[0].get_cooldown())
+   if SpellBook.ActiveSpells[1]: HUD.update_active_cooldown(1, SpellBook.ActiveSpells[1].get_cooldown())
 
 func _unhandled_input(event):
    ## HANDLE MOUSE-TO-CAMERA INPUT
@@ -146,6 +147,9 @@ func _unhandled_input(event):
       rotate_y(-event.relative.x * .005 * personal_settings.MOUSE_SENSITIVITY)
       CAMERA.rotate_x(-event.relative.y * .005 * personal_settings.MOUSE_SENSITIVITY)
       CAMERA.rotation.x = clamp(CAMERA.rotation.x, -PI/2, PI/2)
+   ## CHANGE BUTTON PROMPTS
+   if event is InputEventKey or event is InputEventMouseMotion or event is InputEventMouseButton: HUD.swap_button_prompts(true)
+   elif event is InputEventJoypadButton or event is InputEventJoypadMotion: HUD.swap_button_prompts(false)
 
 func _melee_attack():
    ## RESIZE MELEE AREA
@@ -176,22 +180,12 @@ func _melee_attack():
 func _physics_process(delta):
    ## GET RELEVANT INFLUENCED STATS
    var influenced_speed   : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPEED,   SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.SPEED],   SpellBook.get_stat(SpellData.StatTypes.SPEED))
-   #var influenced_sprint  : float = SpellData.get_influenced_stat(SpellData.StatTypes.SPRINT,  SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.SPRINT],  SpellBook.get_stat(SpellData.StatTypes.SPRINT))
    var influenced_jump    : float = SpellData.get_influenced_stat(SpellData.StatTypes.JUMP,    SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.JUMP],    SpellBook.get_stat(SpellData.StatTypes.JUMP))
    var influenced_gravity : float = SpellData.get_influenced_stat(SpellData.StatTypes.GRAVITY, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.GRAVITY], SpellBook.get_stat(SpellData.StatTypes.GRAVITY))
    
    ## GRAVITY AND JUMP VELOCITY
    if not is_on_floor(): velocity.y -= influenced_gravity * delta
    if Input.is_action_pressed("jump") and is_on_floor() and Enabled: velocity.y = influenced_jump
-   
-   ## PLAYER SPRINTS IF THEY A) ARE ALREADY SPRINTING OR B) PRESS THE "SPRINT" BUTTON. STOP SPRINTING WHEN STOP MOVING. CANNOT START/STOP SPRINTING IN THE AIR.
-   #var sprint_multi : float = 1.0
-   #if velocity.x == 0 and velocity.z == 0: is_sprinting = false
-   #if not is_on_floor():
-      #sprint_multi = influenced_sprint if is_sprinting else 1.0
-   #else:
-      #if Input.is_action_pressed("sprint"): is_sprinting = true
-      #if is_sprinting: sprint_multi = influenced_sprint
    
    ## HORIZONTAL MOVEMENT
    var input_dir := Input.get_vector("left", "right", "up", "down")
@@ -265,7 +259,7 @@ func sync_health():
 
 func _update_heath_display(new_health : Array[float]) -> void:
    HEALTHBAR.set_health(new_health)
-   HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
+   HUD.update_healthbar(HEALTHBAR.get_health(), false)
 
 func set_colors() -> void:
    var primary_mat := StandardMaterial3D.new()
@@ -288,10 +282,13 @@ func update_HUD_icons():
    ## ACTIVE SPELL ICONS
    var active_spell_l = SpellBook.ActiveSpells[0].SpellID if SpellBook.ActiveSpells[0] else -1
    var active_spell_r = SpellBook.ActiveSpells[1].SpellID if SpellBook.ActiveSpells[1] else -1
-   HUD_LEFT_ACTIVE._update_icon(active_spell_l)
-   HUD_RIGHT_ACTIVE._update_icon(active_spell_r)
+   HUD.update_active_icon(0,active_spell_l)
+   HUD.update_active_icon(1,active_spell_r)
+   #HUD_LEFT_ACTIVE._update_icon(active_spell_l)
+   #HUD_RIGHT_ACTIVE._update_icon(active_spell_r)
    ## PASSIVE SPELL ICONS
-   HUD_PASSIVEBOX.import_passive_spells(SpellBook.PassiveSpells, true)
+   HUD.import_passive_spells(SpellBook.PassiveSpells, true)
+   #HUD_PASSIVEBOX.import_passive_spells(SpellBook.PassiveSpells, true)
 ## Called by the base ActiveSpell class to get the players "stat influenced cooldown" which is multiplied with the delta each frame to reduce that spell's cooldown timer.
 func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.StatTypes.COOLDOWN,  SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.COOLDOWN], SpellBook.get_stat(SpellData.StatTypes.COOLDOWN))
 ## returns the SpellID of the active currently in [member hand]. returns SpellData.ActiveSpellIDs.ERROR if there is no active in that hand.
@@ -308,7 +305,7 @@ func send_damage_package(package : DamagePackage):
    damage_dealt.emit(package)
 func on_damage_data(package : DamagePackage):
    HEALTHBAR.on_damage_data(package)
-   HUD_HEALTHBAR.update_display(HEALTHBAR.get_health(), false)
+   HUD.update_healthbar(HEALTHBAR.get_health(), false)
 
 func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.equip_effect(spell_id, is_active)

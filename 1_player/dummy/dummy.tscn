@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b104tuac4uwp4" path="res://1_player/character_body/wizard_body.tscn" id="2_efvjk"]
 [ext_resource type="Script" uid="uid://b7hkrvtuscupp" path="res://1_player/components/healthbar.gd" id="2_iiygx"]
 [ext_resource type="Script" uid="uid://cuueb1u2pkixq" path="res://1_player/effectory/effectory.gd" id="5_iiygx"]
-[ext_resource type="PackedScene" uid="uid://cgtqkg01jix6k" path="res://4_ui/HUD_2/HealthDisplay.tscn" id="6_efvjk"]
+[ext_resource type="PackedScene" uid="uid://cgtqkg01jix6k" path="res://4_ui/HUD_3/HealthDisplay.tscn" id="6_efvjk"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_sof1a"]
 viewport_path = NodePath("SubViewport")

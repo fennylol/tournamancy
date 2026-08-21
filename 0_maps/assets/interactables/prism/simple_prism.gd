@@ -10,6 +10,7 @@ enum PrismShapes { tetrahedron , cube , octahedron , dodecahedron , icosahedron 
 var is_player_prism : bool = false
 var timeout : float = 0.0
 
+@warning_ignore("unused_signal")
 signal update_prism(id: int)
 signal destroy_prism(id : int)
 

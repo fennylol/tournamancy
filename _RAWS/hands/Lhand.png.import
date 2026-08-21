@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://rsxo7i1bx2pe"
-path.s3tc="res://.godot/imported/Lpoint.png-ab31ab1759b5814ddf9f6b88da173307.s3tc.ctex"
+uid="uid://ddq437x4g5mpf"
+path.s3tc="res://.godot/imported/Lhand.png-a83b1e5b5f7ffd4facd511bd507d51d3.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://4_ui/hud/Lpoint.png"
-dest_files=["res://.godot/imported/Lpoint.png-ab31ab1759b5814ddf9f6b88da173307.s3tc.ctex"]
+source_file="res://_RAWS/hands/Lhand.png"
+dest_files=["res://.godot/imported/Lhand.png-a83b1e5b5f7ffd4facd511bd507d51d3.s3tc.ctex"]
 
 [params]
 
