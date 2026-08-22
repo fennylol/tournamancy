@@ -3,11 +3,12 @@
 # meta-default: true
 # meta-space-indent: 3
 extends PassiveSpell
-# TODO: name your class
+# TODO: name your new PassiveSpell
 class_name NewPassiveSpell
 
 #enum States {}
 #enum FamiliarIDs {}
+
 #func on_state_changed(new_state: int) -> void:
    #super(new_state) # NOTE: keep this line if adding custom state change logic
 

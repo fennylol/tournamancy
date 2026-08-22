@@ -2,7 +2,9 @@ extends ActiveSpell
 class_name PulsarsBreath
 
 enum States {FIRE}
-#enum FamiliarIDs {}
+enum FamiliarIDs {PULSAR_BEAM}
+
+const SPELL_DAMAGE: float = 5.0
 
 #func on_state_changed(new_state: int) -> void:
    #super(new_state) # NOTE: keep this line if adding custom state change logic

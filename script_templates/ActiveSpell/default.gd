@@ -3,7 +3,7 @@
 # meta-default: true
 # meta-space-indent: 3
 extends ActiveSpell
-# TODO: name your class
+# TODO: name your new ActiveSpell
 class_name NewActiveSpell
 
 #enum States {}

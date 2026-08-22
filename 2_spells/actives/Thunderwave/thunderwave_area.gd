@@ -15,7 +15,7 @@ func send_damage(enemy : Dummy):
    var stat_influenced_force  : float = SPELL_FORCE  * SpellData.get_influenced_stat(SpellData.StatTypes.FORCE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.FORCE], ThePlayer.SpellBook.get_stat(SpellData.StatTypes.FORCE))
    
    var new_damage_package = DamagePackage.new()
-   new_damage_package.id_from = ThePlayer.MY_NETWORK_ID
+   new_damage_package.id_from = ThePlayer.NETWORK_ID
    new_damage_package.id_to = enemy.NETWORK_ID
    new_damage_package.location_source = ThePlayer.global_position
    new_damage_package.location_receipt = enemy.global_position

@@ -28,7 +28,7 @@ const TRANSFORM_DATA_SIZE: int = (4*9)+1
 ## SETTINGS AND REFERENCE FILES
 var personal_settings : PersonalSettings = PersonalSettings.new()
 var SpellBook: Grimoire = Grimoire.new()
-var MY_NETWORK_ID : int
+var NETWORK_ID : int
 
 ## LOCAL VARIABLES
 var is_sprinting  : bool = false
@@ -164,7 +164,7 @@ func _melee_attack():
          var stat_influenced_damage : float = SpellData.get_influenced_stat(SpellData.StatTypes.MELEE_DAMAGE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.MELEE_DAMAGE], SpellBook.get_stat(SpellData.StatTypes.MELEE_DAMAGE))
          var stat_influenced_force  : float = SpellData.get_influenced_stat(SpellData.StatTypes.MELEE_FORCE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.MELEE_FORCE], SpellBook.get_stat(SpellData.StatTypes.MELEE_FORCE))
          var new_damage_package = DamagePackage.new()
-         new_damage_package.id_from = MY_NETWORK_ID
+         new_damage_package.id_from = NETWORK_ID
          new_damage_package.id_to = enemy.NETWORK_ID
          new_damage_package.location_source = global_position
          new_damage_package.location_receipt = enemy.global_position

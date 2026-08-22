@@ -43,7 +43,7 @@ func _ready() -> void:
    PLAYER_CHARACTER.spell_changed_state.connect(MPM.send_spell_state_data)
    PLAYER_CHARACTER.damage_dealt.connect(_on_player_damage_dealt)
    PLAYER_CHARACTER.familiar_spawned.connect(_on_player_familiar_spawned)
-   PLAYER_CHARACTER.MY_NETWORK_ID = MPM.get_local_player_id()
+   PLAYER_CHARACTER.NETWORK_ID = MPM.get_local_player_id()
    PLAYER_CHARACTER.position = GAME_MAP.get_library_spawn_pos()
 
 func _physics_process(_delta: float) -> void:
@@ -58,7 +58,7 @@ func _spawn_familiar(owner_id: int, spell_id: int, is_active: bool, familiar_idx
    if familiar_list.size() <= familiar_idx: return
    
    var familiar: Familiar = load(familiar_list[familiar_idx]).create_from_byte_array(owner_id, creation_data)
-   if owner_id == PLAYER_CHARACTER.MY_NETWORK_ID: 
+   if owner_id == PLAYER_CHARACTER.NETWORK_ID: 
       # TODO: REALLY cludgy way to do this but idk man
       familiar.ThePlayer = PLAYER_CHARACTER
    FAMILIARS.add_child(familiar)
