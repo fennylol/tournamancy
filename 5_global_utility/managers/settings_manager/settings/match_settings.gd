@@ -145,39 +145,56 @@ var PRISM_FORCE_ACTIVE_ABILITIES : bool = true
 var ACTIVE_ABILITIES_PERCENT : float = 0.1
 ## [b]The spell weights for active spells.[/b][br][br]Each spell will be more or less likely to appear depending on its associated value in this property. If one spell has a weight of 2 and another spell has a weight of 1, the first spell will be twice as likely to appear.[br][br]Negative weight values are treated the same as values of 0 - neither will appear at all.
 var ACTIVE_SPELL_WEIGHTS : Dictionary = {
-   SpellData.ActiveSpellIDs.GreatBallOfFire : 1,
-   SpellData.ActiveSpellIDs.IronBody        : 1,
-   SpellData.ActiveSpellIDs.ShockstarDisco  : 1,
-   SpellData.ActiveSpellIDs.StarlightBlink  : 1,
-   SpellData.ActiveSpellIDs.Thunderwave     : 1
+   SpellData.ActiveSpellIDs.GreatBallOfFire : 10,
+   SpellData.ActiveSpellIDs.IronBody        : 10,
+   SpellData.ActiveSpellIDs.ShockstarDisco  : 10,
+   SpellData.ActiveSpellIDs.StarlightBlink  : 10,
+   SpellData.ActiveSpellIDs.Thunderwave     : 10
 }
 ## [b]The spell weights for passive spells.[/b][br][br]Each spell will be more or less likely to appear depending on its associated value in this property. If one spell has a weight of 2 and another spell has a weight of 1, the first spell will be twice as likely to appear.[br][br]Negative weight values are treated the same as values of 0 - neither will appear at all.
 var PASSIVE_SPELL_WEIGHTS : Dictionary = {
    ## STAT PASSIVES
-   SpellData.PassiveSpellIDs.Heart          : 1,
+   SpellData.PassiveSpellIDs.Heart          : 15,
    SpellData.PassiveSpellIDs.Armor          : 0,
    SpellData.PassiveSpellIDs.Ward           : 0,
    SpellData.PassiveSpellIDs.Overhealth     : 0,
    SpellData.PassiveSpellIDs.Armor_Strength : 0,
    SpellData.PassiveSpellIDs.Ward_Strength  : 0,
    SpellData.PassiveSpellIDs.Lifesteal      : 0,
-   SpellData.PassiveSpellIDs.Damage         : 1,
-   SpellData.PassiveSpellIDs.Attack_Range   : 1,
-   SpellData.PassiveSpellIDs.Cooldown       : 1,
-   SpellData.PassiveSpellIDs.Force          : 1,
-   SpellData.PassiveSpellIDs.Crit           : 1,
-   SpellData.PassiveSpellIDs.Luck           : 1,
-   SpellData.PassiveSpellIDs.Speed          : 1,
+   SpellData.PassiveSpellIDs.Damage         : 10,
+   SpellData.PassiveSpellIDs.Attack_Range   : 10,
+   SpellData.PassiveSpellIDs.Cooldown       : 10,
+   SpellData.PassiveSpellIDs.Force          : 10,
+   SpellData.PassiveSpellIDs.Crit           : 10,
+   SpellData.PassiveSpellIDs.Luck           : 10,
+   SpellData.PassiveSpellIDs.Speed          : 10,
    SpellData.PassiveSpellIDs.Sprint         : 0,
-   SpellData.PassiveSpellIDs.Jump           : 1,
-   SpellData.PassiveSpellIDs.Gravity        : 1,
-   SpellData.PassiveSpellIDs.Steadfastness  : 1,
-   SpellData.PassiveSpellIDs.Melee_Damage   : 1,
-   SpellData.PassiveSpellIDs.Melee_Range    : 1,
-   SpellData.PassiveSpellIDs.Melee_Force    : 1,
-   SpellData.PassiveSpellIDs.Melee_Cooldown : 1,
-   ## NON-STAT PASSIVES
-   SpellData.PassiveSpellIDs.MoonJump       : 1
+   SpellData.PassiveSpellIDs.Jump           : 10,
+   SpellData.PassiveSpellIDs.Gravity        : 10,
+   SpellData.PassiveSpellIDs.Steadfastness  : 10,
+   SpellData.PassiveSpellIDs.Melee_Damage   : 10,
+   SpellData.PassiveSpellIDs.Melee_Range    : 10,
+   SpellData.PassiveSpellIDs.Melee_Force    : 10,
+   SpellData.PassiveSpellIDs.Melee_Cooldown : 10,
+   ## DAMAGE MODIFIER PASSIVES
+   SpellData.PassiveSpellIDs.Boost_Impact   : 2,
+   SpellData.PassiveSpellIDs.Boost_Sharp    : 2,
+   SpellData.PassiveSpellIDs.Boost_Energy   : 2,
+   SpellData.PassiveSpellIDs.Boost_Fire     : 2,
+   SpellData.PassiveSpellIDs.Boost_Cold     : 2,
+   SpellData.PassiveSpellIDs.Boost_Zap      : 2,
+   SpellData.PassiveSpellIDs.Boost_Rot      : 2,
+   SpellData.PassiveSpellIDs.Boost_Natural  : 2,
+   SpellData.PassiveSpellIDs.Resist_Impact  : 3,
+   SpellData.PassiveSpellIDs.Resist_Sharp   : 3,
+   SpellData.PassiveSpellIDs.Resist_Energy  : 3,
+   SpellData.PassiveSpellIDs.Resist_Fire    : 3,
+   SpellData.PassiveSpellIDs.Resist_Cold    : 3,
+   SpellData.PassiveSpellIDs.Resist_Zap     : 3,
+   SpellData.PassiveSpellIDs.Resist_Rot     : 3,
+   SpellData.PassiveSpellIDs.Resist_Natural : 3,
+   ## ALL OTHER PASSIVES
+   SpellData.PassiveSpellIDs.MoonJump       : 10
 }
 ## [b]The mercy weights for active spells.[/b][br][br]A spell's mercy weight is summed with its standard weight when a player has been knocked out enough times. This allows some spells to become more or less likely to appear the worse a player is performing.[br][br]Mercy weights can be negative, which will reduce the associated spell's weight by that amount.
 var ACTIVE_MERCY_WEIGHTS : Dictionary = {}

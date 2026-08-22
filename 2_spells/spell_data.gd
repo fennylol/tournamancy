@@ -60,7 +60,26 @@ enum StatTypes {
    ## (20) Flat pushing power of the player's quick melee attack.
    MELEE_FORCE,
    ## (21) Cooldown reduction??? of the player's quick melee attack.
-   MELEE_COOLDOWN
+   MELEE_COOLDOWN,
+   
+   # DAMAGE TYPE MODIFIERS #
+   
+   BOOST_IMPACT,
+   BOOST_SHARP,
+   BOOST_ENERGY,
+   BOOST_FIRE,
+   BOOST_COLD,
+   BOOST_ZAP,
+   BOOST_ROT,
+   BOOST_NATURAL,
+   RESIST_IMPACT,
+   RESIST_SHARP,
+   RESIST_ENERGY,
+   RESIST_FIRE,
+   RESIST_COLD,
+   RESIST_ZAP,
+   RESIST_ROT,
+   RESIST_NATURAL
 }
    
 enum SpellFields {Name, Description, IconPath, IconRect, ScriptPath, Cooldown, Effects, DummyEffects, Familiars} # may at some point break this into PassiveSpellFields and ActiveSpellFields
@@ -164,6 +183,9 @@ enum PassiveSpellIDs {
    Speed, Sprint, Jump, Gravity, Steadfastness,
    ## MELEE
    Melee_Damage, Melee_Range, Melee_Force, Melee_Cooldown,
+   ## DAMAGE MODIFIERS
+   Boost_Impact, Boost_Sharp, Boost_Energy, Boost_Fire, Boost_Cold, Boost_Zap, Boost_Rot, Boost_Natural,
+   Resist_Impact, Resist_Sharp, Resist_Energy, Resist_Fire, Resist_Cold, Resist_Zap, Resist_Rot, Resist_Natural,
    ## OTHER
    JBLSpeaker, MoonJump, PhantomFlight,
    ## ERROR
@@ -415,7 +437,155 @@ const PassiveSpells: Dictionary = {
       SpellFields.ScriptPath   : "res://2_spells/passives/00Stat_Passives/meleecooldown_script.gd",
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []}
+      SpellFields.Familiars    : []},
+   
+   # ======================================= #
+   # DAMAGE MODIFIERS FROM THIS POINT ONWARD #
+   # ======================================= #
+   PassiveSpellIDs.Boost_Impact : {
+      SpellFields.Name         : "Impact Boost",
+      SpellFields.Description  : "Increases the power of your IMPACT damage.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(0,0,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/impact_boost.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Boost_Sharp : {
+      SpellFields.Name         : "Sharp Boost",
+      SpellFields.Description  : "Increases the power of your SHARP damage.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(32,0,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/sharp_boost.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Boost_Energy : {
+      SpellFields.Name         : "Energy Boost",
+      SpellFields.Description  : "Increases the power of your ENERGY damage.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(64,0,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/energy_boost.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Boost_Fire : {
+      SpellFields.Name         : "Fire Boost",
+      SpellFields.Description  : "Increases the power of your FIRE damage.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(96,0,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/fire_boost.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Boost_Cold : {
+      SpellFields.Name         : "Cold Boost",
+      SpellFields.Description  : "Increases the power of your COLD damage.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(0,32,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/cold_boost.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Boost_Zap : {
+      SpellFields.Name         : "Zap Boost",
+      SpellFields.Description  : "Increases the power of your ZAP damage.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(32,32,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/zap_boost.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Boost_Rot : {
+      SpellFields.Name         : "Rot Boost",
+      SpellFields.Description  : "Increases the power of your ROT damage.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(64,32,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/rot_boost.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Boost_Natural : {
+      SpellFields.Name         : "Natural Boost",
+      SpellFields.Description  : "Increases the power of your NATURAL damage.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(96,32,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/natural_boost.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Resist_Impact : {
+      SpellFields.Name         : "Impact Resistance",
+      SpellFields.Description  : "Reduces the amount of IMPACT damage you take.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(0,64,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/impact_resist.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Resist_Sharp : {
+      SpellFields.Name         : "Sharp Resistance",
+      SpellFields.Description  : "Reduces the amount of SHARP damage you take.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(32,64,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/sharp_resist.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Resist_Energy : {
+      SpellFields.Name         : "Energy Resistance",
+      SpellFields.Description  : "Reduces the amount of ENERGY damage you take.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(64,64,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/energy_resist.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Resist_Fire : {
+      SpellFields.Name         : "Fire Resistance",
+      SpellFields.Description  : "Reduces the amount of FIRE damage you take.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(96,64,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/fire_resist.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Resist_Cold : {
+      SpellFields.Name         : "Cold Resistance",
+      SpellFields.Description  : "Reduces the amount of COLD damage you take.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(0,96,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/cold_resist.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Resist_Zap : {
+      SpellFields.Name         : "Zap Resistance",
+      SpellFields.Description  : "Reduces the amount of ZAP damage you take.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(32,96,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/zap_resist.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Resist_Rot : {
+      SpellFields.Name         : "Rot Resistance",
+      SpellFields.Description  : "Reduces the amount of ROT damage you take.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(64,96,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/rot_resist.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
+   PassiveSpellIDs.Resist_Natural : {
+      SpellFields.Name         : "Natural Resistance",
+      SpellFields.Description  : "Reduces the amount of NATURAL damage you take.",
+      SpellFields.IconPath     : "res://2_spells/passives/01DmgType_Modifiers/damage_types.png",
+      SpellFields.IconRect     : Rect2(96,96,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/passives/01DmgType_Modifiers/natural_resist.gd",
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []},
 }
 
 ## a smooth, continuous S-shaped curve bounded by (0, INF) and crossing the point (0, base_value)
