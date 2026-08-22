@@ -3,6 +3,9 @@
 [ext_resource type="Script" uid="uid://blfua2y68aym4" path="res://0_maps/assets/interactables/prism/prism_menu.gd" id="1_hqamg"]
 [ext_resource type="PackedScene" uid="uid://bj6q28e650yw4" path="res://0_maps/assets/interactables/prism/prism_spell_instance.tscn" id="2_7yhls"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_xwstj"]
+font_size = 8
+
 [node name="PrismMenu" type="Control" unique_id=775943470]
 layout_mode = 3
 anchors_preset = 15
@@ -371,6 +374,47 @@ size_flags_vertical = 3
 [node name="spacer_R" type="Control" parent="ActiveConfirm" unique_id=1234648561]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="Cursor" type="Marker2D" parent="." unique_id=1623973485]
+visible = false
+gizmo_extents = 20.0
+
+[node name="ColorRect" type="ColorRect" parent="Cursor" unique_id=975627785]
+offset_right = 128.0
+offset_bottom = 192.0
+mouse_filter = 2
+color = Color(0.48178947, 0.48178947, 0.48178947, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Cursor/ColorRect" unique_id=627077298]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="isActive" type="Label" parent="Cursor/ColorRect/VBoxContainer" unique_id=542112827]
+layout_mode = 2
+size_flags_vertical = 3
+label_settings = SubResource("LabelSettings_xwstj")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Name" type="Label" parent="Cursor/ColorRect/VBoxContainer" unique_id=1118480874]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Description" type="RichTextLabel" parent="Cursor/ColorRect/VBoxContainer" unique_id=249976599]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 12.0
+mouse_filter = 2
+bbcode_enabled = true
 
 [connection signal="mouse_entered" from="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll" to="." method="_on_button_reroll_mouse_entered"]
 [connection signal="pressed" from="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll" to="." method="_on_button_reroll_pressed"]

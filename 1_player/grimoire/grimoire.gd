@@ -117,7 +117,7 @@ func adopt_class(id: ClassData.ClassIDs) -> void:
 func change_spell_state(spell_id: int, is_active: bool, spell_state: int) -> void:
    var spell_array: Array = (ActiveSpells as Array) if is_active else (PassiveSpells as Array)
    for spell:Spell in spell_array:
-      if spell.SpellID == spell_id:
+      if spell is Spell and spell.SpellID == spell_id:
          spell.on_state_changed(spell_state)
 
    

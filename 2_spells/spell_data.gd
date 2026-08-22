@@ -89,7 +89,7 @@ const ActiveSpells: Dictionary = {
    #}
    ActiveSpellIDs.GreatBallOfFire:{
       SpellFields.Name         : "Great Ball o' Fire",
-      SpellFields.Description  : "",
+      SpellFields.Description  : "Launches a small (but powerful) fireball.",
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
       SpellFields.IconRect     : Rect2(32,64,32,32),
       SpellFields.ScriptPath   : "res://2_spells/actives/GreatBallOFire/great_ball_o_fire_script.gd",
@@ -122,7 +122,7 @@ const ActiveSpells: Dictionary = {
    },
    ActiveSpellIDs.StarlightBlink:{
       SpellFields.Name         : "Starlight Blink",
-      SpellFields.Description  : "",
+      SpellFields.Description  : "Teleport a short distance forward in an instant.",
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
       SpellFields.IconRect     : Rect2(32,32,32,32),
       SpellFields.ScriptPath   : "res://2_spells/actives/StarlightBlink/starlightblink_script.gd",
@@ -203,7 +203,7 @@ const PassiveSpells: Dictionary = {
    },
    PassiveSpellIDs.PhantomFlight : {
       SpellFields.Name         : "Phantom Flight",
-      SpellFields.Description  : "It is wise to stay away from others...",
+      SpellFields.Description  : "Move faster when no one is nearby. Most slower when they are.",
       SpellFields.IconPath     : "res://2_spells/passives/PhantomFlight/icon.png",
       SpellFields.IconRect     : Rect2(0,0,32,32),
       SpellFields.ScriptPath   : "res://2_spells/passives/PhantomFlight/phantom_flight_script.gd",

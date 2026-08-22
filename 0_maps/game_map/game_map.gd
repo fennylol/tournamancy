@@ -121,17 +121,10 @@ func spawn_natural_prism():
    ## I will have to deal with MatchSettings later, but for now I am hardcoding it as ANY -> RANDOM
    var MapBoundryNeg     := Vector3(-61,0,-78)
    var MapBoundryPos     := Vector3(38,25,20)
-   var pick_random_point := Vector3(randf_range(MapBoundryNeg.x,MapBoundryPos.x),randf_range(MapBoundryNeg.y,MapBoundryPos.y),randf_range(MapBoundryNeg.z,MapBoundryPos.z))
-   var spawn_point       := Vector3.ZERO
+   var pick_random_point := Vector3(randf_range(MapBoundryNeg.x,MapBoundryPos.x),MapBoundryPos.y,randf_range(MapBoundryNeg.z,MapBoundryPos.z))
    ## Snap to Floor
    FLOOR_CHECK_RAYCAST.position = pick_random_point
-   FLOOR_CHECK_RAYCAST.target_position = Vector3(0,30,0)
-   if FLOOR_CHECK_RAYCAST.is_colliding() and FLOOR_CHECK_RAYCAST.get_collision_normal() == Vector3.ZERO: 
-      spawn_point = FLOOR_CHECK_RAYCAST.get_collision_point()
-      FLOOR_CHECK_RAYCAST.position = spawn_point + vertical_prism_offset
-   FLOOR_CHECK_RAYCAST.target_position = Vector3(0,-30,0)
-   if FLOOR_CHECK_RAYCAST.is_colliding():
-      spawn_point = FLOOR_CHECK_RAYCAST.get_collision_point()
+   var spawn_point : Vector3 = FLOOR_CHECK_RAYCAST.get_collision_point() if FLOOR_CHECK_RAYCAST.is_colliding() else Vector3(pick_random_point.x,0.0,pick_random_point.z)
    new_prism.position = spawn_point + vertical_prism_offset
    
    ## Set a new PrismID (used to sending prism_removal_data later)

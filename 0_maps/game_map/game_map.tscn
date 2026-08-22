@@ -57,7 +57,6 @@ transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, -61.637024, 0, 20.89
 [node name="RayCast3D" type="RayCast3D" parent="Prisms" unique_id=359608485]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 target_position = Vector3(0, -30, 0)
-collision_mask = 255
 hit_from_inside = true
 collide_with_areas = true
 
