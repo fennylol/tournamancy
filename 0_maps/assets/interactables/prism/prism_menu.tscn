@@ -6,6 +6,8 @@
 [sub_resource type="LabelSettings" id="LabelSettings_xwstj"]
 font_size = 8
 
+[sub_resource type="LabelSettings" id="LabelSettings_7yhls"]
+
 [node name="PrismMenu" type="Control" unique_id=775943470]
 layout_mode = 3
 anchors_preset = 15
@@ -406,6 +408,7 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
+label_settings = SubResource("LabelSettings_7yhls")
 horizontal_alignment = 1
 vertical_alignment = 1
 

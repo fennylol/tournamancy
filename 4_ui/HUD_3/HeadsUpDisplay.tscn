@@ -75,6 +75,9 @@ region = Rect2(32, 192, 32, 40)
 atlas = ExtResource("1_ncv6v")
 region = Rect2(32, 128, 32, 40)
 
+[sub_resource type="LabelSettings" id="LabelSettings_wik73"]
+font_size = 8
+
 [node name="HeadsUpDisplay" type="Control" unique_id=393868772]
 layout_mode = 3
 anchors_preset = 15
@@ -332,3 +335,43 @@ size_flags_vertical = 3
 [node name="SpacerR" type="Control" parent="VBoxContainer/HBoxContainerBottom" unique_id=1743669404]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="Cursor" type="Marker2D" parent="." unique_id=1443514047]
+gizmo_extents = 20.0
+
+[node name="ColorRect" type="ColorRect" parent="Cursor" unique_id=1159110671]
+offset_right = 128.0
+offset_bottom = 192.0
+mouse_filter = 2
+color = Color(0.48178947, 0.48178947, 0.48178947, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Cursor/ColorRect" unique_id=1584592999]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="isActive" type="Label" parent="Cursor/ColorRect/VBoxContainer" unique_id=1201360231]
+layout_mode = 2
+size_flags_vertical = 3
+label_settings = SubResource("LabelSettings_wik73")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Name" type="Label" parent="Cursor/ColorRect/VBoxContainer" unique_id=1966661553]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 2.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Description" type="RichTextLabel" parent="Cursor/ColorRect/VBoxContainer" unique_id=864189919]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 12.0
+mouse_filter = 2
+bbcode_enabled = true

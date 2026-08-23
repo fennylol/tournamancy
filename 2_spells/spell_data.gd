@@ -636,9 +636,9 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       StatTypes.MELEE_DAMAGE:   return base_value + stat_value ##🧑‍🔧
       ## ADDITIVE. Each additional point of range increases the Area3D by 0.5m
       StatTypes.MELEE_RANGE:    return base_value + ( stat_value * 0.5 ) ##🧑‍🔧
-      ## IDK
       StatTypes.MELEE_FORCE:    return base_value + stat_value ##🧑‍🔧
-      StatTypes.MELEE_COOLDOWN: return base_value * stat_value ##🧑‍🔧
+      ## ADD FIVE PERCENT. Each additional point causes active ability cooldowns to go 5% faster (20 stacks needed for a 1/2 reduction).
+      StatTypes.MELEE_COOLDOWN: return 1 + ( ( base_value + stat_value ) * 0.05 )
       _: printerr("SpellData.get_influenced_stat() STAT ", id, " NOT FOUND. RETURNING 0."); return 0
 
 static func get_active_spell_data(id: ActiveSpellIDs) -> Dictionary: 

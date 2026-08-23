@@ -276,7 +276,7 @@ func _setup_description_box(spell : PrismSlotCounter):
       CURSOR.get_child(0).get_child(0).get_child(0).text = "ACTIVE" if spell.is_active else "PASSIVE"
       CURSOR.get_child(0).get_child(0).get_child(0).label_settings.font_color = Color.ORANGE if spell.is_active else Color.CYAN
       CURSOR.get_child(0).get_child(0).get_child(1).text = spell_name
-      CURSOR.get_child(0).get_child(0).get_child(2).text = "[font_size=13]" + spell_desc + "[/font_size]"
+      CURSOR.get_child(0).get_child(0).get_child(2).text = "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]" + spell_desc + "[/font_size]"
 
 # ================================ #
 #  active spell selection handling #

@@ -2,15 +2,19 @@ class_name ClassData
 
 
 enum ClassIDs {NakedManChallenge, Tank, Ranger, Speedster, Test_A,}
-enum ClassFields {ACTIVES, PASSIVES}
+enum ClassFields {ACTIVES, PASSIVES, NAME, DESCRIPTION}
 
 const ClassRecipes: Dictionary = {
    ClassIDs.NakedManChallenge : {
+      ClassFields.NAME : "Naked Man Challenge",
+      ClassFields.DESCRIPTION : "No additional spells.",
       ClassFields.ACTIVES : [],
       ClassFields.PASSIVES: {}
    },
    
    ClassIDs.Tank : {
+      ClassFields.NAME : "Tank",
+      ClassFields.DESCRIPTION : "Moves slowly, but comes with extra health and a spell that packs a punch.",
       ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.Thunderwave, SpellData.ActiveSpellIDs.IronBody],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.Speed : -2,
@@ -21,6 +25,8 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Speedster : {
+      ClassFields.NAME : "Speedster",
+      ClassFields.DESCRIPTION : "Moves fast and jumps high with a short range attack and a short teleport.",
       ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.ShockstarDisco, SpellData.ActiveSpellIDs.StarlightBlink],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.Speed : 5,
@@ -30,6 +36,8 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Ranger : {
+      ClassFields.NAME : "Ranger",
+      ClassFields.DESCRIPTION : "Moves swiftly and silently to attack from a distance. Threatened by enemies nearby.",
       ClassFields.ACTIVES  : [SpellData.ActiveSpellIDs.PulsarsBreath, SpellData.ActiveSpellIDs.GreatBallOfFire],
       ClassFields.PASSIVES : {
          SpellData.PassiveSpellIDs.PhantomFlight: 1
@@ -37,6 +45,8 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Test_A : {
+      ClassFields.NAME : "TEST_A",
+      ClassFields.DESCRIPTION : "comes with a free JBL speaker!",
       ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.GreatBallOfFire],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.JBLSpeaker : 1

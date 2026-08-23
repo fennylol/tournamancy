@@ -17,11 +17,16 @@ var active_hold_array : Array[bool] = [false,false]
 @onready var BUTTONPROMPT_TEXTURERECTS : Array[TextureRect] = [$VBoxContainer/HBoxContainerTop/CenterContainer/ButtonPrompt/color,$VBoxContainer/HBoxContainerTop/CenterContainer/ButtonPrompt/lines,$VBoxContainer/HBoxContainerBottom/ActiveL/Icon/ButtonPrompt/color,$VBoxContainer/HBoxContainerBottom/ActiveL/Icon/ButtonPrompt/lines,$VBoxContainer/HBoxContainerBottom/ActiveR/Icon/ButtonPrompt/color,$VBoxContainer/HBoxContainerBottom/ActiveR/Icon/ButtonPrompt/lines]
 const BUTTONPROMPT_RECT_KYBD : Array[Rect2] = [Rect2(0,96,64,32),Rect2(0,64,64,32),Rect2(0,192,32,40),Rect2(0,128,32,40),Rect2(32,192,32,40),Rect2(32,128,32,40)]
 const BUTTONPROMPT_RECT_CTRL : Array[Rect2] = [Rect2(64,64,64,64),Rect2(64,0,64,64),Rect2(128,32,64,32),Rect2(128,0,64,32),Rect2(128,96,64,32),Rect2(128,64,64,32)]
+@onready var CURSOR : Marker2D = $Cursor
 
 func _ready() -> void: 
    for i in range(active_hold_array.size()):
       update_active_icon(i)
       _get_active_cooldown_from_slot(i).value = 0.0
+
+# ================ #
+#  passive spells  #
+# ================ #
 
 ## Takes an array of PassiveSpells, finds the relevant icons, and arrays them in the passivebox. If [member full_clear] is true, the passive box will empty before adding the new passives. If false, it will add the new passive spells to those already displayed.
 func import_passive_spells(imported_spells : Array[PassiveSpell], full_clear : bool = false):
@@ -58,6 +63,10 @@ func import_passive_spells(imported_spells : Array[PassiveSpell], full_clear : b
       ## PLACE NUMBER
       @warning_ignore("integer_division")
       new_number.position = Vector2((ICON_OFFSET.x * i)+16,(floor(i/9))-16)
+
+# =============== #
+#  active spells  #
+# =============== #
 
 ## Updates an Active slot with the correct texture and cooldown value based on a given SpellID
 func update_active_icon(active_slot : int, id : SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR):
@@ -98,9 +107,39 @@ func _get_active_icon_from_slot(slot : int) -> Sprite2D:
    var icon : Sprite2D = L_ACTIVE_ICON if slot == 0 else R_ACTIVE_ICON
    return icon
 
+# ============= #
+#   healthbar   #
+# ============= #
+
 ## Pass value and boolean data to the Healthbar
 func update_healthbar(v : Array[float], b : bool): HEALTHBAR.update_display(v,b)
 
+# ===================== #
+#  inspect and prompts  #
+# ===================== #
+
+## Recieves an Interactable from the player while their raycast is looking at one. Used to display class data to player.
+func show_interactable_info(obj : Interactable):
+   CURSOR.position = get_viewport_rect().size / 2
+   CURSOR.visible = true
+   if obj is ClassBook:
+      CURSOR.get_child(0).get_child(0).get_child(0).text = "CLASS"
+      CURSOR.get_child(0).get_child(0).get_child(1).text = ClassData.ClassRecipes.get(obj.ClassID).get(ClassData.ClassFields.NAME)
+      CURSOR.get_child(0).get_child(0).get_child(1).label_settings = LabelSettings.new()
+      CURSOR.get_child(0).get_child(0).get_child(1).label_settings.font_color = obj.book_color
+      CURSOR.get_child(0).get_child(0).get_child(2).text = "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]" + ClassData.ClassRecipes.get(obj.ClassID).get(ClassData.ClassFields.DESCRIPTION) +"[/font_size]"
+   elif obj is Prism:
+      CURSOR.get_child(0).get_child(0).get_child(0).text = "a unique"
+      CURSOR.get_child(0).get_child(0).get_child(1).text = "SPELL PRISM"
+      CURSOR.get_child(0).get_child(0).get_child(1).label_settings = LabelSettings.new()
+      CURSOR.get_child(0).get_child(0).get_child(1).label_settings.font_color = Color.WHITE
+      CURSOR.get_child(0).get_child(0).get_child(1).label_settings.outline_size = 2
+      CURSOR.get_child(0).get_child(0).get_child(1).label_settings.outline_color = Color.HOT_PINK
+      CURSOR.get_child(0).get_child(0).get_child(2).text = "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]dropped by a defeated player[/font_size]" if obj.is_player_prism else "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]spawned into the world[/font_size]"
+   else:
+      CURSOR.visible = false
+func close_interactable_info():
+   CURSOR.visible = false
 ## Changes the visible button prompts on the two active icons and below the passive box to show either keyboard/mouse buttons or controller buttons, depending on whether [member keyboard] is true.
 func swap_button_prompts(keyboard : bool):
    for i in range(BUTTONPROMPT_TEXTURERECTS.size()):

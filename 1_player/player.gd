@@ -31,8 +31,6 @@ var SpellBook: Grimoire = Grimoire.new()
 var NETWORK_ID : int
 
 ## LOCAL VARIABLES
-var is_sprinting  : bool = false
-var prism_is_open : bool = false
 var Enabled: bool = false:
    set(new_val):
       Enabled = new_val
@@ -40,6 +38,10 @@ var Enabled: bool = false:
          Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
       else:
          Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+var is_sprinting  : bool = false
+var prism_is_open : bool = false
+var time_since_melee  : float = 0.0
+const MELEE_WAIT : float = 1.0
 
 ## SIGNALS
 signal open_connection_menu_please(show_menu:bool)
@@ -120,10 +122,13 @@ func _process(delta):
       HUD.release_active(1)
       #HUD_RIGHT_ACTIVE._release()
    
+   time_since_melee += delta * SpellData.get_influenced_stat(SpellData.StatTypes.MELEE_COOLDOWN,SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.MELEE_COOLDOWN],SpellBook.get_stat(SpellData.StatTypes.MELEE_COOLDOWN))
    if Input.is_action_just_pressed("quick_melee") and Enabled:
-      LEFT_ARM.rotation.x = -80.0
-      RIGHT_ARM.rotation.x = -80.0
-      _melee_attack()
+      if time_since_melee >= MELEE_WAIT:
+         LEFT_ARM.rotation.x = -80.0
+         RIGHT_ARM.rotation.x = -80.0
+         _melee_attack()
+         time_since_melee = 0.0
    elif Input.is_action_just_released("quick_melee") and Enabled:
       LEFT_ARM.rotation.x = 0.0
       RIGHT_ARM.rotation.x = 0.0
@@ -148,8 +153,13 @@ func _unhandled_input(event):
       CAMERA.rotate_x(-event.relative.y * .005 * personal_settings.MOUSE_SENSITIVITY)
       CAMERA.rotation.x = clamp(CAMERA.rotation.x, -PI/2, PI/2)
    ## CHANGE BUTTON PROMPTS
-   if event is InputEventKey or event is InputEventMouseMotion or event is InputEventMouseButton: HUD.swap_button_prompts(true)
-   elif event is InputEventJoypadButton or event is InputEventJoypadMotion: HUD.swap_button_prompts(false)
+   if event is InputEventKey or \
+      event is InputEventMouseMotion or  \
+      event is InputEventMouseButton: 
+         HUD.swap_button_prompts(true)
+   elif event is InputEventJoypadButton or \
+        event is InputEventJoypadMotion: 
+         HUD.swap_button_prompts(false)
 
 func _melee_attack():
    ## RESIZE MELEE AREA
@@ -203,6 +213,11 @@ func _physics_process(delta):
          var hit = LOOK_DIR.get_collider()
          if hit is Interactable:
             hit._on_interact(self)
+   ## SEND INTERACTABLE DATA TO HUD
+   if LOOK_DIR.is_colliding() and LOOK_DIR.get_collider() is Interactable:
+      HUD.show_interactable_info(LOOK_DIR.get_collider())
+   else:
+      HUD.close_interactable_info()
    move_and_slide()
 
 # ================== #
@@ -290,7 +305,7 @@ func update_HUD_icons():
    HUD.import_passive_spells(SpellBook.PassiveSpells, true)
    #HUD_PASSIVEBOX.import_passive_spells(SpellBook.PassiveSpells, true)
 ## Called by the base ActiveSpell class to get the players "stat influenced cooldown" which is multiplied with the delta each frame to reduce that spell's cooldown timer.
-func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.StatTypes.COOLDOWN,  SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.COOLDOWN], SpellBook.get_stat(SpellData.StatTypes.COOLDOWN))
+func get_cooldown() -> float:  return SpellData.get_influenced_stat(SpellData.StatTypes.COOLDOWN,SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.COOLDOWN],SpellBook.get_stat(SpellData.StatTypes.COOLDOWN))
 ## returns the SpellID of the active currently in [member hand]. returns SpellData.ActiveSpellIDs.ERROR if there is no active in that hand.
 func get_active(hand : int) -> SpellData.ActiveSpellIDs: return SpellBook.ActiveSpells[hand].SpellID as SpellData.ActiveSpellIDs if SpellBook.ActiveSpells[hand] else SpellData.ActiveSpellIDs.ERROR
 ## Called by the PrismMenu with a given spellID and hand. Asks the SpellBook to add that spell, then updates the HUD.

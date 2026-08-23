@@ -22,3 +22,5 @@ var JOYSTICK_SENSITIVITY_y : float = 0.5
 var INVERT_X : bool = false
 ## Inverting Y causes the camera to look down when the mouse or joystick pushes up.
 var INVERT_y : bool = false
+## The size of tooltip text
+var TEXTSIZE : int = 13
