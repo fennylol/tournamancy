@@ -17,6 +17,7 @@ const MAX_LIFE_TIME: float = 30.0
 # before sending over the network.
 func _init(owner_id: int) -> void: 
    super(owner_id, MAX_LIFE_TIME)
+   name = str(owner_id) + "__new_familiar__" + str(randi())
    #var primary_color  : Color = SettingsManager.peer_settings[owner_id].primary_color   if SettingsManager.peer_settings.has(owner_id) else SettingsManager.personal_settings.PRIMARY_COLOR
    #var secondary_color: Color = SettingsManager.peer_settings[owner_id].secondary_color if SettingsManager.peer_settings.has(owner_id) else SettingsManager.personal_settings.SECONDARY_COLOR
 

@@ -137,7 +137,7 @@ const ActiveSpells: Dictionary = {
       SpellFields.Cooldown     : 0.5,
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
+      SpellFields.Familiars    : ["res://2_spells/actives/ShockstarDisco/familiar/disco_ball_familiar.gd"]
    },
    ActiveSpellIDs.StarlightBlink:{
       SpellFields.Name         : "Starlight Blink",

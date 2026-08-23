@@ -224,6 +224,7 @@ collision_mask = 2
 collide_with_areas = true
 
 [node name="quickmelee" type="Area3D" parent="Eyes" unique_id=1986255232]
+collision_layer = 4
 collision_mask = 4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Eyes/quickmelee" unique_id=1589041170]

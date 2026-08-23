@@ -82,8 +82,10 @@ func _init(owner_id: int, fireball_pos: Vector3, fireball_velocity: Vector3) -> 
    col_shape.position.z = 0.375
    col_shape.rotation_degrees.x = 90
    area.add_child(col_shape)
-   area.collision_mask = 5
+   area.collision_layer = 8
+   area.collision_mask = 13
    area.body_entered.connect(_on_body_entered)
+   area.area_entered.connect(_on_area_entered)
    add_child(area)
    
    
@@ -109,5 +111,9 @@ func _on_body_entered(body: Node3D) -> void:
       new_damage_package.type = DamagePackage.DamageType.ZAP
       new_damage_package.force = 0.0
       ThePlayer.send_damage_package(new_damage_package)
-   elif body is CollisionObject3D and body.collision_layer == 1:
+   elif body is CollisionObject3D and (body.collision_layer == 1):
+      self.queue_free()
+
+func _on_area_entered(area: Node3D) -> void:
+   if area is CollisionObject3D and (area.collision_layer == 8):
       self.queue_free()

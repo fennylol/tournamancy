@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://b4d26bvt5rk6x"]
+
+[ext_resource type="Shader" uid="uid://dmxofk3hykslr" path="res://2_spells/actives/ShockstarDisco/familiar/disco_ball.gdshader" id="1_ek587"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_ek587")
+shader_parameter/tile_density = 9.86800027873
+shader_parameter/tile_tilt = 0.35
+shader_parameter/grout_width = 0.050000002375
+shader_parameter/grout_color = Color(0.015, 0.015, 0.018, 1)
+shader_parameter/mirror_color = Color(0.92, 0.94, 0.97, 1)
+shader_parameter/color_variation = 0.06
+shader_parameter/base_roughness = 0.04
+shader_parameter/base_metallic = 0.95
+shader_parameter/specular_power = 300.0
+shader_parameter/specular_boost = 8.0

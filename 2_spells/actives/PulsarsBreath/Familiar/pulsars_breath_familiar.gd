@@ -8,6 +8,7 @@ var particles := GPUParticles3D.new()
 
 func _init(owner_id: int, beam_position: Vector3, beam_rotation: Vector3, length: float) -> void: 
    super(owner_id, MAX_LIFE_TIME)
+   name = str(owner_id) + "__pulsar_beam__" + str(randi())
 
    rotation = beam_rotation
    position = beam_position
