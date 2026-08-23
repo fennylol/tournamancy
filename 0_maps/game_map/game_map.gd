@@ -15,6 +15,7 @@ func _ready() -> void:
 # ===================== #
 
 signal force_player_location(pos : Vector3)
+signal grant_spawn_overhealth()
 
 const LIBRARY_SPAWN_POS := Vector3(0,0,-150)
 
@@ -54,6 +55,7 @@ func _physics_process(delta: float) -> void:
             dragtime = 0.0
             chosen_spawn_point = Vector3.ZERO
             dragging_towards = DragPoints.NONE
+            grant_spawn_overhealth.emit()
 
 ## Searches through available points from SettingsManager.match_settings and returns the best available spawn location as a Vector3
 func _find_player_spawn_point() -> Vector3:

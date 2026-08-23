@@ -112,7 +112,7 @@ func _get_active_icon_from_slot(slot : int) -> Sprite2D:
 # ============= #
 
 ## Pass value and boolean data to the Healthbar
-func update_healthbar(v : Array[float], b : bool): HEALTHBAR.update_display(v,b)
+func update_healthbar(v : Array[float], b : bool = false): HEALTHBAR.update_display(v,b)
 
 # ===================== #
 #  inspect and prompts  #

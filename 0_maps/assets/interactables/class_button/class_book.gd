@@ -34,6 +34,7 @@ func _process(delta: float) -> void:
 func _on_interact(interacter: Player) -> void:
    if pull_time > 0: return
    interacter.SpellBook.adopt_class(ClassID)
+   interacter.sync_health()
    interacter.update_HUD_icons()
    
    pull_time = BOOK_PULL_TIME

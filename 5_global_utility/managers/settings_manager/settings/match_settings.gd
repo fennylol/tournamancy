@@ -232,7 +232,7 @@ var PLAYER_BASE_STATS : Dictionary = {
    SpellData.StatTypes.STEADFASTNESS  : 1.0,
    SpellData.StatTypes.MELEE_DAMAGE   : 2.0,
    SpellData.StatTypes.MELEE_RANGE    : 1.5,
-   SpellData.StatTypes.MELEE_FORCE    : 1.0,
+   SpellData.StatTypes.MELEE_FORCE    : 0.0,
    SpellData.StatTypes.MELEE_COOLDOWN : 0.0
 }
 ## Determines a default loadout of passives which are given to every player in addition to whichever class they select.

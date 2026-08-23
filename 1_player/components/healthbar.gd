@@ -14,8 +14,10 @@ signal health_updated(new_health : Array[float])
 func _ready():
    pass
 
-func _process(_delta):
-   pass
+func _process(delta):
+   if total_health[3] != 0.0:
+      total_health[3] = total_health[3] * pow(2 , -( delta / SettingsManager.match_settings.OVERHEALTH_DECAY_RATE ))
+      health_updated.emit(total_health)
 
 func on_damage_data(package : DamagePackage):
    damage_taken += package.amount

@@ -32,10 +32,11 @@ func _ready() -> void:
    MPM.spawn_familiar_data.connect(_on_mpm_spawn_familiar_data)
    VP_MANAGER.set_personal_id(MPM.get_local_player_id())
    GAME_MAP.force_player_location.connect(force_player_position)
+   GAME_MAP.grant_spawn_overhealth.connect(grant_respawn_overhealth)
    GAME_MAP.spawned_prism.connect(MPM.send_spawned_prism_data)
    GAME_MAP.updated_prism.connect(MPM.send_updated_prism_data)
    GAME_MAP.removed_prism.connect(MPM.send_removed_prism_data)
-   PLAYER_CHARACTER.HEALTHBAR.health_updated.connect(MPM.send_health_update_data)
+   PLAYER_CHARACTER.HEALTHBAR.health_updated.connect(_on_player_health_updated)
    PLAYER_CHARACTER.HEALTHBAR.health_reached_zero.connect(_on_player_knocked_out)
    PLAYER_CHARACTER.open_connection_menu_please.connect(MPM.open_connection_menu)
    PLAYER_CHARACTER.spell_equipped.connect(MPM.send_effect_equip_data)
@@ -63,12 +64,15 @@ func _spawn_familiar(owner_id: int, spell_id: int, is_active: bool, familiar_idx
       familiar.ThePlayer = PLAYER_CHARACTER
    FAMILIARS.add_child(familiar)
 
-# ===================== #
-#  PLAYER RESPAWN DRAG  #
-# ===================== #
+# ================ #
+#  PLAYER RESPAWN  #
+# ================ #
 
 func force_player_position(pos : Vector3): PLAYER_CHARACTER.position = pos
 func get_player_position() -> Vector3: return PLAYER_CHARACTER.position
+func grant_respawn_overhealth() -> void:
+   PLAYER_CHARACTER.sync_health()
+   PLAYER_CHARACTER._update_heath_display([0,0,0,SettingsManager.match_settings.RETURNING_PLAYER_OVERHEALTH], true)
 
 # ======================== #
 #  VICTORY POINT HANDLING  #
@@ -143,6 +147,9 @@ func _on_gamemap_prism_updated     (): pass
 func _on_gamemap_prism_removed     (): pass
 
 # player
+func _on_player_health_updated     (new_health : Array[float]):
+   MPM.send_health_update_data(new_health)
+   PLAYER_CHARACTER.HUD.update_healthbar(new_health, false)
 func _on_player_damage_dealt       (package : DamagePackage) -> void:
    MPM.send_damage_data(package)
    if SettingsManager.peer_settings.has(package.id_to):

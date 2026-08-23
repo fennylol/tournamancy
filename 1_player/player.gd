@@ -104,24 +104,20 @@ func _process(delta):
    if Input.is_action_just_pressed("active_spell_0") and Enabled:
       LEFT_ARM.rotation.x = -80.0
       HUD.hold_active(0)
-      #HUD_LEFT_ACTIVE._hold()
       if SpellBook.ActiveSpells[0]:
          SpellBook.ActiveSpells[0]._on_activate(self)
    elif Input.is_action_just_released("active_spell_0") or not Enabled: 
       LEFT_ARM.rotation.x = 0.0
       HUD.release_active(0)
-      #HUD_LEFT_ACTIVE._release()
    
    if Input.is_action_just_pressed("active_spell_1") and Enabled:
       RIGHT_ARM.rotation.x = -80.0
       HUD.hold_active(1)
-      #HUD_RIGHT_ACTIVE._hold()
       if SpellBook.ActiveSpells[1]:
          SpellBook.ActiveSpells[1]._on_activate(self)      
    elif Input.is_action_just_released("active_spell_1") or not Enabled: 
       RIGHT_ARM.rotation.x = 0.0
       HUD.release_active(1)
-      #HUD_RIGHT_ACTIVE._release()
    
    time_since_melee += delta * SpellData.get_influenced_stat(SpellData.StatTypes.MELEE_COOLDOWN,SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.MELEE_COOLDOWN],SpellBook.get_stat(SpellData.StatTypes.MELEE_COOLDOWN))
    if Input.is_action_just_pressed("quick_melee") and Enabled:
@@ -285,9 +281,9 @@ func sync_health():
    ]
    _update_heath_display(new_health)
 
-func _update_heath_display(new_health : Array[float]) -> void:
-   HEALTHBAR.set_health(new_health)
-   HUD.update_healthbar(HEALTHBAR.get_health(), false)
+func _update_heath_display(new_health : Array[float], add : bool = false) -> void:
+   HEALTHBAR.set_health(new_health, add)
+   HUD.update_healthbar(HEALTHBAR.get_health())
 
 func set_colors() -> void:
    var primary_mat := StandardMaterial3D.new()

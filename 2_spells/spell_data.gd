@@ -612,7 +612,8 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       StatTypes.ARMOR:          return base_value + stat_value
       ## ONE-TO-ONE. Each additional point is one (1.0) additional ward.
       StatTypes.WARD:           return base_value + stat_value
-      StatTypes.OVERHEALTH:     return base_value * stat_value ##🧑‍🔧
+      ## ONE-TO-ONE. Each additional point is one (1.0) additional overhealth.
+      StatTypes.OVERHEALTH:     return base_value + stat_value
       StatTypes.ARMOR_STRENGTH: return base_value * stat_value ##🧑‍🔧
       StatTypes.WARD_STRENGTH:  return base_value * stat_value ##🧑‍🔧
       StatTypes.LIFESTEAL:      return base_value * stat_value ##🧑‍🔧
