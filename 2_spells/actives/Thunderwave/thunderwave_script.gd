@@ -2,6 +2,7 @@ extends ActiveSpell
 class_name ThunderwaveSpell
 
 enum States {IDLE, DAMAGE_WAVE}
+enum FamiliarIDs {WAVE}
 
 func _init() -> void: super(SpellData.ActiveSpellIDs.Thunderwave)
 

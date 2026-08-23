@@ -337,6 +337,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Cursor" type="Marker2D" parent="." unique_id=1443514047]
+visible = false
 gizmo_extents = 20.0
 
 [node name="ColorRect" type="ColorRect" parent="Cursor" unique_id=1159110671]

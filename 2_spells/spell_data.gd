@@ -157,9 +157,9 @@ const ActiveSpells: Dictionary = {
       SpellFields.IconRect     : Rect2(0,0,32,32),
       SpellFields.ScriptPath   : "res://2_spells/actives/Thunderwave/thunderwave_script.gd",
       SpellFields.Cooldown     : 5.0,
-      SpellFields.Effects      : ["res://2_spells/actives/Thunderwave/ThunderwaveArea.tscn"],
+      SpellFields.Effects      : ["res://2_spells/actives/Thunderwave/Effects/ThunderwaveArea.tscn"],
       SpellFields.DummyEffects : [],
-      SpellFields.Familiars    : []
+      SpellFields.Familiars    : ["res://2_spells/actives/Thunderwave/Familiar/thunderwave_familiar.gd"]
    },
    ActiveSpellIDs.PulsarsBreath:{
       SpellFields.Name         : "Pulsar's Breath",
@@ -618,10 +618,10 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       StatTypes.LIFESTEAL:      return base_value * stat_value ##🧑‍🔧
       ## HALF-BOUNDED HYPERBOLIC. Diminishing growth. 2x damage at 5 stacks, 3x at 15, 4x at 40. 
       StatTypes.DAMAGE:         return _half_bounded_hyperbolic(base_value, stat_value, 0.25)
-      StatTypes.RANGE:          return base_value * stat_value ##🧑‍🔧
+      StatTypes.RANGE:          return _half_bounded_linear(base_value, stat_value, 1)
       ## ADD FIVE PERCENT. Each additional point causes active ability cooldowns to go 5% faster (20 stacks needed for a 1/2 reduction).
       StatTypes.COOLDOWN:       return 1 + ( ( base_value + stat_value ) * 0.05 )
-      StatTypes.FORCE:          return base_value * stat_value ##🧑‍🔧
+      StatTypes.FORCE:          return _half_bounded_hyperbolic(base_value, stat_value, 0.5)
       StatTypes.CRIT:           return base_value * stat_value ##🧑‍🔧
       StatTypes.LUCK:           return base_value * stat_value ##🧑‍🔧
       ## ADDITIVE. Each additional point of speed increases walk speed by ~1 m/s
@@ -631,7 +631,7 @@ static func get_influenced_stat(id: StatTypes, base_value: float, stat_value: fl
       StatTypes.JUMP:           return base_value + stat_value ##🧑‍🔧
       ## PLATFORMER JUMPS. While the "jump" button is held, gravity is low. When the "jump" button is released, gravity is high.
       StatTypes.GRAVITY:        return base_value * pow( 2.0 , ( -( stat_value * 0.25 ) / 2 ) ) if Input.is_action_pressed("jump") else base_value * pow( 2.0 , ( ( stat_value * 0.25 ) / 2 ) )
-      StatTypes.STEADFASTNESS:  return base_value * stat_value ##🧑‍🔧
+      StatTypes.STEADFASTNESS:  return _half_bounded_linear(base_value, stat_value, 0.5)
       ## ONE-TO-ONE. Each additional point is one (1.0) additional point of damage.
       StatTypes.MELEE_DAMAGE:   return base_value + stat_value ##🧑‍🔧
       ## ADDITIVE. Each additional point of range increases the Area3D by 0.5m

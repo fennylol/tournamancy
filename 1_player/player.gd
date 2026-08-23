@@ -39,6 +39,7 @@ var Enabled: bool = false:
       else:
          Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 var is_sprinting  : bool = false
+var shove_vector  := Vector3.ZERO
 var prism_is_open : bool = false
 var time_since_melee  : float = 0.0
 const MELEE_WAIT : float = 1.0
@@ -135,7 +136,13 @@ func _process(delta):
    
    if Input.is_action_just_pressed("debug"):
       THE_WHEEL.visible = true
-      THE_WHEEL.generate_wheel([],8)
+      var contents : Array[AtlasTexture] = []
+      contents.resize(8)
+      for i in range(contents.size()):
+         contents[i] = AtlasTexture.new()
+         contents[i].atlas = load("res://2_spells/actives/misc_active_icons.png")
+         contents[i].region = Rect2(32*i,0,32,32) if i <= 3 else Rect2(32*(i-4),32,32,32)
+      THE_WHEEL.generate_wheel(contents)
    if Input.is_action_just_released("debug"):
       THE_WHEEL.visible = false
    
@@ -206,7 +213,13 @@ func _physics_process(delta):
    else:
       velocity.x = move_toward(velocity.x, 0, influenced_speed)
       velocity.z = move_toward(velocity.z, 0, influenced_speed)
-
+   
+   ## DEAL WITH SHOVING EFFECTS
+   if shove_vector != Vector3.ZERO:
+      velocity += shove_vector
+      shove_vector = shove_vector.normalized() * (shove_vector.length() * exp(-delta))
+      if shove_vector.length() <= 0.01: shove_vector = Vector3.ZERO
+   
    ## INTERACTABLES
    if Input.is_action_pressed("interact") and Enabled:
       if LOOK_DIR.is_colliding():
@@ -319,8 +332,13 @@ func request_new_passive_spell(id: SpellData.PassiveSpellIDs, stacks : int):
 func send_damage_package(package : DamagePackage):
    damage_dealt.emit(package)
 func on_damage_data(package : DamagePackage):
+   ## SEND DAMAGE TO HEALTHBAR
    HEALTHBAR.on_damage_data(package)
    HUD.update_healthbar(HEALTHBAR.get_health(), false)
+   ## CHECK FOR SHOVE
+   if package.force != 0.0:
+      var influenced_steadfastness : float = SpellData.get_influenced_stat(SpellData.StatTypes.STEADFASTNESS,SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.STEADFASTNESS],SpellBook.get_stat(SpellData.StatTypes.STEADFASTNESS))
+      shove_vector += (package.location_receipt - package.location_source).normalized() * package.force * ( 1 / influenced_steadfastness )
 
 func _on_grimoire_spell_equipped(spell_id: int, is_active: bool) -> void: 
    EFFECTORY.equip_effect(spell_id, is_active)

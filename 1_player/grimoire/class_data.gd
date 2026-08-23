@@ -18,9 +18,10 @@ const ClassRecipes: Dictionary = {
       ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.Thunderwave, SpellData.ActiveSpellIDs.IronBody],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.Speed : -2,
-         #SpellData.PassiveSpellIDs.Gravity : 0,
          SpellData.PassiveSpellIDs.Damage : 5,
-         SpellData.PassiveSpellIDs.Heart : 4
+         SpellData.PassiveSpellIDs.Heart : 4,
+         SpellData.PassiveSpellIDs.Steadfastness : 1,
+         SpellData.PassiveSpellIDs.Resist_Impact : 1
       }
    },
    
@@ -29,9 +30,10 @@ const ClassRecipes: Dictionary = {
       ClassFields.DESCRIPTION : "Moves fast and jumps high with a short range attack and a short teleport.",
       ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.ShockstarDisco, SpellData.ActiveSpellIDs.StarlightBlink],
       ClassFields.PASSIVES: {
-         SpellData.PassiveSpellIDs.Speed : 5,
-         SpellData.PassiveSpellIDs.Gravity : 5,
-         SpellData.PassiveSpellIDs.MoonJump : 1
+         SpellData.PassiveSpellIDs.MoonJump : 1,
+         SpellData.PassiveSpellIDs.Speed : 4,
+         SpellData.PassiveSpellIDs.Gravity : 4,
+         SpellData.PassiveSpellIDs.Jump : 1
       }
    },
    
@@ -40,7 +42,10 @@ const ClassRecipes: Dictionary = {
       ClassFields.DESCRIPTION : "Moves swiftly and silently to attack from a distance. Threatened by enemies nearby.",
       ClassFields.ACTIVES  : [SpellData.ActiveSpellIDs.PulsarsBreath, SpellData.ActiveSpellIDs.GreatBallOfFire],
       ClassFields.PASSIVES : {
-         SpellData.PassiveSpellIDs.PhantomFlight: 1
+         SpellData.PassiveSpellIDs.PhantomFlight: 1,
+         SpellData.PassiveSpellIDs.Gravity : 2,
+         SpellData.PassiveSpellIDs.Cooldown : 2,
+         SpellData.PassiveSpellIDs.Resist_Sharp : 1,
       }
    },
    

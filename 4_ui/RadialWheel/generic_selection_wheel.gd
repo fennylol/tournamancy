@@ -6,6 +6,7 @@ class_name SelectionWheel
 @onready var action_node = $actions
 
 #var item_texture_scene = preload("res://items_and_materials/inventory_item_texture.tscn")
+const CONTENTS_SIZE : float = 64.0
 
 var PLAYER_CHARACTER : Player
 
@@ -43,8 +44,8 @@ func _on_visibility_changed():
       @warning_ignore("narrowing_conversion")
       inner_rim_size = wheel_size - ( wheel_thickness / 2 )
    else:
-      for i in wheel_node.get_children():
-         i.queue_free()
+      for i in wheel_node.get_children(): i.queue_free()
+      for i in texture_node.get_children(): i.queue_free()
       wheel_contents.clear()
       wheel_vector_dict.clear()
 
@@ -84,7 +85,7 @@ func _draw():
    draw_circle(cursor_location,10,Color.WHITE)
    draw_line(window_centerpoint, cursor_location, Color.WHITE)
 
-func generate_wheel(contents : Array, count : int = -1):
+func generate_wheel(contents : Array[AtlasTexture], count : int = -1):
    var num = contents.size() if count == -1 else count
    
    ## DETERMINE SLICE LINES
@@ -130,9 +131,10 @@ func generate_wheel(contents : Array, count : int = -1):
       # skip if a blank array was generated
       if count != -1: continue
       
-      #var new_sprite = item_texture_scene.instantiate()
-      #texture_node.add_child(new_sprite)
-      #new_sprite.position = new_pos * ( inner_rim_size + outer_rim_size ) / 2
-      #var set_texture = contents[i] if contents[i] is ItemTexture else ItemTexture.new()
-      #new_sprite.set_item_texture(set_texture)
- 
+      var new_texture_rect = TextureRect.new()
+      texture_node.add_child(new_texture_rect)
+      new_texture_rect.texture = contents[i]
+      new_texture_rect.size = Vector2(CONTENTS_SIZE,CONTENTS_SIZE)
+      new_texture_rect.position = window_centerpoint + ( new_pos * ( inner_rim_size + outer_rim_size ) / 2 ) + Vector2(-(CONTENTS_SIZE/2),-(CONTENTS_SIZE/2))
+      new_texture_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+      new_texture_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE

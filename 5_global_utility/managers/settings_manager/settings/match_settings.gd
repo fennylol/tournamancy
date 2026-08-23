@@ -222,7 +222,7 @@ var PLAYER_BASE_STATS : Dictionary = {
    SpellData.StatTypes.DAMAGE         : 1.0,
    SpellData.StatTypes.RANGE          : 1.0,
    SpellData.StatTypes.COOLDOWN       : 0.0,
-   SpellData.StatTypes.FORCE          : 0.0,
+   SpellData.StatTypes.FORCE          : 1.0,
    SpellData.StatTypes.CRIT           : 5.0,
    SpellData.StatTypes.LUCK           : 2.0,
    SpellData.StatTypes.SPEED          : 10.0,

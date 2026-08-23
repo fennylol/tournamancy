@@ -2,8 +2,6 @@ extends Effect
 
 @onready var LOS: RayCast3D = $RayCast3D
 
-
-
 func _init() -> void: FollowsEyes = true
 
 func on_state_changed(_new_state: int) -> void:
