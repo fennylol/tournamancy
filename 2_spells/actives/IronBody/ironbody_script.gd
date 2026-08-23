@@ -1,7 +1,7 @@
 extends ActiveSpell
 class_name IronBodySpell
 
-var Distance: float = 5.0
+var OverhealthAmount: float = 20.0
 
 # set true cooldown
 func _init() -> void:
@@ -10,4 +10,4 @@ func _init() -> void:
 func _on_activate(activator: Player) -> void:
    if _can_activate():
       TimeSinceActivation = 0.0
-      print("Iron Body Activated")
+      activator._update_heath_display([0,0,0,OverhealthAmount], true)

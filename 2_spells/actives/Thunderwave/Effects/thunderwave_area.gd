@@ -36,6 +36,6 @@ func send_damage(enemy : Dummy):
    new_damage_package.location_source = ThePlayer.global_position
    new_damage_package.location_receipt = enemy.global_position
    new_damage_package.amount = stat_influenced_damage
-   new_damage_package.type = DamagePackage.DamageType.ZAP
+   new_damage_package.type = DamagePackage.DamageType.ENERGY
    new_damage_package.force = stat_influenced_force
    ThePlayer.send_damage_package(new_damage_package)

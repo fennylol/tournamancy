@@ -119,18 +119,18 @@ const ActiveSpells: Dictionary = {
    },
    ActiveSpellIDs.IronBody:{
       SpellFields.Name         : "Iron Body",
-      SpellFields.Description  : "",
+      SpellFields.Description  : "Immediately grants a boost of health that fades over time.",
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
       SpellFields.IconRect     : Rect2(32,0,32,32),
       SpellFields.ScriptPath   : "res://2_spells/actives/IronBody/ironbody_script.gd",
-      SpellFields.Cooldown     : 3.0,
+      SpellFields.Cooldown     : 10.0,
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],
       SpellFields.Familiars    : []
    },
    ActiveSpellIDs.ShockstarDisco:{
       SpellFields.Name         : "Shockstar Disco",
-      SpellFields.Description  : "",
+      SpellFields.Description  : "Fires a bounding disco ball that damages nearby enemies.",
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
       SpellFields.IconRect     : Rect2(0,32,32,32),
       SpellFields.ScriptPath   : "res://2_spells/actives/ShockstarDisco/shockstardisco_script.gd",
@@ -152,11 +152,11 @@ const ActiveSpells: Dictionary = {
    },
    ActiveSpellIDs.Thunderwave:{
       SpellFields.Name         : "Thunderwave",
-      SpellFields.Description  : "",
+      SpellFields.Description  : "Projects a wave of energy that damages and shoves enemies away from you.",
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
       SpellFields.IconRect     : Rect2(0,0,32,32),
       SpellFields.ScriptPath   : "res://2_spells/actives/Thunderwave/thunderwave_script.gd",
-      SpellFields.Cooldown     : 5.0,
+      SpellFields.Cooldown     : 4.0,
       SpellFields.Effects      : ["res://2_spells/actives/Thunderwave/Effects/ThunderwaveArea.tscn"],
       SpellFields.DummyEffects : [],
       SpellFields.Familiars    : ["res://2_spells/actives/Thunderwave/Familiar/thunderwave_familiar.gd"]

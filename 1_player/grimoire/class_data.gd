@@ -13,7 +13,7 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Tank : {
-      ClassFields.NAME : "Tank",
+      ClassFields.NAME : "The Adamant",
       ClassFields.DESCRIPTION : "Moves slowly, but comes with extra health and a spell that packs a punch.",
       ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.Thunderwave, SpellData.ActiveSpellIDs.IronBody],
       ClassFields.PASSIVES: {
@@ -26,8 +26,8 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Speedster : {
-      ClassFields.NAME : "Speedster",
-      ClassFields.DESCRIPTION : "Moves fast and jumps high with a short range attack and a short teleport.",
+      ClassFields.NAME : "Dancekiller",
+      ClassFields.DESCRIPTION : "Moves fast and jumps high with a bouncing attack and a short teleport.[br]🕺💃",
       ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.ShockstarDisco, SpellData.ActiveSpellIDs.StarlightBlink],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.MoonJump : 1,
@@ -38,7 +38,7 @@ const ClassRecipes: Dictionary = {
    },
    
    ClassIDs.Ranger : {
-      ClassFields.NAME : "Ranger",
+      ClassFields.NAME : "Beam and Shadow",
       ClassFields.DESCRIPTION : "Moves swiftly and silently to attack from a distance. Threatened by enemies nearby.",
       ClassFields.ACTIVES  : [SpellData.ActiveSpellIDs.PulsarsBreath, SpellData.ActiveSpellIDs.GreatBallOfFire],
       ClassFields.PASSIVES : {

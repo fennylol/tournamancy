@@ -118,24 +118,36 @@ func update_healthbar(v : Array[float], b : bool = false): HEALTHBAR.update_disp
 #  inspect and prompts  #
 # ===================== #
 
+@onready var COLOR_RECT  : ColorRect = $Cursor/ColorRect
+@onready var PREAMBLE    : Label = $Cursor/ColorRect/MarginContainer/VBoxContainer/isActive
+@onready var NAME        : Label = $Cursor/ColorRect/MarginContainer/VBoxContainer/Name
+@onready var DESCRIPTION : RichTextLabel = $Cursor/ColorRect/MarginContainer/VBoxContainer/Description
+
 ## Recieves an Interactable from the player while their raycast is looking at one. Used to display class data to player.
 func show_interactable_info(obj : Interactable):
    CURSOR.position = get_viewport_rect().size / 2
    CURSOR.visible = true
+   COLOR_RECT.color = SettingsManager.personal_settings.PRIMARY_COLOR
+   PREAMBLE.label_settings = LabelSettings.new()
+   NAME.label_settings = LabelSettings.new()
+   @warning_ignore("integer_division")
+   PREAMBLE.label_settings.font_size = SettingsManager.personal_settings.TEXTSIZE * 2/3
+   @warning_ignore("integer_division")
+   NAME.label_settings.font_size = SettingsManager.personal_settings.TEXTSIZE * 4/3
    if obj is ClassBook:
-      CURSOR.get_child(0).get_child(0).get_child(0).text = "CLASS"
-      CURSOR.get_child(0).get_child(0).get_child(1).text = ClassData.ClassRecipes.get(obj.ClassID).get(ClassData.ClassFields.NAME)
-      CURSOR.get_child(0).get_child(0).get_child(1).label_settings = LabelSettings.new()
-      CURSOR.get_child(0).get_child(0).get_child(1).label_settings.font_color = obj.book_color
-      CURSOR.get_child(0).get_child(0).get_child(2).text = "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]" + ClassData.ClassRecipes.get(obj.ClassID).get(ClassData.ClassFields.DESCRIPTION) +"[/font_size]"
+      PREAMBLE.text = "ARCANE DISCIPLINE"
+      PREAMBLE.label_settings.font_color = Color.WHITE
+      NAME.text = ClassData.ClassRecipes.get(obj.ClassID).get(ClassData.ClassFields.NAME)
+      NAME.label_settings.font_color = obj.book_color
+      DESCRIPTION.text = "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]" + ClassData.ClassRecipes.get(obj.ClassID).get(ClassData.ClassFields.DESCRIPTION) +"[/font_size]"
    elif obj is Prism:
-      CURSOR.get_child(0).get_child(0).get_child(0).text = "a unique"
-      CURSOR.get_child(0).get_child(0).get_child(1).text = "SPELL PRISM"
-      CURSOR.get_child(0).get_child(0).get_child(1).label_settings = LabelSettings.new()
-      CURSOR.get_child(0).get_child(0).get_child(1).label_settings.font_color = Color.WHITE
-      CURSOR.get_child(0).get_child(0).get_child(1).label_settings.outline_size = 2
-      CURSOR.get_child(0).get_child(0).get_child(1).label_settings.outline_color = Color.HOT_PINK
-      CURSOR.get_child(0).get_child(0).get_child(2).text = "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]dropped by a defeated player[/font_size]" if obj.is_player_prism else "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]spawned into the world[/font_size]"
+      PREAMBLE.text = "a unique"
+      PREAMBLE.label_settings.font_color = Color.WHITE
+      NAME.text = "SPELL PRISM"
+      NAME.label_settings.font_color = Color.WHITE
+      NAME.label_settings.outline_size = 2
+      NAME.label_settings.outline_color = Color.HOT_PINK
+      DESCRIPTION.text = "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]dropped by a defeated player[/font_size]" if obj.is_player_prism else "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]spawned into the world[/font_size]"
    else:
       CURSOR.visible = false
 func close_interactable_info():
