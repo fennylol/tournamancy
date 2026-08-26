@@ -16,14 +16,9 @@ const TRANSFORM_DATA_SIZE: int = (4*9)+1
 
 @onready var EFFECTORY : Effectory       = $Effectory
 @onready var HEALTHBAR : HealthComponent = $Healthbar
-#@onready var HUD       : Control         = $CanvasLayer/DefaultHud
 @onready var HUD       : HeadsUpDisplay  = $CanvasLayer/HeadsUpDisplay
 @onready var THE_WHEEL : SelectionWheel  = $CanvasLayer/GenericSelectionWheel
 @onready var PRISMMENU : PrismMenu       = $CanvasLayer/PrismMenu
-#var HUD_LEFT_ACTIVE    : Node2D
-#var HUD_RIGHT_ACTIVE   : Node2D
-#var HUD_PASSIVEBOX     : Node2D
-#var HUD_HEALTHBAR      : HealthDisplay
 
 ## SETTINGS AND REFERENCE FILES
 var personal_settings : PersonalSettings = PersonalSettings.new()
@@ -43,6 +38,7 @@ var shove_vector  := Vector3.ZERO
 var prism_is_open : bool = false
 var time_since_melee  : float = 0.0
 const MELEE_WAIT : float = 1.0
+var ActiveMeshArray : Array[Node3D] = []
 
 ## SIGNALS
 signal open_connection_menu_please(show_menu:bool)
@@ -70,7 +66,10 @@ func _ready() -> void:
    PRISMMENU.visible = false
    THE_WHEEL.visible = false
    set_colors()
-
+   
+   #ActiveMeshArray.resize(SpellBook.ActiveSlots)
+   ActiveMeshArray = [LEFT_ARM,RIGHT_ARM]
+   
    var starting_health : Array[float] = [
       SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.HEARTS],
       SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.ARMOR],
@@ -91,6 +90,9 @@ func _process(delta):
       open_connection_menu_please.emit(not(Enabled))
       HUD.visible = Enabled
    
+   ## HUD PROCESS
+   HUD.process(delta)
+   
    ## PASSIVE PROCESSES, BEGIN
    if Enabled: SpellBook.process_begin(delta, self)
    
@@ -101,24 +103,50 @@ func _process(delta):
    CAMERA.rotation.x += cam_vertical * 0.05 * personal_settings.JOYSTICK_SENSITIVITY_X
    CAMERA.rotation.x = clamp(CAMERA.rotation.x, -PI/2, PI/2)
    
-   if Input.is_action_just_pressed("active_spell_0") and Enabled:
-      LEFT_ARM.rotation.x = -80.0
-      HUD.hold_active(0)
-      if SpellBook.ActiveSpells[0]:
-         SpellBook.ActiveSpells[0]._on_activate(self)
-   elif Input.is_action_just_released("active_spell_0") or not Enabled: 
-      LEFT_ARM.rotation.x = 0.0
-      HUD.release_active(0)
+   ## ACTIVE ABILITIES
+   for i in range(SpellBook.ActiveSlots):
+      if not Enabled: continue
+      var input_button : String = "active_spell_" + str(i)
+      if   Input.is_action_just_pressed (input_button): 
+         if SpellBook.ActiveSpells[i]: SpellBook.ActiveSpells[i]._on_activate(self)
+         ActiveMeshArray[i].rotation.x = -80.0
+      elif Input.is_action_pressed      (input_button): 
+         if SpellBook.ActiveSpells[i]: SpellBook.ActiveSpells[i]._on_hold(self, delta)
+         HUD.hold_active(i)
+      elif Input.is_action_just_released(input_button): 
+         if SpellBook.ActiveSpells[i]: SpellBook.ActiveSpells[i]._on_release(self)
+         HUD.release_active(i)
+         ActiveMeshArray[i].rotation.x = 0.0
    
-   if Input.is_action_just_pressed("active_spell_1") and Enabled:
-      RIGHT_ARM.rotation.x = -80.0
-      HUD.hold_active(1)
-      if SpellBook.ActiveSpells[1]:
-         SpellBook.ActiveSpells[1]._on_activate(self)      
-   elif Input.is_action_just_released("active_spell_1") or not Enabled: 
-      RIGHT_ARM.rotation.x = 0.0
-      HUD.release_active(1)
+   #if Input.is_action_just_pressed("active_spell_0") and Enabled:
+      #LEFT_ARM.rotation.x = -80.0
+      #HUD.hold_active(0)
+      #if SpellBook.ActiveSpells[0]:
+         #SpellBook.ActiveSpells[0]._on_activate(self)
+   #elif Input.is_action_pressed("active_spell_0") and Enabled:
+      #if SpellBook.ActiveSpells[0]:
+         #SpellBook.ActiveSpells[0]._on_hold(self)
+   #elif Input.is_action_just_released("active_spell_0") or not Enabled: 
+      #LEFT_ARM.rotation.x = 0.0
+      #HUD.release_active(0)
+      #if SpellBook.ActiveSpells[0]:
+         #SpellBook.ActiveSpells[0]._on_release(self)
+   #
+   #if Input.is_action_just_pressed("active_spell_1") and Enabled:
+      #RIGHT_ARM.rotation.x = -80.0
+      #HUD.hold_active(1)
+      #if SpellBook.ActiveSpells[1]:
+         #SpellBook.ActiveSpells[1]._on_activate(self)      
+   #elif Input.is_action_pressed("active_spell_1") and Enabled:
+      #if SpellBook.ActiveSpells[1]:
+         #SpellBook.ActiveSpells[1]._on_hold(self)
+   #elif Input.is_action_just_released("active_spell_1") or not Enabled: 
+      #RIGHT_ARM.rotation.x = 0.0
+      #HUD.release_active(1)
+      #if SpellBook.ActiveSpells[1]:
+         #SpellBook.ActiveSpells[1]._on_release(self)   
    
+   ## QUICK MELEE
    time_since_melee += delta * SpellData.get_influenced_stat(SpellData.StatTypes.MELEE_COOLDOWN,SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.MELEE_COOLDOWN],SpellBook.get_stat(SpellData.StatTypes.MELEE_COOLDOWN))
    if Input.is_action_just_pressed("quick_melee") and Enabled:
       if time_since_melee >= MELEE_WAIT:
@@ -130,6 +158,7 @@ func _process(delta):
       LEFT_ARM.rotation.x = 0.0
       RIGHT_ARM.rotation.x = 0.0
    
+   ## DEBUG ACTION (DELETE ON RELEASE)
    if Input.is_action_just_pressed("debug"):
       THE_WHEEL.visible = true
       var contents : Array[AtlasTexture] = []

@@ -2980,9 +2980,10 @@ book_color = Color(0.75, 0.75, 0.75, 1)
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.508762, 2.3849013, -3.6997097)
 book_color = Color(0.75, 0.75, 0.75, 1)
 
-[node name="ClassBook11" parent="ClassBooks" unique_id=414757686 instance=ExtResource("1_vsyuj")]
+[node name="JohnCarter" parent="ClassBooks" unique_id=414757686 instance=ExtResource("1_vsyuj")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.456774, 2.3849013, -1.9857329)
-book_color = Color(0.75, 0.75, 0.75, 1)
+ClassID = 5
+book_color = Color(0.53108305, 0.771075, 0.8937902, 1)
 
 [node name="ClassBook12" parent="ClassBooks" unique_id=540350729 instance=ExtResource("1_vsyuj")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.438587, 1.6962571, -2.607769)
@@ -2996,22 +2997,22 @@ book_color = Color(0.75, 0.75, 0.75, 1)
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.378437, 0.9860697, -3.2647796)
 book_color = Color(0.75, 0.75, 0.75, 1)
 
-[node name="ClassBook15" parent="ClassBooks" unique_id=1272094629 instance=ExtResource("1_vsyuj")]
+[node name="Tank" parent="ClassBooks" unique_id=1272094629 instance=ExtResource("1_vsyuj")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.378437, 2.4047923, 0.9259831)
 ClassID = 1
 book_color = Color(0.7964767, 0.68329674, 0.9922624, 1)
 
-[node name="ClassBook16" parent="ClassBooks" unique_id=1250617992 instance=ExtResource("1_vsyuj")]
+[node name="FireGuy" parent="ClassBooks" unique_id=1250617992 instance=ExtResource("1_vsyuj")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.424227, 2.4047923, 2.437346)
 ClassID = 4
-book_color = Color(1, 0.5754779, 0.92381656, 1)
+book_color = Color(1, 0.13999999, 0.38366663, 1)
 
-[node name="ClassBook17" parent="ClassBooks" unique_id=621476779 instance=ExtResource("1_vsyuj")]
+[node name="Speedster" parent="ClassBooks" unique_id=621476779 instance=ExtResource("1_vsyuj")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.424227, 1.6820586, 0.2488271)
 ClassID = 3
 book_color = Color(0.3471, 0.89, 0.61855, 1)
 
-[node name="ClassBook18" parent="ClassBooks" unique_id=1290748240 instance=ExtResource("1_vsyuj")]
+[node name="Ranger" parent="ClassBooks" unique_id=1290748240 instance=ExtResource("1_vsyuj")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 16.50166, 1.6820586, 1.1473436)
 ClassID = 2
 book_color = Color(0.9623181, 0.68621707, 0.3497621, 1)

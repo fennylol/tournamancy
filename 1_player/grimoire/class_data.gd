@@ -1,7 +1,7 @@
 class_name ClassData
 
 
-enum ClassIDs {NakedManChallenge, Tank, Ranger, Speedster, Test_A,}
+enum ClassIDs {NakedManChallenge, Tank, Ranger, Speedster, FireGuy, JohnCarter, Test_A,}
 enum ClassFields {ACTIVES, PASSIVES, NAME, DESCRIPTION}
 
 const ClassRecipes: Dictionary = {
@@ -30,8 +30,7 @@ const ClassRecipes: Dictionary = {
       ClassFields.DESCRIPTION : "Moves fast and jumps high with a bouncing attack and a short teleport.[br]🕺💃",
       ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.ShockstarDisco, SpellData.ActiveSpellIDs.StarlightBlink],
       ClassFields.PASSIVES: {
-         SpellData.PassiveSpellIDs.MoonJump : 1,
-         SpellData.PassiveSpellIDs.Speed : 4,
+         SpellData.PassiveSpellIDs.Speed : 5,
          SpellData.PassiveSpellIDs.Gravity : 4,
          SpellData.PassiveSpellIDs.Jump : 1
       }
@@ -40,7 +39,7 @@ const ClassRecipes: Dictionary = {
    ClassIDs.Ranger : {
       ClassFields.NAME : "Beam and Shadow",
       ClassFields.DESCRIPTION : "Moves swiftly and silently to attack from a distance. Threatened by enemies nearby.",
-      ClassFields.ACTIVES  : [SpellData.ActiveSpellIDs.PulsarsBreath, SpellData.ActiveSpellIDs.GreatBallOfFire],
+      ClassFields.ACTIVES  : [SpellData.ActiveSpellIDs.PulsarsBreath, SpellData.ActiveSpellIDs.CrimsonThorn],
       ClassFields.PASSIVES : {
          SpellData.PassiveSpellIDs.PhantomFlight: 1,
          SpellData.PassiveSpellIDs.Gravity : 2,
@@ -49,10 +48,33 @@ const ClassRecipes: Dictionary = {
       }
    },
    
+   ClassIDs.FireGuy : {
+      ClassFields.NAME : "Pyro Technica",
+      ClassFields.DESCRIPTION : "Burns hot and bright, but not for very long. Has some of the strongest spells, but comes with low health and survivability.",
+      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.GreatBallOfFire],
+      ClassFields.PASSIVES: {
+         ## super resistant to fire but weakness to every other type. lots of damage boosts.
+      }
+   },
+   
+   ClassIDs.JohnCarter : {
+      ClassFields.NAME : "Moonlight Angler",
+      ClassFields.DESCRIPTION : "A fisher who lives high up in the sky, throwing their line to those below. High control, low damage.",
+      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.LunarTowline, SpellData.ActiveSpellIDs.CelestialAnchor],
+      ClassFields.PASSIVES: {
+         SpellData.PassiveSpellIDs.MoonJump : 2,
+         SpellData.PassiveSpellIDs.Jump : 5,
+         SpellData.PassiveSpellIDs.Attack_Range : 3,
+         SpellData.PassiveSpellIDs.Force : 1,
+         SpellData.PassiveSpellIDs.Gravity : 4,
+         SpellData.PassiveSpellIDs.Damage : -2
+      }
+   },
+   
    ClassIDs.Test_A : {
       ClassFields.NAME : "TEST_A",
       ClassFields.DESCRIPTION : "comes with a free JBL speaker!",
-      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.GreatBallOfFire],
+      ClassFields.ACTIVES : [],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.JBLSpeaker : 1
       }

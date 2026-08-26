@@ -86,8 +86,11 @@ enum SpellFields {Name, Description, IconPath, IconRect, ScriptPath, Cooldown, E
 
 ## TODO: FOR FUTURE DEBUGGING, TRY TO KEEP THE ACTIVESPELLIDS AND ACTIVESPELLS SORTED ALPHABETICALLY
 enum ActiveSpellIDs {
+   CelestialAnchor,
+   CrimsonThorn,
    GreatBallOfFire,
    IronBody,
+   LunarTowline,
    PulsarsBreath,
    ShockstarDisco,
    StarlightBlink,
@@ -105,12 +108,34 @@ const ActiveSpells: Dictionary = {
       #SpellFields.Effects      : [],
       #SpellFields.DummyEffects : [],
       #SpellFields.Familiars    : []
-   #}
+   #},
+   ActiveSpellIDs.CelestialAnchor:{
+      SpellFields.Name         : "Celestial Anchor",
+      SpellFields.Description  : "Lock yourself to the sky for a moment, so you cannot fall or rise.",
+      SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
+      SpellFields.IconRect     : Rect2(32,128,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/actives/CelestialAnchor/celestialanchor_script.gd",
+      SpellFields.Cooldown     : 10.0,
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []
+   },
+   ActiveSpellIDs.CrimsonThorn:{
+      SpellFields.Name         : "Crimson Thorn",
+      SpellFields.Description  : "Drop a small bramble on the ground which harms anyone who walks over it.",
+      SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
+      SpellFields.IconRect     : Rect2(0,64,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/actives/CrimsonThorn/crimsonthorn_script.gd",
+      SpellFields.Cooldown     : 1.0,
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : []
+   },
    ActiveSpellIDs.GreatBallOfFire:{
       SpellFields.Name         : "Great Ball o' Fire",
       SpellFields.Description  : "Launches a small (but powerful) fireball.",
       SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
-      SpellFields.IconRect     : Rect2(32,64,32,32),
+      SpellFields.IconRect     : Rect2(96,0,32,32),
       SpellFields.ScriptPath   : "res://2_spells/actives/GreatBallOFire/great_ball_o_fire_script.gd",
       SpellFields.Cooldown     : 0.5,
       SpellFields.Effects      : [],
@@ -127,6 +152,17 @@ const ActiveSpells: Dictionary = {
       SpellFields.Effects      : [],
       SpellFields.DummyEffects : [],
       SpellFields.Familiars    : []
+   },
+   ActiveSpellIDs.LunarTowline:{
+      SpellFields.Name         : "Lunar Towline",
+      SpellFields.Description  : "Cast a fishing line to snag an enemy, then pull them towards you.",
+      SpellFields.IconPath     : "res://2_spells/actives/misc_active_icons.png",
+      SpellFields.IconRect     : Rect2(0,128,32,32),
+      SpellFields.ScriptPath   : "res://2_spells/actives/LunarTowline/lunartowline_script.gd",
+      SpellFields.Cooldown     : 3.0,
+      SpellFields.Effects      : [],
+      SpellFields.DummyEffects : [],
+      SpellFields.Familiars    : ["res://2_spells/actives/LunarTowline/familiar/lunartowline_hook.gd"]
    },
    ActiveSpellIDs.ShockstarDisco:{
       SpellFields.Name         : "Shockstar Disco",

@@ -11,6 +11,7 @@ var WAVESPEED : float
 
 func _init(owner_id: int, wave_position: Vector3, wave_rotation: Vector3, size : Vector3, reach: float) -> void: 
    super(owner_id, MAX_LIFE_TIME)
+   name = str(owner_id) + "__thunderwave_box__" + str(randi())
    
    rotation = wave_position
    position = wave_rotation
@@ -24,8 +25,10 @@ func _init(owner_id: int, wave_position: Vector3, wave_rotation: Vector3, size :
    WAVEMESH.mesh.size = wave_size
    var mat := StandardMaterial3D.new()
    mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+   mat.metallic = 0.0
+   mat.roughness = 1.0
    mat.albedo_color = SettingsManager.peer_settings[owner_id].primary_color   if SettingsManager.peer_settings.has(owner_id) else SettingsManager.personal_settings.PRIMARY_COLOR
-   mat.albedo_color.a = 0.25
+   mat.albedo_color.a = 0.5
    WAVEMESH.mesh.material = mat
 
 # pack essential info into a PackedByteArray then destroy self. 

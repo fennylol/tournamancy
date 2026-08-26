@@ -30,6 +30,8 @@ func process_begin(delta: float, player: Player) -> void:
 func process_end(delta: float, player: Player) -> void:
    for spell:PassiveSpell in PassiveSpells:
       spell._on_process_end(delta, player)
+   for spell:ActiveSpell in ActiveSpells:
+      if spell: spell._on_process_end(delta)
    #StatModifiers = {} # i dont think theres an advantage to resetting stat modifications after each frame, right?
 
 # =============== #

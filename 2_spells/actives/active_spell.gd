@@ -13,8 +13,11 @@ func _init(id: SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR) -> voi
    Cooldown = SpellData.ActiveSpells.get(SpellID).get(SpellData.SpellFields.Cooldown)
 
 func _on_process_begin(delta: float) -> void: TimeSinceActivation += delta * Player_Self.get_cooldown()
+func _on_process_end(_delta: float) -> void: pass
 func _can_activate(cooldown_reduction: float = 0.0) -> bool: return TimeSinceActivation > ( Cooldown + cooldown_reduction )
 func _on_activate(_activator: Player) -> void: printerr("ERROR: _on_activate() not overridden but called.")
+func _on_hold(_activator: Player, _delta : float) -> void: pass
+func _on_release(_activator: Player) -> void: pass
 
 func identify_player(player_id : Player): Player_Self = player_id
 func get_cooldown() -> float: return TimeSinceActivation
