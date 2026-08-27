@@ -6,6 +6,7 @@ const MAX_LIFE_TIME: float = 30.0
 
 var LightBar: Node3D
 var DamageMesh: MeshInstance3D
+var DamageArea: Area3D
 var MeshInstance: MeshInstance3D
 var CollisionArea: Area3D
 var CollisionShape: CollisionShape3D
@@ -70,19 +71,17 @@ func _init(owner_id: int, projectile_pos: Vector3, projectile_velocity: Vector3)
    CollisionShape.shape = sphere_shape
    CollisionArea.add_child(CollisionShape)
    
-   var dmg_collision_area = Area3D.new()
-   dmg_collision_area.monitorable = false
-   dmg_collision_area.collision_layer = 0
-   dmg_collision_area.collision_mask = 4
-   # TODO: imement with get_overlapping_)bodies
-   dmg_collision_area.body_entered.connect(_on_body_entered_dmg_area)
-   add_child(dmg_collision_area)
+   DamageArea = Area3D.new()
+   DamageArea.monitorable = false
+   DamageArea.collision_layer = 0
+   DamageArea.collision_mask = 4
+   add_child(DamageArea)
    
    var dmg_collision_shape = CollisionShape3D.new()
    var dmg_sphere_shape := SphereShape3D.new()
    dmg_sphere_shape.radius = DMG_RADIUS
    dmg_collision_shape.shape = dmg_sphere_shape
-   dmg_collision_area.add_child(dmg_collision_shape)
+   DamageArea.add_child(dmg_collision_shape)
    
    LightBar = Node3D.new()
    add_child(LightBar)
@@ -160,7 +159,7 @@ func _resolve_bounce(_contact: Node3D) -> void:
    query.collision_mask = CollisionArea.collision_mask
    query.collide_with_bodies = true
    query.collide_with_areas = true
-   query.exclude = [CollisionArea.get_rid()]
+   query.exclude = [CollisionArea.get_rid(), DamageArea.get_rid()]
 
    var contacts := space_state.get_rest_info(query)
 
@@ -170,29 +169,30 @@ func _resolve_bounce(_contact: Node3D) -> void:
       Velocity = Velocity.bounce(contacts.normal) * ELASTICITY
       BounceCount += 1
       
+      if ThePlayer:
+         for body in DamageArea.get_overlapping_bodies():
+            if body.get_parent() is Dummy: 
+               send_damage(body.get_parent())
+      
       if Velocity.length_squared() < 0.025:
          queue_free()
-
-func _on_body_entered_dmg_area(body: Node3D) -> void:
-   if DamageMesh.visible == false: return
-   else: print("damaging", randf())
-   
-   var parent_node: Node3D = body.get_parent()
-   if ThePlayer and parent_node and parent_node is Dummy and parent_node.NETWORK_ID != OwnerID:
-      var stat_influenced_damage : float = GreatBallOFire.SPELL_DAMAGE * SpellData.get_influenced_stat(SpellData.StatTypes.DAMAGE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.DAMAGE], ThePlayer.SpellBook.get_stat(SpellData.StatTypes.DAMAGE))
-      
-      var new_damage_package = DamagePackage.new()
-      new_damage_package.id_from = OwnerID
-      new_damage_package.id_to = parent_node.NETWORK_ID
-      new_damage_package.location_source = global_position
-      new_damage_package.location_receipt = parent_node.global_position
-      new_damage_package.amount = stat_influenced_damage
-      new_damage_package.type = DamagePackage.DamageType.ZAP
-      new_damage_package.force = 0.0
-      ThePlayer.send_damage_package(new_damage_package)
+  
 
 func _process(delta: float) -> void:
    super(delta)
    if DamageTime <= DMG_TIME: DamageTime += delta
    elif BounceCount >= MAX_BOUNCES: queue_free() 
    else: DamageMesh.visible = false
+
+func send_damage(enemy : Dummy):
+   var stat_influenced_damage : float = GreatBallOFire.SPELL_DAMAGE * SpellData.get_influenced_stat(SpellData.StatTypes.DAMAGE, SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.DAMAGE], ThePlayer.SpellBook.get_stat(SpellData.StatTypes.DAMAGE))
+      
+   var new_damage_package = DamagePackage.new()
+   new_damage_package.id_from = OwnerID
+   new_damage_package.id_to = enemy.NETWORK_ID
+   new_damage_package.location_source = global_position
+   new_damage_package.location_receipt = enemy.global_position
+   new_damage_package.amount = stat_influenced_damage
+   new_damage_package.type = DamagePackage.DamageType.ZAP
+   new_damage_package.force = 0.0
+   ThePlayer.send_damage_package(new_damage_package)
