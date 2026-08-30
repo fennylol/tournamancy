@@ -22,7 +22,7 @@ var CurrentActivePrism : Prism
 
 signal close_menu()
 
-var SpellList    : Array[PrismSlotCounter] = []
+var SpellSlotPool    : Array[PrismSlotCounter] = []
 var SlotPointers : Array[PrismSlotCounter] = []
 var passive_spell_offset : int = 0
 
@@ -52,7 +52,7 @@ func setup(the_prism_in_question : Prism) -> void:
    MAIN_MENU.visible = true
    ACTIVE_MENU.visible = false
    CurrentActivePrism = the_prism_in_question
-   SpellList.clear()
+   SpellSlotPool.clear()
    for i : ActiveSpell in CurrentActivePrism.get_active_spells():
       var new_slot_counter = PrismSlotCounter.new()
       new_slot_counter.is_active = true
@@ -60,8 +60,8 @@ func setup(the_prism_in_question : Prism) -> void:
       new_slot_counter.Weight = SettingsManager.match_settings.ACTIVE_SPELL_WEIGHTS.get(new_slot_counter.ActiveSpellID) if SettingsManager.match_settings.ACTIVE_SPELL_WEIGHTS.has(new_slot_counter.ActiveSpellID) else 0
       # the folling line adds mercy weights, but first we need some way to determine how many times the player has been defeated.
       #new_slot_counter.Weight += ( SettingsManager.match_settings.ACTIVE_MERCY_WEIGHTS.get(new_slot_counter.ActiveSpellID) * _defeatcount) if SettingsManager.match_settings.ACTIVE_MERCY_WEIGHTS.has(new_slot_counter.ActiveSpellID) else 0
-      SpellList.append(new_slot_counter)
-   passive_spell_offset = SpellList.size()
+      SpellSlotPool.append(new_slot_counter)
+   passive_spell_offset = SpellSlotPool.size()
    for i : PassiveSpell in CurrentActivePrism.get_passive_spells():
       var new_slot_counter = PrismSlotCounter.new()
       new_slot_counter.is_active = false
@@ -70,7 +70,7 @@ func setup(the_prism_in_question : Prism) -> void:
       new_slot_counter.Weight = SettingsManager.match_settings.PASSIVE_SPELL_WEIGHTS.get(new_slot_counter.PassiveSpellID) if SettingsManager.match_settings.PASSIVE_SPELL_WEIGHTS.has(new_slot_counter.PassiveSpellID) else 0
       # the folling line adds mercy weights, but first we need some way to determine how many times the player has been defeated.
       #new_slot_counter.Weight += ( SettingsManager.match_settings.PASSIVE_MERCY_WEIGHTS.get(new_slot_counter.PassiveSpellID) * _defeatcount) if SettingsManager.match_settings.PASSIVE_MERCY_WEIGHTS.has(new_slot_counter.PassiveSpellID) else 0
-      SpellList.append(new_slot_counter)
+      SpellSlotPool.append(new_slot_counter)
    current_slot_count = SettingsManager.match_settings.DEFAULT_PRISM_SHOW_COUNT
    reroll_count = 0
    BUTTON_REROLL.disabled = false
@@ -123,12 +123,12 @@ func roll_slots():
       ## then a random number is generated whose maximum value is equal to the weight sum.
       ## if PRISM_FORCE_ACTIVE_ABILITIES is true, the weight sum is just the weights of passives OR actives. if false, the weight sum is the sum of all spell weights (both passive and active)
       var weight_sum : int = 0
-      for j in range(SpellList.size()):
+      for j in range(SpellSlotPool.size()):
          if SettingsManager.match_settings.PRISM_FORCE_ACTIVE_ABILITIES == true:
-            if     SlotPointers[i].is_active and     SpellList[j].is_active: weight_sum += SpellList[j].Weight
-            if not SlotPointers[i].is_active and not SpellList[j].is_active: weight_sum += SpellList[j].Weight
+            if     SlotPointers[i].is_active and     SpellSlotPool[j].is_active: weight_sum += SpellSlotPool[j].Weight
+            if not SlotPointers[i].is_active and not SpellSlotPool[j].is_active: weight_sum += SpellSlotPool[j].Weight
          else:
-            weight_sum += SpellList[j].Weight
+            weight_sum += SpellSlotPool[j].Weight
       var random_number = randi_range(1,weight_sum)
       
       ## CHECK AGAINST WEIGHTS
@@ -136,8 +136,8 @@ func roll_slots():
       ## once the generated number reaches 0, the position currently in the loop is the chosen spell
       var slot_position : int = -1
       var offset = passive_spell_offset if SettingsManager.match_settings.PRISM_FORCE_ACTIVE_ABILITIES == true and not SlotPointers[i].is_active else 0
-      for j in range(SpellList.size()):
-         random_number -= SpellList[j+offset].Weight
+      for j in range(SpellSlotPool.size()):
+         random_number -= SpellSlotPool[j+offset].Weight
          if random_number <= 0:
             slot_position = j + offset
             break
@@ -146,15 +146,15 @@ func roll_slots():
          continue
          
       ## GET ID AND UPDATE TEXTURE
-      SlotPointers[i].is_active      = SpellList[slot_position].is_active
-      SlotPointers[i].ActiveSpellID  = SpellList[slot_position].ActiveSpellID
-      SlotPointers[i].PassiveSpellID = SpellList[slot_position].PassiveSpellID
-      SlotPointers[i].Stacks         = SpellList[slot_position].Stacks
+      SlotPointers[i].is_active      = SpellSlotPool[slot_position].is_active
+      SlotPointers[i].ActiveSpellID  = SpellSlotPool[slot_position].ActiveSpellID
+      SlotPointers[i].PassiveSpellID = SpellSlotPool[slot_position].PassiveSpellID
+      SlotPointers[i].Stacks         = SpellSlotPool[slot_position].Stacks
       SlotPointers[i].slot_location  = slot_position
       var new_texture = AtlasTexture.new()
       new_texture.margin = ICONMARGIN
-      new_texture.atlas = load(SpellData.ActiveSpells.get(SlotPointers[i].ActiveSpellID).get(SpellData.SpellFields.IconPath)) if SlotPointers[i].is_active else load(SpellData.PassiveSpells.get(SlotPointers[i].PassiveSpellID).get(SpellData.SpellFields.IconPath))
-      new_texture.region = SpellData.ActiveSpells.get(SlotPointers[i].ActiveSpellID).get(SpellData.SpellFields.IconRect) if SlotPointers[i].is_active else SpellData.PassiveSpells.get(SlotPointers[i].PassiveSpellID).get(SpellData.SpellFields.IconRect)
+      new_texture.atlas = SpellList.get_active_spell_data(SlotPointers[i].ActiveSpellID).get(SpellData.SpellFields.IconPath) if SlotPointers[i].is_active else SpellList.get_passive_spell_data(SlotPointers[i].PassiveSpellID).get(SpellData.SpellFields.IconPath)
+      new_texture.region = SpellList.get_active_spell_data(SlotPointers[i].ActiveSpellID).get(SpellData.SpellFields.IconRect) if SlotPointers[i].is_active else SpellList.get_passive_spell_data(SlotPointers[i].PassiveSpellID).get(SpellData.SpellFields.IconRect)
       SlotPointers[i].IconTextureRect.texture = new_texture
       if not SlotPointers[i].is_active:
          SlotPointers[i].IconLabel.visible = true
@@ -201,7 +201,7 @@ func _process(_delta: float) -> void:
 func _on_spell_icon_button_pressed() ->void:
    ## DON'T ALLOW SELECTION IF YOU'VE SELECTED TO MANY, OTHERWISE TOGGLE SELECTED SYMBOL
    var selected_count : int = 0
-   for i in SpellList: if i.is_selected: selected_count += 1
+   for i in SpellSlotPool: if i.is_selected: selected_count += 1
    if CurrentButton.get_parent().find_child("Selected").visible == false:
       if selected_count >= SettingsManager.match_settings.MAX_SPELL_FROM_PRISM: return
       CurrentButton.get_parent().find_child("Selected").visible = true
@@ -209,17 +209,17 @@ func _on_spell_icon_button_pressed() ->void:
    
    var slot_number = SlotPointers.find_custom(_is_this_button_current.bind(CurrentButton))
    if CurrentButton.get_parent().find_child("Selected").visible:
-      SpellList[SlotPointers[slot_number].slot_location].is_selected = true
+      SpellSlotPool[SlotPointers[slot_number].slot_location].is_selected = true
       selected_count += 1
    else:
-      SpellList[SlotPointers[slot_number].slot_location].is_selected = false
+      SpellSlotPool[SlotPointers[slot_number].slot_location].is_selected = false
       selected_count -= 1
    BUTTON_CONFIRM.text = "CONFIRM (" + str(SettingsManager.match_settings.MAX_SPELL_FROM_PRISM - selected_count ) + ")" if (SettingsManager.match_settings.MAX_SPELL_FROM_PRISM - selected_count ) != 0 else "CONFIRM"
    BUTTON_CONFIRM.disabled = true if ( selected_count < SettingsManager.match_settings.MIN_SPELL_FROM_PRISM ) or ( selected_count > SettingsManager.match_settings.MAX_SPELL_FROM_PRISM ) else false
 func _is_this_button_current(slot : PrismSlotCounter, expected : TextureButton): return slot.IconTextureButton == expected
 func _remove_all_selections():
-   for i in range(SpellList.size()):
-      SpellList[i].is_selected = false
+   for i in range(SpellSlotPool.size()):
+      SpellSlotPool[i].is_selected = false
    for i in range(SlotPointers.size()):
       SlotPointers[i].IconTextureRect.find_child("Selected").visible = false
 
@@ -227,7 +227,7 @@ func _on_button_reroll_pressed() -> void:
    if reroll_count < SettingsManager.match_settings.PRISM_REROLL_COUNT:
       reroll_count += 1
       current_slot_count = SettingsManager.match_settings.DEFAULT_PRISM_SHOW_COUNT - ( reroll_count * SettingsManager.match_settings.PRISM_REROLL_DECREMENT )
-      for i in SpellList: i.is_selected = false
+      for i in SpellSlotPool: i.is_selected = false
       gridmap_setup(current_slot_count)
       roll_slots()
    BUTTON_REROLL.text = "REROLL (" + str(SettingsManager.match_settings.PRISM_REROLL_COUNT - reroll_count) + ")" if (SettingsManager.match_settings.PRISM_REROLL_COUNT - reroll_count) != 0 else "NO REROLLS REMAIN"
@@ -235,12 +235,12 @@ func _on_button_reroll_pressed() -> void:
 func _on_button_confirm_pressed() -> void:
    var selected_active_list : Array[PrismSlotCounter] = []
    ## GRANT ALL PASSIVES FIRST
-   for i in range(SpellList.size()):
-      if SpellList[i].is_selected and not SpellList[i].is_active:
-         get_parent().get_parent().request_new_passive_spell(SpellList[i].PassiveSpellID, SpellList[i].Stacks)
-         SpellList[i].is_selected = false
-      if SpellList[i].is_selected and SpellList[i].is_active:
-         selected_active_list.append(SpellList[i].duplicate_self())
+   for i in range(SpellSlotPool.size()):
+      if SpellSlotPool[i].is_selected and not SpellSlotPool[i].is_active:
+         get_parent().get_parent().request_new_passive_spell(SpellSlotPool[i].PassiveSpellID, SpellSlotPool[i].Stacks)
+         SpellSlotPool[i].is_selected = false
+      if SpellSlotPool[i].is_selected and SpellSlotPool[i].is_active:
+         selected_active_list.append(SpellSlotPool[i].duplicate_self())
    ## IF THERE ARE ANY ACTIVES SELECTED, MOVE TO ACTIVE SELECTION MENU
    if selected_active_list != []:
       selecting_active = true
@@ -271,8 +271,8 @@ func _setup_description_box(spell : PrismSlotCounter):
          i.text = ""
       CURSOR.get_child(0).get_child(0).get_child(1).text = "Empty Hand"
    else:
-      var spell_name : String = SpellData.ActiveSpells.get(spell.ActiveSpellID).get(SpellData.SpellFields.Name) if spell.is_active else SpellData.PassiveSpells.get(spell.PassiveSpellID).get(SpellData.SpellFields.Name)
-      var spell_desc : String = SpellData.ActiveSpells.get(spell.ActiveSpellID).get(SpellData.SpellFields.Description) if spell.is_active else SpellData.PassiveSpells.get(spell.PassiveSpellID).get(SpellData.SpellFields.Description)
+      var spell_name : String = SpellList.get_active_spell_data(spell.ActiveSpellID).get(SpellData.SpellFields.Name) if spell.is_active else SpellList.get_passive_spell_data(spell.PassiveSpellID).get(SpellData.SpellFields.Name)
+      var spell_desc : String = SpellList.get_active_spell_data(spell.ActiveSpellID).get(SpellData.SpellFields.Description) if spell.is_active else SpellList.get_passive_spell_data(spell.PassiveSpellID).get(SpellData.SpellFields.Description)
       CURSOR.get_child(0).get_child(0).get_child(0).text = "ACTIVE" if spell.is_active else "PASSIVE"
       CURSOR.get_child(0).get_child(0).get_child(0).label_settings.font_color = Color.ORANGE if spell.is_active else Color.CYAN
       CURSOR.get_child(0).get_child(0).get_child(1).text = spell_name
@@ -288,8 +288,8 @@ func setup_active_spell_chooser():
    ## SELECTED SPELL TEXTURE
    new_active_spell.IconTextureButton = ActiveButton_Selected
    new_active_spell.atlastexture.margin = ICONMARGIN
-   new_active_spell.atlastexture.atlas = load(SpellData.ActiveSpells.get(new_active_spell.ActiveSpellID).get(SpellData.SpellFields.IconPath))
-   new_active_spell.atlastexture.region = SpellData.ActiveSpells.get(new_active_spell.ActiveSpellID).get(SpellData.SpellFields.IconRect)
+   new_active_spell.atlastexture.atlas = SpellList.get_active_spell_data(new_active_spell.ActiveSpellID).get(SpellData.SpellFields.IconPath)
+   new_active_spell.atlastexture.region = SpellList.get_active_spell_data(new_active_spell.ActiveSpellID).get(SpellData.SpellFields.IconRect)
    ACTIVE_SEL.get_child(0).texture = new_active_spell.atlastexture
    ActiveButton_Left.grab_focus()
    
@@ -306,8 +306,8 @@ func setup_active_spell_chooser():
          current_slots[i].atlastexture.region = Rect2((48*i),48,48,48)
       else:
          current_slots[i].atlastexture.margin = ICONMARGIN
-         current_slots[i].atlastexture.atlas = load(SpellData.ActiveSpells.get(current_slots[i].ActiveSpellID).get(SpellData.SpellFields.IconPath))
-         current_slots[i].atlastexture.region = SpellData.ActiveSpells.get(current_slots[i].ActiveSpellID).get(SpellData.SpellFields.IconRect)
+         current_slots[i].atlastexture.atlas = SpellList.get_active_spell_data(current_slots[i].ActiveSpellID).get(SpellData.SpellFields.IconPath)
+         current_slots[i].atlastexture.region = SpellList.get_active_spell_data(current_slots[i].ActiveSpellID).get(SpellData.SpellFields.IconRect)
    current_slots[0].IconTextureButton = ActiveButton_Left
    current_slots[1].IconTextureButton = ActiveButton_Right
    ACTIVE_CL.get_child(0).texture = current_slots[0].atlastexture

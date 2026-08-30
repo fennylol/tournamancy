@@ -10,7 +10,7 @@ var Player_Self : Player
 
 func _init(id: SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR) -> void:
    super(id)
-   Cooldown = SpellData.ActiveSpells.get(SpellID).get(SpellData.SpellFields.Cooldown)
+   Cooldown = SpellList.get_active_spell_data(SpellID).get(SpellData.SpellFields.Cooldown)
 
 func _on_process_begin(delta: float) -> void: TimeSinceActivation += delta * Player_Self.get_cooldown()
 func _on_process_end(_delta: float) -> void: pass

@@ -59,8 +59,8 @@ func import_passive_spells(imported_spells : Array[PassiveSpell], full_clear : b
       ## CREATE NEW ICON
       var new_icon = Sprite2D.new()
       var new_texture = AtlasTexture.new()
-      new_texture.atlas = load(SpellData.PassiveSpells.get(passive_list.keys()[i]).get(SpellData.SpellFields.IconPath))
-      new_texture.region = SpellData.PassiveSpells.get(passive_list.keys()[i]).get(SpellData.SpellFields.IconRect)
+      new_texture.atlas = SpellList.PassiveSpells.get(passive_list.keys()[i]).get(SpellData.SpellFields.IconPath)
+      new_texture.region = SpellList.PassiveSpells.get(passive_list.keys()[i]).get(SpellData.SpellFields.IconRect)
       new_icon.texture = new_texture
       PASSIVE_ICON_STACK.add_child(new_icon)
       ## SET ICON LOCATION
@@ -86,17 +86,17 @@ func update_active_icon(active_slot : int, id : SpellData.ActiveSpellIDs = Spell
    var icon         : Sprite2D           = L_ACTIVE_ICON if active_slot == 0 else R_ACTIVE_ICON
    var cooldown_bar := _get_active_cooldown_bar_from_slot(active_slot)
    var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
-   if id == SpellData.ActiveSpellIDs.ERROR or not SpellData.ActiveSpells.has(id): 
+   if id == SpellData.ActiveSpellIDs.ERROR or not SpellList.ActiveSpells.has(id):
       icon.texture = ImageTexture.new()
       cooldown_bar.max_value = 0.0
       cooldown_rad.max_value = 0.0
    else:
       var new_texture := AtlasTexture.new()
-      new_texture.atlas = load(SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.IconPath))
-      new_texture.region = SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.IconRect)
+      new_texture.atlas = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.IconPath)
+      new_texture.region = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.IconRect)
       icon.texture = new_texture
-      cooldown_bar.max_value = SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.Cooldown)
-      cooldown_rad.max_value = SpellData.ActiveSpells.get(id).get(SpellData.SpellFields.Cooldown)
+      cooldown_bar.max_value = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.Cooldown)
+      cooldown_rad.max_value = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.Cooldown)
 ## Updates an Active slot's cooldown progress bar based on a given time delta.
 func update_active_cooldown(active_slot : int, time_since_activation : float):
    var cooldown_bar := _get_active_cooldown_bar_from_slot(active_slot)

@@ -25,12 +25,12 @@ func equip_effect(spell_id: int, is_active: bool) -> void:
    eyes_container_node.name = _get_effect_spell_name(spell_id, is_active)
    body_container_node.name = _get_effect_spell_name(spell_id, is_active)
    
-   var spell_data: Dictionary = SpellData.get_active_spell_data(spell_id) if is_active else SpellData.get_passive_spell_data(spell_id)
-   if not ((is_active and SpellData.is_valid_active_spell(spell_data)) or SpellData.is_valid_passive_spell(spell_data)): return
+   var spell_data: Dictionary = SpellList.get_active_spell_data(spell_id) if is_active else SpellList.get_passive_spell_data(spell_id)
+   if not ((is_active and SpellList.is_valid_active_spell(spell_data)) or SpellList.is_valid_passive_spell(spell_data)): return
    var effect_list: Array = spell_data[SpellData.SpellFields.DummyEffects if IsDummy else SpellData.SpellFields.Effects]
    
    for effect in effect_list:
-      var effect_node: Effect = load(effect).instantiate()
+      var effect_node: Effect = effect.instantiate()
       if effect_node.FollowsEyes: eyes_container_node.add_child(effect_node)
       else: body_container_node.add_child(effect_node)
       if not IsDummy:

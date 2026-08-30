@@ -52,15 +52,15 @@ func _physics_process(_delta: float) -> void:
    MPM.send_player_transform_data(PLAYER_CHARACTER.generate_transform_data())
 
 func _spawn_familiar(owner_id: int, spell_id: int, is_active: bool, familiar_idx: int, creation_data: PackedByteArray) -> void:
-   var spell_data: Dictionary = SpellData.get_active_spell_data(spell_id) if is_active else SpellData.get_passive_spell_data(spell_id)
-   if not ((is_active and SpellData.is_valid_active_spell(spell_data)) or SpellData.is_valid_passive_spell(spell_data)): return
+   var spell_data: Dictionary = SpellList.get_active_spell_data(spell_id) if is_active else SpellList.get_passive_spell_data(spell_id)
+   if not ((is_active and SpellList.is_valid_active_spell(spell_data)) or SpellList.is_valid_passive_spell(spell_data)): return
    
    var familiar_list: Array = spell_data[SpellData.SpellFields.Familiars]
    if familiar_list.size() <= familiar_idx:
       printerr("tournamancy.gd _spawn_familiar(): familiar_idx > familiar_list.size()")
       return
    
-   var familiar: Familiar = load(familiar_list[familiar_idx]).create_from_byte_array(owner_id, creation_data)
+   var familiar: Familiar = familiar_list[familiar_idx].create_from_byte_array(owner_id, creation_data)
    if owner_id == PLAYER_CHARACTER.NETWORK_ID: 
       # TODO: REALLY cludgy way to do this but idk man
       familiar.ThePlayer = PLAYER_CHARACTER

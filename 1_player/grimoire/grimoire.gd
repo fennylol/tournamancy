@@ -57,9 +57,9 @@ func get_stat(id: SpellData.StatTypes) -> float:
 # ================ #
 
 func add_passive(id: SpellData.PassiveSpellIDs, stacks: int) -> void:
-   var data: Dictionary = SpellData.get_passive_spell_data(id)
-   if SpellData.is_valid_passive_spell(data):
-      var spell: PassiveSpell = load(data[SpellData.SpellFields.ScriptPath]).new(stacks)
+   var data: Dictionary = SpellList.get_passive_spell_data(id)
+   if SpellList.is_valid_passive_spell(data):
+      var spell: PassiveSpell = data[SpellData.SpellFields.ScriptPath].new(stacks)
       ## CHECK TO SEE IF THE SPELL ALREADY EXISTS. UPDATE IF SO
       var spell_extant : bool = false
       for i in range(PassiveSpells.size()): 
@@ -78,10 +78,10 @@ func add_passive(id: SpellData.PassiveSpellIDs, stacks: int) -> void:
          spell_equipped.emit(id, false)
 
 func add_active(id: SpellData.ActiveSpellIDs, slot: int) -> void:
-   var data: Dictionary = SpellData.get_active_spell_data(id)
-   if SpellData.is_valid_active_spell(data):
+   var data: Dictionary = SpellList.get_active_spell_data(id)
+   if SpellList.is_valid_active_spell(data):
       var capped_slot: int = clampi(slot, 0, ActiveSlots)
-      var spell: ActiveSpell = load(data[SpellData.SpellFields.ScriptPath]).new()
+      var spell: ActiveSpell = data[SpellData.SpellFields.ScriptPath].new()
       ActiveSpells[capped_slot] = spell
       spell.state_changed.connect(func(new_state: int): spell_change_state.emit(id, true, new_state))
       spell_equipped.emit(id, true)

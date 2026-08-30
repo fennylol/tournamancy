@@ -34,8 +34,8 @@ const PINGUS_TYPE_SIZE: int   = 2
 const HEADER_SIZE     : int   = PINGUS_TYPE_SIZE + NETWORK_ID_SIZE + NETWORK_ID_SIZE
 const _RETRY_TIME     : float = 0.5
 const _MAX_RETRIES    : int   = 5
-const _KEEP_ALIVE_TIME: float = 2.0
-const _TIMEOUT_TIME   : float = 6.0
+const _KEEP_ALIVE_TIME: float = 5.0
+const _TIMEOUT_TIME   : float = 30.0
 const _TWO_GENERALS   : int   = 0x26E1
 # ========= #
 # variables #
@@ -72,7 +72,7 @@ var LocalPort  : int               = 0:
       LocalPort = _Udp.get_local_port()
       return _Udp.get_local_port()
 var _Udp            : PacketPeerUDP     = PacketPeerUDP.new()
-var _SprayRate      : int               = 100
+var _SprayRate      : int               = 10
 var _RetryCount     : int               = 0
 var _FetchingAddress: bool              = false
 # ======= #
