@@ -38,3 +38,5 @@ static func create_from_byte_array(owner_id: int, _data: PackedByteArray) -> Fam
 #func _process(delta: float) -> void:
    #super(delta) # NOTE: keep this line if adding custom _process(). kills self at end of life.
 
+
+# NOTE: don't forget to add your Familiar to the SpellList

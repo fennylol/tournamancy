@@ -21,3 +21,6 @@ func _on_process_end(_delta: float, _player: Player)   -> void: pass
 func _on_equip(_player: Player)                        -> void: pass
 func _on_update(_player : Player)                      -> void: pass
 func _on_unequip(_player: Player)                      -> void: pass
+
+
+# NOTE: don't forget to add your PassiveSpell to SpellList.PassiveSpells

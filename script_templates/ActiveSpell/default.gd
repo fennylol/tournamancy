@@ -19,3 +19,5 @@ func _on_activate(_activator: Player) -> void:
    if _can_activate():
       TimeSinceActivation = 0.0
 
+
+# NOTE: don't forget to add your ActiveSpell to SpellList.ActiveSpells

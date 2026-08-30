@@ -68,3 +68,5 @@ func _physics_process(delta: float) -> void:
 #func _process(delta: float) -> void:
    #super(delta) # NOTE: keep this line if adding custom _process(). kills self at end of life.
 
+
+# NOTE: don't forget to add your Familiar to the SpellList
