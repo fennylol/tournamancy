@@ -101,10 +101,14 @@ func update_active_icon(active_slot : int, id : SpellData.ActiveSpellIDs = Spell
 func update_active_cooldown(active_slot : int, time_since_activation : float):
    var cooldown_bar := _get_active_cooldown_bar_from_slot(active_slot)
    var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
-   var new_value = clamp(cooldown_bar.max_value - time_since_activation , 0.0 , cooldown_bar.max_value)
+   var new_value = clamp(time_since_activation , 0.0 , cooldown_bar.max_value)
    cooldown_bar.value = new_value
    cooldown_rad.value = new_value
-   if new_value == 0.0 and active_anim_array[active_slot] == 1: 
+   var is_loaded : bool = new_value == cooldown_bar.max_value
+   var bar_color : Color = SettingsManager.personal_settings.PRIMARY_COLOR if is_loaded else SettingsManager.personal_settings.SECONDARY_COLOR
+   cooldown_bar.tint_progress = bar_color
+   cooldown_rad.tint_progress = bar_color
+   if is_loaded and active_anim_array[active_slot] == 1:
       active_anim_array[active_slot] = 2
 ## Resets an active cooldown to its max value.
 func reset_active_cooldown(active_slot : int):
@@ -155,7 +159,7 @@ func _reset_animate_active(slot : int):
    var animate_node : TextureRect = L_ACTIVE_ANIM if slot == 0 else R_ACTIVE_ANIM
    animate_node.visible = false
    animate_node.offset_transform_scale = Vector2(1,1)
-   animate_node.self_modulate = Color.WHITE
+   animate_node.self_modulate = SettingsManager.personal_settings.PRIMARY_COLOR.lightened(0.5)
 
 # ============= #
 #   healthbar   #
