@@ -28,7 +28,7 @@ const ClassRecipes: Dictionary = {
    ClassIDs.Speedster : {
       ClassFields.NAME : "Dancekiller",
       ClassFields.DESCRIPTION : "Moves fast and jumps high with a bouncing attack and a short teleport.[br]🕺💃",
-      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.ShockstarDisco, SpellData.ActiveSpellIDs.StarlightBlink],
+      ClassFields.ACTIVES : [SpellData.ActiveSpellIDs.ShockstarDisco, SpellData.ActiveSpellIDs.PolytopeParty],
       ClassFields.PASSIVES: {
          SpellData.PassiveSpellIDs.Speed : 5,
          SpellData.PassiveSpellIDs.Gravity : 4,

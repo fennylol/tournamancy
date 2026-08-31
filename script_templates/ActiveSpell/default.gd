@@ -18,6 +18,8 @@ func _init() -> void: super(SpellData.ActiveSpellIDs.ERROR)
 func _on_activate(_activator: Player) -> void:
    if _can_activate():
       TimeSinceActivation = 0.0
+      # var temp_familiar := NewFamiliar.new(activator.NETWORK_ID)
+      # activator.spawn_familiar(true, SpellData.ActiveSpellIDs.NewActiveSpell, FamiliarIDs.FAMILIAR, temp_familiar.reduce_to_byte_array())
 
 
 # NOTE: don't forget to add your ActiveSpell to SpellList.ActiveSpells

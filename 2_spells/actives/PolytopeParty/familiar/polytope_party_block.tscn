@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://cgfl2o6yunwv7"]
+
+[ext_resource type="Script" uid="uid://lh8xw7no3i1h" path="res://2_spells/actives/PolytopeParty/familiar/polytope_party_block.gd" id="1_pb8uu"]
+
+[node name="PolytopePartyBlock" type="Node3D" unique_id=1729161691]
+script = ExtResource("1_pb8uu")
+metadata/_custom_type_script = "uid://dqrer573netet"

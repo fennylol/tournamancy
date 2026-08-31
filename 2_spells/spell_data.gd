@@ -91,6 +91,7 @@ enum ActiveSpellIDs {
    GreatBallOfFire,
    IronBody,
    LunarTowline,
+   PolytopeParty,
    PulsarsBreath,
    ShockstarDisco,
    StarlightBlink,

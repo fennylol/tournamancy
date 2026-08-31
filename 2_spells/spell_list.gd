@@ -111,7 +111,18 @@ const ActiveSpells: Dictionary = {
       SpellData.SpellFields.Effects      : [preload("res://2_spells/actives/PulsarsBreath/Effects/pulsars_breath_raycast.tscn")],
       SpellData.SpellFields.DummyEffects : [],
       SpellData.SpellFields.Familiars    : [preload("res://2_spells/actives/PulsarsBreath/Familiar/pulsars_breath_familiar.gd")]
-   }
+   },
+   SpellData.ActiveSpellIDs.PolytopeParty:{
+      SpellData.SpellFields.Name         : "Polytope Party",
+      SpellData.SpellFields.Description  : "Summon a polytope beneath your feet!",
+      SpellData.SpellFields.IconPath     : preload("res://2_spells/actives/PolytopeParty/icon.png"),
+      SpellData.SpellFields.IconRect     : Rect2(0,0,32,32),
+      SpellData.SpellFields.ScriptPath   : preload("res://2_spells/actives/PolytopeParty/polytope_party_spell.gd"),
+      SpellData.SpellFields.Cooldown     : 1.0,
+      SpellData.SpellFields.Effects      : [],
+      SpellData.SpellFields.DummyEffects : [],
+      SpellData.SpellFields.Familiars    : [preload("res://2_spells/actives/PolytopeParty/familiar/polytope_party_block.gd")]
+   },
 }
 
 
@@ -120,9 +131,9 @@ func _jump_to_passive_spells() -> void: print("this exists for sidebar navigatio
 #SpellData.PassiveSpellIDs. : {
       #SpellData.SpellFields.Name         : "",
       #SpellData.SpellFields.Description  : "",
-      #SpellData.SpellFields.IconPath     : ,
+      #SpellData.SpellFields.IconPath     : preload(),
       #SpellData.SpellFields.IconRect     : Rect2(0,0,32,32),
-      #SpellData.SpellFields.ScriptPath   : ,
+      #SpellData.SpellFields.ScriptPath   : preload(),
       #SpellData.SpellFields.Cooldown     : 1.0,
       #SpellData.SpellFields.Effects      : [],
       #SpellData.SpellFields.DummyEffects : [],
