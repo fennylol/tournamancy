@@ -115,36 +115,7 @@ func _process(delta):
          HUD.hold_active(i)
       elif Input.is_action_just_released(input_button): 
          if SpellBook.ActiveSpells[i]: SpellBook.ActiveSpells[i]._on_release(self)
-         HUD.release_active(i)
          ActiveMeshArray[i].rotation.x = 0.0
-   
-   #if Input.is_action_just_pressed("active_spell_0") and Enabled:
-      #LEFT_ARM.rotation.x = -80.0
-      #HUD.hold_active(0)
-      #if SpellBook.ActiveSpells[0]:
-         #SpellBook.ActiveSpells[0]._on_activate(self)
-   #elif Input.is_action_pressed("active_spell_0") and Enabled:
-      #if SpellBook.ActiveSpells[0]:
-         #SpellBook.ActiveSpells[0]._on_hold(self)
-   #elif Input.is_action_just_released("active_spell_0") or not Enabled: 
-      #LEFT_ARM.rotation.x = 0.0
-      #HUD.release_active(0)
-      #if SpellBook.ActiveSpells[0]:
-         #SpellBook.ActiveSpells[0]._on_release(self)
-   #
-   #if Input.is_action_just_pressed("active_spell_1") and Enabled:
-      #RIGHT_ARM.rotation.x = -80.0
-      #HUD.hold_active(1)
-      #if SpellBook.ActiveSpells[1]:
-         #SpellBook.ActiveSpells[1]._on_activate(self)      
-   #elif Input.is_action_pressed("active_spell_1") and Enabled:
-      #if SpellBook.ActiveSpells[1]:
-         #SpellBook.ActiveSpells[1]._on_hold(self)
-   #elif Input.is_action_just_released("active_spell_1") or not Enabled: 
-      #RIGHT_ARM.rotation.x = 0.0
-      #HUD.release_active(1)
-      #if SpellBook.ActiveSpells[1]:
-         #SpellBook.ActiveSpells[1]._on_release(self)   
    
    ## QUICK MELEE
    time_since_melee += delta * SpellData.get_influenced_stat(SpellData.StatTypes.MELEE_COOLDOWN,SettingsManager.match_settings.PLAYER_BASE_STATS[SpellData.StatTypes.MELEE_COOLDOWN],SpellBook.get_stat(SpellData.StatTypes.MELEE_COOLDOWN))

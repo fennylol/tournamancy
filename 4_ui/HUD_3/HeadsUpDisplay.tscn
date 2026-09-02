@@ -1,80 +1,57 @@
 [gd_scene format=3 uid="uid://7x8vtttdpe52"]
 
-[ext_resource type="Texture2D" uid="uid://cv7j5obg5mwwk" path="res://4_ui/HUD_3/main_ui_sheet32.png" id="1_ncv6v"]
 [ext_resource type="Script" uid="uid://deqkcunr58wp7" path="res://4_ui/HUD_3/heads_up_display.gd" id="1_wik73"]
 [ext_resource type="PackedScene" uid="uid://cgtqkg01jix6k" path="res://4_ui/HUD_3/HealthDisplay.tscn" id="2_uy4pi"]
 [ext_resource type="Texture2D" uid="uid://cssnvvdrvplv3" path="res://0_maps/assets/interactables/prism/prism_buttons.png" id="4_o3ree"]
+[ext_resource type="Texture2D" uid="uid://bd08opsc6h0ad" path="res://4_ui/HUD_3/main_ui_sheet48.png" id="4_x3hv6"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uy4pi"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(128, 160, 32, 96)
+atlas = ExtResource("4_x3hv6")
+region = Rect2(576, 192, 48, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wik73"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(160, 160, 32, 96)
+atlas = ExtResource("4_x3hv6")
+region = Rect2(624, 192, 48, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_o3ree"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(192, 96, 672, 96)
+atlas = ExtResource("4_x3hv6")
+region = Rect2(0, 96, 672, 96)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_x3hv6"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(192, 0, 672, 96)
+atlas = ExtResource("4_x3hv6")
+region = Rect2(0, 0, 672, 96)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_l66gj"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(0, 96, 64, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_stt4b"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(0, 64, 64, 32)
+[sub_resource type="AtlasTexture" id="AtlasTexture_dy7al"]
+atlas = ExtResource("4_x3hv6")
+region = Rect2(288, 192, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ncv6v"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(320, 192, 64, 64)
+atlas = ExtResource("4_x3hv6")
+region = Rect2(320, 384, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hmm2v"]
+atlas = ExtResource("4_x3hv6")
+region = Rect2(336, 240, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fj8xm"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(192, 192, 64, 64)
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_ohx7a"]
-load_path = "res://.godot/imported/main_ui_sheet32.png-40148ca5379bac06ec3e85044d0cba5d.ctex"
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_2428d"]
-atlas = SubResource("CompressedTexture2D_ohx7a")
-region = Rect2(448, 192, 64, 64)
+atlas = ExtResource("4_x3hv6")
+region = Rect2(320, 320, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_12jdw"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(0, 192, 32, 40)
+atlas = ExtResource("4_x3hv6")
+region = Rect2(320, 448, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tgn3a"]
+atlas = ExtResource("4_x3hv6")
+region = Rect2(0, 192, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_icfkn"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(0, 128, 32, 40)
+atlas = ExtResource("4_x3hv6")
+region = Rect2(384, 240, 48, 48)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_vqnp1"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(384, 192, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_5phbm"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(256, 192, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_dhx5c"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(256, 192, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_s4vue"]
-atlas = SubResource("CompressedTexture2D_ohx7a")
-region = Rect2(512, 192, 64, 64)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ugc8m"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(32, 192, 32, 40)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rmpoi"]
-atlas = ExtResource("1_ncv6v")
-region = Rect2(32, 128, 32, 40)
+[sub_resource type="AtlasTexture" id="AtlasTexture_2428d"]
+atlas = ExtResource("4_x3hv6")
+region = Rect2(48, 192, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2e5jc"]
 atlas = ExtResource("4_o3ree")
@@ -143,7 +120,7 @@ stretch_mode = 2
 [node name="R_bar" type="TextureRect" parent="VBoxContainer/HBoxContainerTop/CenterContainer/Control" unique_id=2021010780]
 texture_filter = 1
 layout_mode = 0
-offset_left = 304.0
+offset_left = 288.0
 offset_top = -48.0
 offset_right = 336.0
 offset_bottom = 48.0
@@ -183,13 +160,9 @@ layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(0, 48)
 
-[node name="color" type="TextureRect" parent="VBoxContainer/HBoxContainerTop/CenterContainer/ButtonPrompt" unique_id=1997282882]
+[node name="icon" type="TextureRect" parent="VBoxContainer/HBoxContainerTop/CenterContainer/ButtonPrompt" unique_id=1491907436]
 layout_mode = 2
-texture = SubResource("AtlasTexture_l66gj")
-
-[node name="lines" type="TextureRect" parent="VBoxContainer/HBoxContainerTop/CenterContainer/ButtonPrompt" unique_id=1491907436]
-layout_mode = 2
-texture = SubResource("AtlasTexture_stt4b")
+texture = SubResource("AtlasTexture_dy7al")
 
 [node name="SpacerR" type="Control" parent="VBoxContainer/HBoxContainerTop" unique_id=488509174]
 layout_mode = 2
@@ -223,131 +196,103 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 40.0
 
-[node name="ActiveL" type="VBoxContainer" parent="VBoxContainer/HBoxContainerBottom" unique_id=773526952]
+[node name="Active_0" type="VBoxContainer" parent="VBoxContainer/HBoxContainerBottom" unique_id=773526952]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 3.0
 
-[node name="Icon" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/ActiveL" unique_id=791775999]
+[node name="Icon" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/Active_0" unique_id=791775999]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="color" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/ActiveL/Icon" unique_id=1356499074]
+[node name="color" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/Active_0/Icon" unique_id=1356499074]
 modulate = Color(1, 1, 1, 0.5019608)
 texture_filter = 1
 layout_mode = 2
 texture = SubResource("AtlasTexture_ncv6v")
 
-[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/ActiveL/Icon" unique_id=183020792]
+[node name="CooldownContainer" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/Active_0/Icon" unique_id=183020792]
 layout_mode = 2
 
-[node name="ActiveL" type="Node2D" parent="VBoxContainer/HBoxContainerBottom/ActiveL/Icon/CenterContainer" unique_id=1529295983]
+[node name="Icon" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/Active_0/Icon/CooldownContainer" unique_id=1684833745]
+texture_filter = 1
+layout_mode = 2
+texture = SubResource("AtlasTexture_hmm2v")
 
-[node name="Icon" type="Sprite2D" parent="VBoxContainer/HBoxContainerBottom/ActiveL/Icon/CenterContainer/ActiveL" unique_id=386294677]
-
-[node name="Cooldown" type="TextureProgressBar" parent="VBoxContainer/HBoxContainerBottom/ActiveL/Icon/CenterContainer/ActiveL" unique_id=1126004537]
+[node name="Cooldown" type="TextureProgressBar" parent="VBoxContainer/HBoxContainerBottom/Active_0/Icon/CooldownContainer" unique_id=1126004537]
 modulate = Color(1, 1, 1, 0.5019608)
 texture_filter = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -22.5
-offset_top = -22.5
-offset_right = 22.5
-offset_bottom = 22.5
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 max_value = 1.0
 step = 0.01
 value = 1.0
 fill_mode = 3
 texture_under = SubResource("AtlasTexture_fj8xm")
 texture_over = SubResource("AtlasTexture_fj8xm")
-texture_progress = SubResource("AtlasTexture_2428d")
+texture_progress = SubResource("AtlasTexture_12jdw")
 
-[node name="ButtonPrompt" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/ActiveL/Icon" unique_id=80687628]
+[node name="ButtonPrompt" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/Active_0/Icon" unique_id=80687628]
 texture_filter = 1
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(0, 32)
 
-[node name="color" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/ActiveL/Icon/ButtonPrompt" unique_id=1636664382]
-texture_filter = 1
+[node name="icon" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/Active_0/Icon/ButtonPrompt" unique_id=1636664382]
 layout_mode = 2
-texture = SubResource("AtlasTexture_12jdw")
+texture = SubResource("AtlasTexture_tgn3a")
 
-[node name="lines" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/ActiveL/Icon/ButtonPrompt" unique_id=1688324185]
-texture_filter = 1
-layout_mode = 2
-texture = SubResource("AtlasTexture_icfkn")
-
-[node name="Spacer" type="Control" parent="VBoxContainer/HBoxContainerBottom/ActiveL" unique_id=730605753]
+[node name="Spacer" type="Control" parent="VBoxContainer/HBoxContainerBottom/Active_0" unique_id=730605753]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ActiveR" type="VBoxContainer" parent="VBoxContainer/HBoxContainerBottom" unique_id=662244106]
+[node name="Active_1" type="VBoxContainer" parent="VBoxContainer/HBoxContainerBottom" unique_id=946536597]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 3.0
 
-[node name="Icon" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/ActiveR" unique_id=25588158]
+[node name="Icon" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/Active_1" unique_id=1676180774]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="color" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/ActiveR/Icon" unique_id=675715423]
+[node name="color" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/Active_1/Icon" unique_id=662040233]
 modulate = Color(1, 1, 1, 0.5019608)
 texture_filter = 1
 layout_mode = 2
-texture = SubResource("AtlasTexture_vqnp1")
+texture = SubResource("AtlasTexture_ncv6v")
 
-[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/ActiveR/Icon" unique_id=1669490059]
+[node name="CooldownContainer" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/Active_1/Icon" unique_id=605445538]
 layout_mode = 2
 
-[node name="ActiveR" type="Node2D" parent="VBoxContainer/HBoxContainerBottom/ActiveR/Icon/CenterContainer" unique_id=1720907886]
+[node name="Icon" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/Active_1/Icon/CooldownContainer" unique_id=1774330283]
+texture_filter = 1
+layout_mode = 2
+texture = SubResource("AtlasTexture_icfkn")
 
-[node name="Icon" type="Sprite2D" parent="VBoxContainer/HBoxContainerBottom/ActiveR/Icon/CenterContainer/ActiveR" unique_id=516778745]
-
-[node name="Cooldown" type="TextureProgressBar" parent="VBoxContainer/HBoxContainerBottom/ActiveR/Icon/CenterContainer/ActiveR" unique_id=14678466]
+[node name="Cooldown" type="TextureProgressBar" parent="VBoxContainer/HBoxContainerBottom/Active_1/Icon/CooldownContainer" unique_id=1001783243]
 modulate = Color(1, 1, 1, 0.5019608)
 texture_filter = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -22.5
-offset_top = -22.5
-offset_right = 22.5
-offset_bottom = 22.5
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 max_value = 1.0
 step = 0.01
 value = 1.0
 fill_mode = 3
-texture_under = SubResource("AtlasTexture_5phbm")
-texture_over = SubResource("AtlasTexture_dhx5c")
-texture_progress = SubResource("AtlasTexture_s4vue")
+texture_under = SubResource("AtlasTexture_fj8xm")
+texture_over = SubResource("AtlasTexture_fj8xm")
+texture_progress = SubResource("AtlasTexture_12jdw")
 
-[node name="ButtonPrompt" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/ActiveR/Icon" unique_id=1518041790]
+[node name="ButtonPrompt" type="CenterContainer" parent="VBoxContainer/HBoxContainerBottom/Active_1/Icon" unique_id=1430983064]
 texture_filter = 1
 layout_mode = 2
 offset_transform_enabled = true
 offset_transform_position = Vector2(0, 32)
 
-[node name="color" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/ActiveR/Icon/ButtonPrompt" unique_id=1492393964]
+[node name="icon" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/Active_1/Icon/ButtonPrompt" unique_id=1660907098]
 layout_mode = 2
-texture = SubResource("AtlasTexture_ugc8m")
+texture = SubResource("AtlasTexture_2428d")
 
-[node name="lines" type="TextureRect" parent="VBoxContainer/HBoxContainerBottom/ActiveR/Icon/ButtonPrompt" unique_id=1270773615]
-layout_mode = 2
-texture = SubResource("AtlasTexture_rmpoi")
-
-[node name="Spacer" type="Control" parent="VBoxContainer/HBoxContainerBottom/ActiveR" unique_id=7597633]
+[node name="Spacer" type="Control" parent="VBoxContainer/HBoxContainerBottom/Active_1" unique_id=768626718]
 layout_mode = 2
 size_flags_vertical = 3
 

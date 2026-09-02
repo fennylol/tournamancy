@@ -8,7 +8,7 @@ class_name HealthDisplay
 ## How many decimal places the text field displaying remaining health should round to.
 @export var text_decimal_places : int = 2
 @onready var health_text     = $Control/HealthText
-var icon_map_array : Array[TileMapLayer] = []
+@onready var icon_map_array : Array[TileMapLayer] = [ $HEARTS, $ARMOR, $WARD, $OVERHEALTH ]
 enum {HEARTS, ARMOR, WARD, OVERHEALTH}
 var min_quarter : float = 0.125
 var min_half    : float = 0.375
@@ -16,7 +16,6 @@ var min_3fourth : float = 0.625
 var min_full    : float = 0.875
 
 func _ready():
-   icon_map_array = [ $HEARTS, $ARMOR, $WARD, $OVERHEALTH ]
    ## THE CURRENT TEXTURE ATLAS HAS ONLY 3 ICONS: QUARTER, HALF, 3-QUARTER, AND FULL
    ## CALCULATE THE RANGE FOR EACH ICON BASED ON points_per_heart
    var step_size : float = 1 / ( points_per_icon * 2 )
@@ -48,38 +47,40 @@ func update_display(value : Array[float], add : bool = false) -> void:
       health_text.text = str(rounded_sum)
    
    ## UPDATE DISPLAY
-   var icon_offset = [0,0,0,0]
+   var icon_offset : Array[int] = [0,0,0,0]
    for i in [HEARTS, ARMOR, WARD, OVERHEALTH]:
       ## CALCULATE TOTAL OFFSET FOR THIS SET OF ICONS
-      var offset = 0
+      var offset : int = 0
       for k in range(0,i):
          offset += icon_offset[k]
       ## FOR EACH OF THE FOUR ICONS...
       ## CALCULATE HOW MANY ICONS TO DISPLAY (INCL. FRACTIONS OF AN ICON)
-      var icon_amt = floor( health_value[i] / points_per_icon )
-      var icon_rem = ( health_value[i] / points_per_icon ) - icon_amt
+      var icon_amt : int = floor( health_value[i] / points_per_icon )
+      var icon_rem : float = ( health_value[i] / points_per_icon ) - icon_amt
       icon_offset[i] = icon_amt
       if icon_offset[i] <= 0: icon_offset[i] = 0
       icon_map_array[i].clear()
       ## SKIP ICON IF THERE ARE NONE TO DISPLAY
       if health_value[i] <= 0: continue
+      ## DETERMINE WHICH ROW IN THE ATLAS TO PULL FROM
+      var atlas_row_full : int = 6 + ( i * 2 )
       ## ADD FULL ICONS TO GRID
       for j in range(icon_amt):
-         icon_map_array[i].set_cell(Vector2i(offset+j,0),1,Vector2i(randi_range(0,5),i*2))
+         icon_map_array[i].set_cell(Vector2i(offset+j,0),0,Vector2i(j%5,atlas_row_full))
       ## ADD AN EXTRA FULL HEART IF FRACTIONAL AMOUNT IS LARGE ENOUGH
       if icon_rem >= min_full:
-         icon_map_array[i].set_cell(Vector2i(offset+icon_offset[i],0),1,Vector2i(randi_range(0,5),i*2))
+         icon_map_array[i].set_cell(Vector2i(offset+icon_offset[i],0),0,Vector2i(icon_amt%5,atlas_row_full))
          icon_offset[i] += 1
       ## ELSE, ADD A FRACTIONAL ICON
       elif icon_rem >= min_quarter:
          var fraction = 2 if icon_rem >= min_3fourth else 1 if icon_rem >= min_half else 0
-         icon_map_array[i].set_cell(Vector2i(offset+icon_offset[i],0),1,Vector2i((fraction*2)+randi_range(0,1),(i*2)+1))
+         icon_map_array[i].set_cell(Vector2i(offset+icon_offset[i],0),0,Vector2i((fraction*2),atlas_row_full+1))
          icon_offset[i] += 1
    ## SPECIAL CASE: NEVER SHOW 0 ICONS. ALWAYS SHOW 1/4 ICON AT MINIMUM AS LONG AS HEALTH IS ABOVE 0
    ## TODO: weirdness when two types of health are small enough to sum together to be less than 1/4th of an icon. but that's a later problem tbh
    if sum > 0 and ( sum / points_per_icon ) < min_quarter:
-      var icon_to_show = OVERHEALTH if health_value.max() == health_value[3] else WARD if health_value.max() == health_value[2] else ARMOR if health_value.max() == health_value[1] else HEARTS
-      icon_map_array[icon_to_show].set_cell(Vector2i(0,0),1,Vector2i(randi_range(0,1),(icon_to_show*2)+1))
+      var icon_to_show : int = OVERHEALTH if health_value.max() == health_value[3] else WARD if health_value.max() == health_value[2] else ARMOR if health_value.max() == health_value[1] else HEARTS
+      icon_map_array[icon_to_show].set_cell(Vector2i(0,0),0,Vector2i(0,7+(icon_to_show*2)))
 
 ## Returns an int representing how many icons are currently needed to display the whole value. Partial icons are counted as full icons.[br]For example, a health value of 21 under ordinary settings would be represented by five full hearts and 1 quarter-heart, so the function will return 6.
 func get_bar_size() -> int:

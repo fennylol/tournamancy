@@ -1,45 +1,30 @@
 extends Control
 class_name HeadsUpDisplay
 
-@onready var HEALTHBAR : HealthDisplay = $VBoxContainer/HBoxContainerBottom/CenterContainer/Control/HealthDisplay
+var UI_TEXTURES : CompressedTexture2D = preload("res://4_ui/HUD_3/main_ui_sheet48.png")
+
+func _ready() -> void: 
+   var slotsize : int = get_parent().get_parent().SpellBook.ActiveSlots
+   _resize_active_slots(slotsize)
+   active_anim_array.resize(slotsize)
+   #active_hold_array.resize(slotsize)
+   for i in range(slotsize):
+      active_anim_array[i] = 0
+      update_active_icon(i)
+      ACTIVE_CLDN_RECTS[i].value = 0.0
+      _get_active_cooldown_rad_from_slot(i).value = 0.0
+func process(delta : float):
+   for i in range(active_anim_array.size()):
+      if active_anim_array[i] == 2: _animate_ready_icon(i, delta)
+
+# ================ #
+#  passive spells  #
+# ================ #
 
 @onready var PASSIVE_ICON_STACK : Node2D = $VBoxContainer/HBoxContainerTop/CenterContainer/Control/PassiveIcons/IconStack
 @onready var PASSIVE_ICON_COUNT : Node2D = $VBoxContainer/HBoxContainerTop/CenterContainer/Control/PassiveIcons/Numbers
 var passive_list : Dictionary[SpellData.PassiveSpellIDs,int] = {}
 const ICON_OFFSET : Vector2i = Vector2i(64,32)
-
-@onready var L_ACTIVE_ICON     : Sprite2D           = $VBoxContainer/HBoxContainerBottom/ActiveL/Icon/CenterContainer/ActiveL/Icon
-@onready var L_ACTIVE_CLDN_BAR : TextureProgressBar = $VBoxContainer/HBoxContainerBottom/ActiveL/Icon/CenterContainer/ActiveL/Cooldown
-@onready var L_ACTIVE_CLDN_RAD : TextureProgressBar = $CenterContainer/Countdown_L
-@onready var L_ACTIVE_ANIM     : TextureRect        = $CenterContainer/ready_anim_L
-@onready var R_ACTIVE_ICON     : Sprite2D           = $VBoxContainer/HBoxContainerBottom/ActiveR/Icon/CenterContainer/ActiveR/Icon
-@onready var R_ACTIVE_CLDN_BAR : TextureProgressBar = $VBoxContainer/HBoxContainerBottom/ActiveR/Icon/CenterContainer/ActiveR/Cooldown
-@onready var R_ACTIVE_CLDN_RAD : TextureProgressBar = $CenterContainer/Countdown_R
-@onready var R_ACTIVE_ANIM     : TextureRect        = $CenterContainer/ready_anim_R
-var active_hold_array : Array[bool] = []
-var active_anim_array : Array[int] = []
-
-@onready var BUTTONPROMPT_TEXTURERECTS : Array[TextureRect] = [$VBoxContainer/HBoxContainerTop/CenterContainer/ButtonPrompt/color,$VBoxContainer/HBoxContainerTop/CenterContainer/ButtonPrompt/lines,$VBoxContainer/HBoxContainerBottom/ActiveL/Icon/ButtonPrompt/color,$VBoxContainer/HBoxContainerBottom/ActiveL/Icon/ButtonPrompt/lines,$VBoxContainer/HBoxContainerBottom/ActiveR/Icon/ButtonPrompt/color,$VBoxContainer/HBoxContainerBottom/ActiveR/Icon/ButtonPrompt/lines]
-const BUTTONPROMPT_RECT_KYBD : Array[Rect2] = [Rect2(0,96,64,32),Rect2(0,64,64,32),Rect2(0,192,32,40),Rect2(0,128,32,40),Rect2(32,192,32,40),Rect2(32,128,32,40)]
-const BUTTONPROMPT_RECT_CTRL : Array[Rect2] = [Rect2(64,64,64,64),Rect2(64,0,64,64),Rect2(128,32,64,32),Rect2(128,0,64,32),Rect2(128,96,64,32),Rect2(128,64,64,32)]
-@onready var CURSOR : Marker2D = $Cursor
-
-func _ready() -> void: 
-   var slotsize : int = get_parent().get_parent().SpellBook.ActiveSlots
-   active_anim_array.resize(slotsize)
-   active_hold_array.resize(slotsize)
-   for i in range(slotsize):
-      active_anim_array[i] = 0
-      update_active_icon(i)
-      _get_active_cooldown_bar_from_slot(i).value = 0.0
-      _get_active_cooldown_rad_from_slot(i).value = 0.0
-func process(delta : float):
-   for i in range(active_anim_array.size()):
-      if active_anim_array[i] == 2: _animate_active_icon_ready(i, delta)
-
-# ================ #
-#  passive spells  #
-# ================ #
 
 ## Takes an array of PassiveSpells, finds the relevant icons, and arrays them in the passivebox. If [member full_clear] is true, the passive box will empty before adding the new passives. If false, it will add the new passive spells to those already displayed.
 func import_passive_spells(imported_spells : Array[PassiveSpell], full_clear : bool = false):
@@ -81,25 +66,121 @@ func import_passive_spells(imported_spells : Array[PassiveSpell], full_clear : b
 #  active spells  #
 # =============== #
 
+@onready var ACTIVE_ICONS : Array[TextureRect] = []
+@onready var ACTIVE_CLDN_RECTS : Array[TextureProgressBar] = []
+
+@onready var L_ACTIVE_CLDN_RAD : TextureProgressBar = $CenterContainer/Countdown_L
+@onready var L_ACTIVE_ANIM     : TextureRect        = $CenterContainer/ready_anim_L
+@onready var R_ACTIVE_CLDN_RAD : TextureProgressBar = $CenterContainer/Countdown_R
+@onready var R_ACTIVE_ANIM     : TextureRect        = $CenterContainer/ready_anim_R
+var active_anim_array : Array[int] = []
+
+## Updates the HUD to contain the correct number of active slots, according to [member slot_num].
+func _resize_active_slots(slot_num : int) -> void:
+   while $VBoxContainer/HBoxContainerBottom.get_children().size() > 3:
+      $VBoxContainer/HBoxContainerBottom.get_children().pop_back().free()
+   BUTTONPROMPT_TEXTURERECTS.resize(slot_num + 1)
+   ACTIVE_ICONS.resize(slot_num)
+   ACTIVE_CLDN_RECTS.resize(slot_num)
+   for i in range(slot_num):
+      var new_node := _create_new_ActiveSlot_node(i)
+      $VBoxContainer/HBoxContainerBottom.add_child(new_node)
+   var spacer := Control.new()
+   spacer.name = "SpacerR"
+   spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+   spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+   $VBoxContainer/HBoxContainerBottom.add_child(spacer)
+## Creates a new node tree for an active icon and returns it. To be used immediately prior to an add_child() call
+func _create_new_ActiveSlot_node(slot : int , update_promptpointer : bool = true) -> VBoxContainer:
+   var new_container := VBoxContainer.new()
+   new_container.name = "Active_" + str(slot)
+   new_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+   new_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+   new_container.size_flags_stretch_ratio = 3.0
+   var center_container_01 := CenterContainer.new()
+   center_container_01.name = "Icon"
+   center_container_01.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+   center_container_01.size_flags_vertical = Control.SIZE_EXPAND_FILL
+   center_container_01.size_flags_stretch_ratio = 2.0
+   new_container.add_child(center_container_01)
+   var texture_rect_01 := TextureRect.new()
+   texture_rect_01.name = "color"
+   texture_rect_01.modulate = Color(0,0,0,0.5)
+   texture_rect_01.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+   center_container_01.add_child(texture_rect_01)
+   var color_rect_atlas := AtlasTexture.new()
+   color_rect_atlas.atlas = UI_TEXTURES
+   color_rect_atlas.region = Rect2(320+(64*slot),384,64,64)
+   texture_rect_01.texture = color_rect_atlas
+   var center_container_02 := CenterContainer.new()
+   center_container_02.name = "CooldownContainer"
+   center_container_01.add_child(center_container_02)
+   var texture_rect_02 := TextureRect.new()
+   texture_rect_02.name = "Icon"
+   texture_rect_02.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+   center_container_02.add_child(texture_rect_02)
+   var icon_atlas := AtlasTexture.new()
+   icon_atlas.atlas = UI_TEXTURES
+   icon_atlas.region = Rect2(336+(48*slot),240,48,48)
+   texture_rect_02.texture = icon_atlas
+   var texture_progress_bar := TextureProgressBar.new()
+   texture_progress_bar.fill_mode = TextureProgressBar.FillMode.FILL_BOTTOM_TO_TOP
+   texture_progress_bar.max_value = 1.0
+   texture_progress_bar.step = 0.01
+   texture_progress_bar.value = 1.0
+   texture_progress_bar.self_modulate = Color(0,0,0,0.5)
+   texture_progress_bar.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+   center_container_02.add_child(texture_progress_bar)
+   var progress_bar_line := AtlasTexture.new()
+   progress_bar_line.atlas = UI_TEXTURES
+   progress_bar_line.region = Rect2(320+(64*slot),320,64,64)
+   texture_progress_bar.texture_under = progress_bar_line
+   texture_progress_bar.texture_over = progress_bar_line
+   var progress_bar_fill := AtlasTexture.new()
+   progress_bar_fill.atlas = UI_TEXTURES
+   progress_bar_fill.region = Rect2(320+(64*slot),448,64,64)
+   texture_progress_bar.texture_progress = progress_bar_fill
+   var center_container_03 := CenterContainer.new()
+   center_container_03.name = "ButtonPrompt"
+   center_container_03.offset_transform_enabled = true
+   center_container_03.offset_transform_position = Vector2(0,32)
+   center_container_03.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+   center_container_01.add_child(center_container_03)
+   var texture_rect_03 := TextureRect.new()
+   texture_rect_03.name = "PromptTexture"
+   center_container_03.add_child(texture_rect_03)
+   var button_prompt_atlas := AtlasTexture.new()
+   button_prompt_atlas.atlas = UI_TEXTURES
+   button_prompt_atlas.region = Rect2((slot*48),192,48,48) ## TODO: update to array reference
+   texture_rect_03.texture = button_prompt_atlas
+   var spacer_01 := Control.new()
+   spacer_01.name = "Spacer"
+   spacer_01.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+   spacer_01.size_flags_vertical = Control.SIZE_EXPAND_FILL
+   new_container.add_child(spacer_01)
+   if update_promptpointer:
+      BUTTONPROMPT_TEXTURERECTS[slot+1] = texture_rect_03
+      ACTIVE_ICONS             [slot]   = texture_rect_02
+      ACTIVE_CLDN_RECTS        [slot]   = texture_progress_bar
+   return new_container
 ## Updates an Active slot with the correct texture and cooldown value based on a given SpellID
 func update_active_icon(active_slot : int, id : SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR):
-   var icon         : Sprite2D           = L_ACTIVE_ICON if active_slot == 0 else R_ACTIVE_ICON
-   var cooldown_bar := _get_active_cooldown_bar_from_slot(active_slot)
+   var cooldown_bar := ACTIVE_CLDN_RECTS[active_slot]
    var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
    if id == SpellData.ActiveSpellIDs.ERROR or not SpellList.ActiveSpells.has(id):
-      icon.texture = ImageTexture.new()
+      ACTIVE_ICONS[active_slot].texture = ImageTexture.new()
       cooldown_bar.max_value = 0.0
       cooldown_rad.max_value = 0.0
    else:
       var new_texture := AtlasTexture.new()
       new_texture.atlas = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.IconPath)
       new_texture.region = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.IconRect)
-      icon.texture = new_texture
+      ACTIVE_ICONS[active_slot].texture = new_texture
       cooldown_bar.max_value = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.Cooldown)
       cooldown_rad.max_value = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.Cooldown)
 ## Updates an Active slot's cooldown progress bar based on a given time delta.
 func update_active_cooldown(active_slot : int, time_since_activation : float):
-   var cooldown_bar := _get_active_cooldown_bar_from_slot(active_slot)
+   var cooldown_bar := ACTIVE_CLDN_RECTS[active_slot]
    var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
    var new_value = clamp(time_since_activation , 0.0 , cooldown_bar.max_value)
    cooldown_bar.value = new_value
@@ -112,7 +193,7 @@ func update_active_cooldown(active_slot : int, time_since_activation : float):
       active_anim_array[active_slot] = 2
 ## Resets an active cooldown to its max value.
 func reset_active_cooldown(active_slot : int):
-   var cooldown_bar := _get_active_cooldown_bar_from_slot(active_slot)
+   var cooldown_bar := ACTIVE_CLDN_RECTS[active_slot]
    var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
    cooldown_bar.value = cooldown_bar.max_value
    cooldown_rad.value = cooldown_rad.max_value
@@ -120,33 +201,25 @@ func reset_active_cooldown(active_slot : int):
    active_anim_array[active_slot] = 1
 ## Called when an input button is held.
 func hold_active(active_slot : int):
-   var cooldown_bar := _get_active_cooldown_bar_from_slot(active_slot)
+   var cooldown_bar := ACTIVE_CLDN_RECTS[active_slot]
    var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
    if cooldown_bar.value <= 0:
       cooldown_bar.value = cooldown_bar.max_value
-      active_hold_array[active_slot] = true
+      #active_hold_array[active_slot] = true
    if cooldown_rad.value <= 0:
       cooldown_rad.value = cooldown_rad.max_value
-      active_hold_array[active_slot] = true
+      #active_hold_array[active_slot] = true
    _reset_animate_active(active_slot)
    active_anim_array[active_slot] = 1
 ## Called when an input button is released.
-func release_active(active_slot : int):
-   active_hold_array[active_slot] = false
-## Used to differentiate between different active slots. Extensible if we add more active slots.
-func _get_active_cooldown_bar_from_slot(slot : int) -> TextureProgressBar:
-   var cooldown_bar : TextureProgressBar = L_ACTIVE_CLDN_BAR if slot == 0 else R_ACTIVE_CLDN_BAR
-   return cooldown_bar
+#func release_active(active_slot : int):
+   #active_hold_array[active_slot] = false
 ## Used to differentiate between different active slots. Extensible if we add more active slots.
 func _get_active_cooldown_rad_from_slot(slot : int) -> TextureProgressBar:
    var cooldown_bar : TextureProgressBar = L_ACTIVE_CLDN_RAD if slot == 0 else R_ACTIVE_CLDN_RAD
    return cooldown_bar
-## Used to differentiate between different active slots. Extensible if we add more active slots.
-func _get_active_icon_from_slot(slot : int) -> Sprite2D:
-   var icon : Sprite2D = L_ACTIVE_ICON if slot == 0 else R_ACTIVE_ICON
-   return icon
-##
-func _animate_active_icon_ready(slot : int, delta: float) -> void:
+## Updates the "Active Spell is Ready" animation according to delta.
+func _animate_ready_icon(slot : int, delta: float) -> void:
    var animate_node : TextureRect = L_ACTIVE_ANIM if slot == 0 else R_ACTIVE_ANIM
    animate_node.visible = true
    animate_node.offset_transform_scale += Vector2(delta,delta) * 3
@@ -154,7 +227,7 @@ func _animate_active_icon_ready(slot : int, delta: float) -> void:
    if animate_node.self_modulate.a <= 0.0:
       active_anim_array[slot] = 0
       _reset_animate_active(slot)
-##
+## Resets the "Active Spell is Ready" animation to its default state.
 func _reset_animate_active(slot : int):
    var animate_node : TextureRect = L_ACTIVE_ANIM if slot == 0 else R_ACTIVE_ANIM
    animate_node.visible = false
@@ -165,6 +238,8 @@ func _reset_animate_active(slot : int):
 #   healthbar   #
 # ============= #
 
+@onready var HEALTHBAR : HealthDisplay = $VBoxContainer/HBoxContainerBottom/CenterContainer/Control/HealthDisplay
+
 ## Pass value and boolean data to the Healthbar
 func update_healthbar(val : Array[float], add : bool = false): HEALTHBAR.update_display(val,add)
 
@@ -172,10 +247,13 @@ func update_healthbar(val : Array[float], add : bool = false): HEALTHBAR.update_
 #  inspect and prompts  #
 # ===================== #
 
+@onready var CURSOR : Marker2D = $Cursor
 @onready var COLOR_RECT  : ColorRect = $Cursor/ColorRect
 @onready var PREAMBLE    : Label = $Cursor/ColorRect/MarginContainer/VBoxContainer/isActive
 @onready var NAME        : Label = $Cursor/ColorRect/MarginContainer/VBoxContainer/Name
 @onready var DESCRIPTION : RichTextLabel = $Cursor/ColorRect/MarginContainer/VBoxContainer/Description
+
+@onready var BUTTONPROMPT_TEXTURERECTS : Array[TextureRect] = [$VBoxContainer/HBoxContainerTop/CenterContainer/ButtonPrompt/icon]
 
 ## Recieves an Interactable from the player while their raycast is looking at one. Used to display class data to player.
 func show_interactable_info(obj : Interactable):
@@ -209,5 +287,5 @@ func close_interactable_info():
    CURSOR.visible = false
 ## Changes the visible button prompts on the two active icons and below the passive box to show either keyboard/mouse buttons or controller buttons, depending on whether [member keyboard] is true.
 func swap_button_prompts(keyboard : bool):
-   for i in range(BUTTONPROMPT_TEXTURERECTS.size()):
-      BUTTONPROMPT_TEXTURERECTS[i].texture.region = BUTTONPROMPT_RECT_KYBD[i] if keyboard else BUTTONPROMPT_RECT_CTRL[i]
+   for i in BUTTONPROMPT_TEXTURERECTS:
+      if i is TextureRect: i.texture.region.position.y = 192 if keyboard else 240
