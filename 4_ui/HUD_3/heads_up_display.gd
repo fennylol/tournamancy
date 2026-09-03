@@ -7,13 +7,14 @@ func _ready() -> void:
    var slotsize : int = get_parent().get_parent().SpellBook.ActiveSlots
    _resize_active_slots(slotsize)
    active_anim_array.resize(slotsize)
-   #active_hold_array.resize(slotsize)
    for i in range(slotsize):
       active_anim_array[i] = 0
       update_active_icon(i)
       ACTIVE_CLDN_RECTS[i].value = 0.0
-      _get_active_cooldown_rad_from_slot(i).value = 0.0
+      ACTIVE_CLDN_RADLS[i].value = 0.0
 func process(delta : float):
+   $VBoxContainer/HBoxContainerTop/CenterContainer/Control/L_bar.self_modulate = SettingsManager.personal_settings.PRIMARY_COLOR
+   $VBoxContainer/HBoxContainerTop/CenterContainer/Control/R_bar.self_modulate = SettingsManager.personal_settings.SECONDARY_COLOR
    for i in range(active_anim_array.size()):
       if active_anim_array[i] == 2: _animate_ready_icon(i, delta)
 
@@ -66,31 +67,36 @@ func import_passive_spells(imported_spells : Array[PassiveSpell], full_clear : b
 #  active spells  #
 # =============== #
 
+@onready var ACTIVE_SLOT_CONTAINER : HBoxContainer   = $VBoxContainer/HBoxContainerBottom
+@onready var ACTIVE_RADL_CONTAINER : CenterContainer = $CenterContainer
+@onready var ACTIVE_READY_ANIM : TextureRect = $CenterContainer/ready_anim
+
 @onready var ACTIVE_ICONS : Array[TextureRect] = []
 @onready var ACTIVE_CLDN_RECTS : Array[TextureProgressBar] = []
+@onready var ACTIVE_CLDN_RADLS : Array[TextureProgressBar] = []
 
-@onready var L_ACTIVE_CLDN_RAD : TextureProgressBar = $CenterContainer/Countdown_L
-@onready var L_ACTIVE_ANIM     : TextureRect        = $CenterContainer/ready_anim_L
-@onready var R_ACTIVE_CLDN_RAD : TextureProgressBar = $CenterContainer/Countdown_R
-@onready var R_ACTIVE_ANIM     : TextureRect        = $CenterContainer/ready_anim_R
+const radial_margin : float = 5.0
 var active_anim_array : Array[int] = []
 
 ## Updates the HUD to contain the correct number of active slots, according to [member slot_num].
 func _resize_active_slots(slot_num : int) -> void:
-   while $VBoxContainer/HBoxContainerBottom.get_children().size() > 3:
-      $VBoxContainer/HBoxContainerBottom.get_children().pop_back().free()
+   while ACTIVE_SLOT_CONTAINER.get_children().size() > 3:
+      ACTIVE_SLOT_CONTAINER.get_children().pop_back().free()
    BUTTONPROMPT_TEXTURERECTS.resize(slot_num + 1)
    ACTIVE_ICONS.resize(slot_num)
    ACTIVE_CLDN_RECTS.resize(slot_num)
+   ACTIVE_CLDN_RADLS.resize(slot_num)
    for i in range(slot_num):
       var new_node := _create_new_ActiveSlot_node(i)
-      $VBoxContainer/HBoxContainerBottom.add_child(new_node)
+      ACTIVE_SLOT_CONTAINER.add_child(new_node)
+      var new_radial := _create_new_active_cooldown_radial(i, slot_num)
+      ACTIVE_RADL_CONTAINER.add_child(new_radial)
    var spacer := Control.new()
    spacer.name = "SpacerR"
    spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
    spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-   $VBoxContainer/HBoxContainerBottom.add_child(spacer)
-## Creates a new node tree for an active icon and returns it. To be used immediately prior to an add_child() call
+   ACTIVE_SLOT_CONTAINER.add_child(spacer)
+## Creates a new node tree for an active icon and returns it. To be used immediately prior to an add_child() call.
 func _create_new_ActiveSlot_node(slot : int , update_promptpointer : bool = true) -> VBoxContainer:
    var new_container := VBoxContainer.new()
    new_container.name = "Active_" + str(slot)
@@ -105,7 +111,7 @@ func _create_new_ActiveSlot_node(slot : int , update_promptpointer : bool = true
    new_container.add_child(center_container_01)
    var texture_rect_01 := TextureRect.new()
    texture_rect_01.name = "color"
-   texture_rect_01.modulate = Color(0,0,0,0.5)
+   texture_rect_01.modulate = Color(1,1,1,0.5)
    texture_rect_01.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
    center_container_01.add_child(texture_rect_01)
    var color_rect_atlas := AtlasTexture.new()
@@ -115,20 +121,14 @@ func _create_new_ActiveSlot_node(slot : int , update_promptpointer : bool = true
    var center_container_02 := CenterContainer.new()
    center_container_02.name = "CooldownContainer"
    center_container_01.add_child(center_container_02)
-   var texture_rect_02 := TextureRect.new()
-   texture_rect_02.name = "Icon"
-   texture_rect_02.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-   center_container_02.add_child(texture_rect_02)
-   var icon_atlas := AtlasTexture.new()
-   icon_atlas.atlas = UI_TEXTURES
-   icon_atlas.region = Rect2(336+(48*slot),240,48,48)
-   texture_rect_02.texture = icon_atlas
+   
    var texture_progress_bar := TextureProgressBar.new()
+   texture_progress_bar.name = "Cooldown"
    texture_progress_bar.fill_mode = TextureProgressBar.FillMode.FILL_BOTTOM_TO_TOP
    texture_progress_bar.max_value = 1.0
    texture_progress_bar.step = 0.01
    texture_progress_bar.value = 1.0
-   texture_progress_bar.self_modulate = Color(0,0,0,0.5)
+   texture_progress_bar.self_modulate = Color(1,1,1,0.5)
    texture_progress_bar.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
    center_container_02.add_child(texture_progress_bar)
    var progress_bar_line := AtlasTexture.new()
@@ -140,6 +140,16 @@ func _create_new_ActiveSlot_node(slot : int , update_promptpointer : bool = true
    progress_bar_fill.atlas = UI_TEXTURES
    progress_bar_fill.region = Rect2(320+(64*slot),448,64,64)
    texture_progress_bar.texture_progress = progress_bar_fill
+   
+   var texture_rect_02 := TextureRect.new()
+   texture_rect_02.name = "Icon"
+   texture_rect_02.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+   center_container_02.add_child(texture_rect_02)
+   var icon_atlas := AtlasTexture.new()
+   icon_atlas.atlas = UI_TEXTURES
+   icon_atlas.region = Rect2(336+(48*slot),240,48,48)
+   texture_rect_02.texture = icon_atlas
+   
    var center_container_03 := CenterContainer.new()
    center_container_03.name = "ButtonPrompt"
    center_container_03.offset_transform_enabled = true
@@ -163,10 +173,43 @@ func _create_new_ActiveSlot_node(slot : int , update_promptpointer : bool = true
       ACTIVE_ICONS             [slot]   = texture_rect_02
       ACTIVE_CLDN_RECTS        [slot]   = texture_progress_bar
    return new_container
+## Creates a new radial progress bar node and returns it. To be used immediately prior to an add_child() call.
+func _create_new_active_cooldown_radial(slot : int, slotmax : int = -1, update_promptpointer : bool = true) -> TextureProgressBar:
+   ## NODE SETUP
+   var new_radial := TextureProgressBar.new()
+   new_radial.name = "Cooldown_" + str(slot)
+   new_radial.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+   new_radial.self_modulate = Color(1,1,1,0.5)
+   new_radial.fill_mode = TextureProgressBar.FillMode.FILL_CLOCKWISE_AND_COUNTER_CLOCKWISE
+   new_radial.max_value = 1.0
+   new_radial.value = 1.0
+   new_radial.step = 0.01
+   new_radial.offset_transform_enabled = true
+   new_radial.offset_transform_scale = Vector2(-1,1)
+   var new_texture := AtlasTexture.new()
+   new_texture.atlas = UI_TEXTURES
+   new_texture.region = Rect2(528,192,48,48)
+   new_radial.texture_progress = new_texture
+   ## MATH
+   var M : float = get_parent().get_parent().SpellBook.ActiveSlots if slotmax <= 0 else slotmax
+   var L : float = (90*(M+2))/M
+   var D : float = 360/(2*M) if M > 2 else 0.0
+   ## DETERMINE ANGLE
+   var angle : float = 0.0
+   if slot < 2:    angle = ((D+L)/2)+(slot*(L+(D*M)-(D*3)))
+   elif slot == 2: angle = 0.0
+   else:           angle = L+(D*slot)-(2*D)
+   ## ASSIGN VALUES
+   new_radial.radial_initial_angle = angle
+   new_radial.radial_fill_degrees = L-radial_margin if slot < 2 else D-radial_margin
+   if update_promptpointer: ACTIVE_CLDN_RADLS[slot] = new_radial
+   print("slot #", slot," set to angle ", angle)
+   return new_radial
+
 ## Updates an Active slot with the correct texture and cooldown value based on a given SpellID
 func update_active_icon(active_slot : int, id : SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR):
    var cooldown_bar := ACTIVE_CLDN_RECTS[active_slot]
-   var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
+   var cooldown_rad := ACTIVE_CLDN_RADLS[active_slot]
    if id == SpellData.ActiveSpellIDs.ERROR or not SpellList.ActiveSpells.has(id):
       ACTIVE_ICONS[active_slot].texture = ImageTexture.new()
       cooldown_bar.max_value = 0.0
@@ -181,7 +224,7 @@ func update_active_icon(active_slot : int, id : SpellData.ActiveSpellIDs = Spell
 ## Updates an Active slot's cooldown progress bar based on a given time delta.
 func update_active_cooldown(active_slot : int, time_since_activation : float):
    var cooldown_bar := ACTIVE_CLDN_RECTS[active_slot]
-   var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
+   var cooldown_rad := ACTIVE_CLDN_RADLS[active_slot]
    var new_value = clamp(time_since_activation , 0.0 , cooldown_bar.max_value)
    cooldown_bar.value = new_value
    cooldown_rad.value = new_value
@@ -194,45 +237,37 @@ func update_active_cooldown(active_slot : int, time_since_activation : float):
 ## Resets an active cooldown to its max value.
 func reset_active_cooldown(active_slot : int):
    var cooldown_bar := ACTIVE_CLDN_RECTS[active_slot]
-   var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
+   var cooldown_rad := ACTIVE_CLDN_RADLS[active_slot]
    cooldown_bar.value = cooldown_bar.max_value
    cooldown_rad.value = cooldown_rad.max_value
-   _reset_animate_active(active_slot)
+   _reset_animate_active()
    active_anim_array[active_slot] = 1
 ## Called when an input button is held.
 func hold_active(active_slot : int):
    var cooldown_bar := ACTIVE_CLDN_RECTS[active_slot]
-   var cooldown_rad := _get_active_cooldown_rad_from_slot(active_slot)
+   var cooldown_rad := ACTIVE_CLDN_RADLS[active_slot]
    if cooldown_bar.value <= 0:
       cooldown_bar.value = cooldown_bar.max_value
       #active_hold_array[active_slot] = true
    if cooldown_rad.value <= 0:
       cooldown_rad.value = cooldown_rad.max_value
       #active_hold_array[active_slot] = true
-   _reset_animate_active(active_slot)
+   _reset_animate_active()
    active_anim_array[active_slot] = 1
-## Called when an input button is released.
-#func release_active(active_slot : int):
-   #active_hold_array[active_slot] = false
-## Used to differentiate between different active slots. Extensible if we add more active slots.
-func _get_active_cooldown_rad_from_slot(slot : int) -> TextureProgressBar:
-   var cooldown_bar : TextureProgressBar = L_ACTIVE_CLDN_RAD if slot == 0 else R_ACTIVE_CLDN_RAD
-   return cooldown_bar
+
 ## Updates the "Active Spell is Ready" animation according to delta.
 func _animate_ready_icon(slot : int, delta: float) -> void:
-   var animate_node : TextureRect = L_ACTIVE_ANIM if slot == 0 else R_ACTIVE_ANIM
-   animate_node.visible = true
-   animate_node.offset_transform_scale += Vector2(delta,delta) * 3
-   animate_node.self_modulate -= Color(0,0,0,delta * 2)
-   if animate_node.self_modulate.a <= 0.0:
+   ACTIVE_READY_ANIM.visible = true
+   ACTIVE_READY_ANIM.offset_transform_scale += Vector2(delta,delta) * 3
+   ACTIVE_READY_ANIM.self_modulate -= Color(0,0,0,delta * 2)
+   if ACTIVE_READY_ANIM.self_modulate.a <= 0.0:
       active_anim_array[slot] = 0
-      _reset_animate_active(slot)
+      _reset_animate_active()
 ## Resets the "Active Spell is Ready" animation to its default state.
-func _reset_animate_active(slot : int):
-   var animate_node : TextureRect = L_ACTIVE_ANIM if slot == 0 else R_ACTIVE_ANIM
-   animate_node.visible = false
-   animate_node.offset_transform_scale = Vector2(1,1)
-   animate_node.self_modulate = SettingsManager.personal_settings.PRIMARY_COLOR.lightened(0.5)
+func _reset_animate_active():
+   ACTIVE_READY_ANIM.visible = false
+   ACTIVE_READY_ANIM.offset_transform_scale = Vector2(1,1)
+   ACTIVE_READY_ANIM.self_modulate = SettingsManager.personal_settings.PRIMARY_COLOR.lightened(0.5)
 
 # ============= #
 #   healthbar   #
@@ -247,10 +282,10 @@ func update_healthbar(val : Array[float], add : bool = false): HEALTHBAR.update_
 #  inspect and prompts  #
 # ===================== #
 
-@onready var CURSOR : Marker2D = $Cursor
-@onready var COLOR_RECT  : ColorRect = $Cursor/ColorRect
-@onready var PREAMBLE    : Label = $Cursor/ColorRect/MarginContainer/VBoxContainer/isActive
-@onready var NAME        : Label = $Cursor/ColorRect/MarginContainer/VBoxContainer/Name
+@onready var CURSOR      : Marker2D      = $Cursor
+@onready var COLOR_RECT  : ColorRect     = $Cursor/ColorRect
+@onready var PREAMBLE    : Label         = $Cursor/ColorRect/MarginContainer/VBoxContainer/isActive
+@onready var NAME        : Label         = $Cursor/ColorRect/MarginContainer/VBoxContainer/Name
 @onready var DESCRIPTION : RichTextLabel = $Cursor/ColorRect/MarginContainer/VBoxContainer/Description
 
 @onready var BUTTONPROMPT_TEXTURERECTS : Array[TextureRect] = [$VBoxContainer/HBoxContainerTop/CenterContainer/ButtonPrompt/icon]

@@ -2,8 +2,7 @@
 
 [ext_resource type="Script" uid="uid://deqkcunr58wp7" path="res://4_ui/HUD_3/heads_up_display.gd" id="1_wik73"]
 [ext_resource type="PackedScene" uid="uid://cgtqkg01jix6k" path="res://4_ui/HUD_3/HealthDisplay.tscn" id="2_uy4pi"]
-[ext_resource type="Texture2D" uid="uid://cssnvvdrvplv3" path="res://0_maps/assets/interactables/prism/prism_buttons.png" id="4_o3ree"]
-[ext_resource type="Texture2D" uid="uid://bd08opsc6h0ad" path="res://4_ui/HUD_3/main_ui_sheet48.png" id="4_x3hv6"]
+[ext_resource type="Texture2D" uid="uid://eovl458y06ed" path="res://4_ui/HUD_3/main_ui_sheet48.png" id="4_x3hv6"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uy4pi"]
 atlas = ExtResource("4_x3hv6")
@@ -53,21 +52,9 @@ region = Rect2(384, 240, 48, 48)
 atlas = ExtResource("4_x3hv6")
 region = Rect2(48, 192, 48, 48)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_2e5jc"]
-atlas = ExtResource("4_o3ree")
-region = Rect2(144, 0, 48, 48)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_nera2"]
-atlas = ExtResource("4_o3ree")
-region = Rect2(192, 0, 48, 48)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_ohx7a"]
-atlas = ExtResource("4_o3ree")
-region = Rect2(144, 0, 48, 48)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_gptfh"]
-atlas = ExtResource("4_o3ree")
-region = Rect2(192, 0, 48, 48)
+atlas = ExtResource("4_x3hv6")
+region = Rect2(528, 192, 48, 48)
 
 [sub_resource type="LabelSettings" id="LabelSettings_wik73"]
 font_size = 8
@@ -308,43 +295,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ready_anim_L" type="TextureRect" parent="CenterContainer" unique_id=1306644415]
+[node name="ready_anim" type="TextureRect" parent="CenterContainer" unique_id=1306644415]
 visible = false
 texture_filter = 1
 layout_mode = 2
 offset_transform_enabled = true
-texture = SubResource("AtlasTexture_2e5jc")
-
-[node name="ready_anim_R" type="TextureRect" parent="CenterContainer" unique_id=65639565]
-visible = false
-texture_filter = 1
-layout_mode = 2
-offset_transform_enabled = true
-texture = SubResource("AtlasTexture_nera2")
-
-[node name="Countdown_L" type="TextureProgressBar" parent="CenterContainer" unique_id=323400136]
-texture_filter = 1
-layout_mode = 2
-offset_transform_enabled = true
-offset_transform_scale = Vector2(0.9, 0.9)
-max_value = 1.0
-step = 0.01
-fill_mode = 4
-radial_initial_angle = 190.0
-radial_fill_degrees = 160.0
-texture_progress = SubResource("AtlasTexture_ohx7a")
-
-[node name="Countdown_R" type="TextureProgressBar" parent="CenterContainer" unique_id=689911282]
-texture_filter = 1
-layout_mode = 2
-offset_transform_enabled = true
-offset_transform_scale = Vector2(0.9, 0.9)
-max_value = 1.0
-step = 0.01
-fill_mode = 5
-radial_initial_angle = 170.0
-radial_fill_degrees = 160.0
-texture_progress = SubResource("AtlasTexture_gptfh")
+texture = SubResource("AtlasTexture_ohx7a")
 
 [node name="Cursor" type="Marker2D" parent="." unique_id=1443514047]
 gizmo_extents = 20.0

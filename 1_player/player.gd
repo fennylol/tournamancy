@@ -321,6 +321,7 @@ func get_active(hand : int) -> SpellData.ActiveSpellIDs: return SpellBook.Active
 func request_new_active_spell(id : SpellData.ActiveSpellIDs, slot : int):
    SpellBook.add_active(id, slot)
    update_HUD_icons()
+## Called by the PrismMenu with a given spellID and stack count. Asks the SpellBook to add that spell, then updates the HUD.
 func request_new_passive_spell(id: SpellData.PassiveSpellIDs, stacks : int):
    SpellBook.add_passive(id, stacks)
    update_HUD_icons()

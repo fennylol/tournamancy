@@ -1,6 +1,6 @@
 [gd_resource type="TileSet" format=3 uid="uid://ve0w0gx0uj5m"]
 
-[ext_resource type="Texture2D" uid="uid://bd08opsc6h0ad" path="res://4_ui/HUD_3/main_ui_sheet48.png" id="1_ba3ys"]
+[ext_resource type="Texture2D" uid="uid://eovl458y06ed" path="res://4_ui/HUD_3/main_ui_sheet48.png" id="1_ba3ys"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lvvi7"]
 resource_name = "MainUISheer"
