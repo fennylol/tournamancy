@@ -1,7 +1,7 @@
 extends Control
 class_name HeadsUpDisplay
 
-var UI_TEXTURES : CompressedTexture2D = preload("res://4_ui/HUD_3/main_ui_sheet48.png")
+var UI_TEXTURES : CompressedTexture2D = preload("res://4_ui/main_ui_sheet48.png")
 
 func _ready() -> void: 
    var slotsize : int = get_parent().get_parent().SpellBook.ActiveSlots
@@ -17,6 +17,9 @@ func process(delta : float):
    $VBoxContainer/HBoxContainerTop/CenterContainer/Control/R_bar.self_modulate = SettingsManager.personal_settings.SECONDARY_COLOR
    for i in range(active_anim_array.size()):
       if active_anim_array[i] == 2: _animate_ready_icon(i, delta)
+func toggle_reticle(v : bool):
+   $CenterContainer.visible = v
+   $Cursor.visible = v
 
 # ================ #
 #  passive spells  #
@@ -203,7 +206,6 @@ func _create_new_active_cooldown_radial(slot : int, slotmax : int = -1, update_p
    new_radial.radial_initial_angle = angle
    new_radial.radial_fill_degrees = L-radial_margin if slot < 2 else D-radial_margin
    if update_promptpointer: ACTIVE_CLDN_RADLS[slot] = new_radial
-   print("slot #", slot," set to angle ", angle)
    return new_radial
 
 ## Updates an Active slot with the correct texture and cooldown value based on a given SpellID

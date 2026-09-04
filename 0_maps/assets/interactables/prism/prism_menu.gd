@@ -2,10 +2,10 @@ extends Control
 class_name PrismMenu
 
 @onready var MAIN_MENU      : HBoxContainer   = $ButtonContainer
-@onready var SPELL_GRIDMAP  : GridContainer   = $ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/GridContainer
-@onready var BUTTON_REROLL  : Button          = $ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll
-@onready var BUTTON_CONFIRM : Button          = $ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm
-@onready var BUTTON_CANCEL  : Button          = $ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel
+@onready var SPELL_GRIDMAP  : GridContainer   = $ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/PanelContainer/GridContainer
+@onready var BUTTON_REROLL  : Button          = $ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll
+@onready var BUTTON_CONFIRM : Button          = $ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm
+@onready var BUTTON_CANCEL  : Button          = $ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel
 
 @onready var ACTIVE_MENU    : HBoxContainer   = $ActiveConfirm
 @onready var ACTIVE_SEL     : CenterContainer = $ActiveConfirm/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/SpellInstance_SELECTED

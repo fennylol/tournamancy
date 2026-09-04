@@ -100,6 +100,11 @@ func remove_active(id: SpellData.ActiveSpellIDs) -> void:
          spell_erased.emit(id, true)
          return
 
+func remove_active_at_slot(slot : int) -> void:
+   var spell_id : int = ActiveSpells[slot].SpellID if ActiveSpells[slot] else SpellData.ActiveSpellIDs.ERROR
+   ActiveSpells[slot] = null
+   if spell_id != SpellData.ActiveSpellIDs.ERROR: spell_erased.emit(spell_id, true)
+
 func adopt_class(id: ClassData.ClassIDs) -> void:
    ## CLEAR SPELLS
    for spell:ActiveSpell  in ActiveSpells:

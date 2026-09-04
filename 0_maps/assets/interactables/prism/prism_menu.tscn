@@ -3,6 +3,22 @@
 [ext_resource type="Script" uid="uid://blfua2y68aym4" path="res://0_maps/assets/interactables/prism/prism_menu.gd" id="1_hqamg"]
 [ext_resource type="PackedScene" uid="uid://bj6q28e650yw4" path="res://0_maps/assets/interactables/prism/prism_spell_instance.tscn" id="2_7yhls"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xwstj"]
+bg_color = Color(0.92941177, 0.70980394, 1, 0.1254902)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+corner_detail = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gptfh"]
+bg_color = Color(0.8, 0.8, 0.8, 0.23529412)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+corner_detail = 6
+
 [sub_resource type="LabelSettings" id="LabelSettings_xwstj"]
 font_size = 8
 
@@ -16,111 +32,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_hqamg")
-
-[node name="Background_LargeRect" type="HBoxContainer" parent="." unique_id=650993852]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="spacer_L" type="Control" parent="Background_LargeRect" unique_id=1489789478]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Background_LargeRect" unique_id=2024917028]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
-
-[node name="spacer_U" type="Control" parent="Background_LargeRect/VBoxContainer" unique_id=1290642794]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-size_flags_stretch_ratio = 2.0
-
-[node name="ColorRect" type="ColorRect" parent="Background_LargeRect/VBoxContainer" unique_id=1581367402]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 10.0
-color = Color(0.9275, 0.71000004, 1, 0.1254902)
-
-[node name="spacer_D" type="Control" parent="Background_LargeRect/VBoxContainer" unique_id=2012212980]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="spacer_R" type="Control" parent="Background_LargeRect" unique_id=1082944799]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Background_SmallRect" type="HBoxContainer" parent="." unique_id=128850422]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="spacer_L" type="Control" parent="Background_SmallRect" unique_id=1522037953]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Background_SmallRect" unique_id=1942537948]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
-
-[node name="spacer_U" type="Control" parent="Background_SmallRect/VBoxContainer" unique_id=2126542592]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-size_flags_stretch_ratio = 2.0
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Background_SmallRect/VBoxContainer" unique_id=1236270341]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 10.0
-
-[node name="spacer_L" type="Control" parent="Background_SmallRect/VBoxContainer/HBoxContainer" unique_id=1461421332]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Background_SmallRect/VBoxContainer/HBoxContainer" unique_id=338600311]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 6.0
-
-[node name="spacer_U" type="Control" parent="Background_SmallRect/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=269850964]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ColorRect" type="ColorRect" parent="Background_SmallRect/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1441427329]
-layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 12.0
-color = Color(0.8, 0.8, 0.8, 0.23529412)
-
-[node name="spacer_D" type="Control" parent="Background_SmallRect/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=180362276]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-size_flags_stretch_ratio = 8.0
-
-[node name="spacer_R" type="Control" parent="Background_SmallRect/VBoxContainer/HBoxContainer" unique_id=120370628]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="spacer_D" type="Control" parent="Background_SmallRect/VBoxContainer" unique_id=567999386]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="spacer_R" type="Control" parent="Background_SmallRect" unique_id=1604161564]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="ButtonContainer" type="HBoxContainer" parent="." unique_id=2132038012]
 layout_mode = 1
@@ -145,52 +56,64 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ButtonContainer/VBoxContainer" unique_id=757160952]
+[node name="PanelContainer" type="PanelContainer" parent="ButtonContainer/VBoxContainer" unique_id=176731303]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 10.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_xwstj")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ButtonContainer/VBoxContainer/PanelContainer" unique_id=757160952]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 10.0
 
-[node name="spacer_L" type="Control" parent="ButtonContainer/VBoxContainer/HBoxContainer" unique_id=45461518]
+[node name="spacer_L" type="Control" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer" unique_id=45461518]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ButtonContainer/VBoxContainer/HBoxContainer" unique_id=341050314]
+[node name="VBoxContainer" type="VBoxContainer" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer" unique_id=341050314]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 6.0
 
-[node name="spacer_U" type="Control" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=254349726]
+[node name="spacer_U" type="Control" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer" unique_id=254349726]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="GridContainer" type="GridContainer" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1230229900]
+[node name="PanelContainer" type="PanelContainer" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer" unique_id=1292285693]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 12.0
-focus_neighbor_bottom = NodePath("../HBoxContainerD/VBoxContainer/Button_Reroll")
-focus_next = NodePath("../HBoxContainerD/VBoxContainer/Button_Reroll")
+theme_override_styles/panel = SubResource("StyleBoxFlat_gptfh")
 
-[node name="spacer_M" type="Control" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=398721214]
+[node name="GridContainer" type="GridContainer" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/PanelContainer" unique_id=1230229900]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 12.0
+focus_neighbor_bottom = NodePath("../../HBoxContainerD/VBoxContainer/Button_Reroll")
+focus_next = NodePath("../../HBoxContainerD/VBoxContainer/Button_Reroll")
+
+[node name="spacer_M" type="Control" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer" unique_id=398721214]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HBoxContainerD" type="HBoxContainer" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=1804975095]
+[node name="HBoxContainerD" type="HBoxContainer" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer" unique_id=1804975095]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 6.0
 
-[node name="spacer_L" type="Control" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD" unique_id=296588577]
+[node name="spacer_L" type="Control" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD" unique_id=296588577]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD" unique_id=418774014]
+[node name="VBoxContainer" type="VBoxContainer" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD" unique_id=418774014]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 
-[node name="Button_Reroll" type="Button" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=214618658]
+[node name="Button_Reroll" type="Button" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=214618658]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 20.0
@@ -198,12 +121,12 @@ focus_neighbor_bottom = NodePath("../Button_Confirm")
 focus_next = NodePath("../Button_Confirm")
 text = "REROLL"
 
-[node name="spacer_U" type="Control" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=225218596]
+[node name="spacer_U" type="Control" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=225218596]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Button_Confirm" type="Button" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=1735421461]
+[node name="Button_Confirm" type="Button" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=1735421461]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 20.0
@@ -213,12 +136,12 @@ focus_next = NodePath("../Button_Cancel")
 focus_previous = NodePath("../Button_Reroll")
 text = "CONFIRM"
 
-[node name="spacer_D" type="Control" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=418832320]
+[node name="spacer_D" type="Control" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=418832320]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Button_Cancel" type="Button" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=1025091920]
+[node name="Button_Cancel" type="Button" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer" unique_id=1025091920]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 20.0
@@ -227,16 +150,16 @@ focus_previous = NodePath("../Button_Confirm")
 text = "CANCEL
 "
 
-[node name="spacer_R" type="Control" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD" unique_id=495009174]
+[node name="spacer_R" type="Control" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD" unique_id=495009174]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="spacer_D" type="Control" parent="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer" unique_id=560185576]
+[node name="spacer_D" type="Control" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer" unique_id=560185576]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="spacer_R" type="Control" parent="ButtonContainer/VBoxContainer/HBoxContainer" unique_id=71312926]
+[node name="spacer_R" type="Control" parent="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer" unique_id=71312926]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -419,9 +342,9 @@ size_flags_stretch_ratio = 12.0
 mouse_filter = 2
 bbcode_enabled = true
 
-[connection signal="mouse_entered" from="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll" to="." method="_on_button_reroll_mouse_entered"]
-[connection signal="pressed" from="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll" to="." method="_on_button_reroll_pressed"]
-[connection signal="mouse_entered" from="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm" to="." method="_on_button_confirm_mouse_entered"]
-[connection signal="pressed" from="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm" to="." method="_on_button_confirm_pressed"]
-[connection signal="mouse_entered" from="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel" to="." method="_on_button_cancel_mouse_entered"]
-[connection signal="pressed" from="ButtonContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel" to="." method="_on_button_cancel_pressed"]
+[connection signal="mouse_entered" from="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll" to="." method="_on_button_reroll_mouse_entered"]
+[connection signal="pressed" from="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Reroll" to="." method="_on_button_reroll_pressed"]
+[connection signal="mouse_entered" from="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm" to="." method="_on_button_confirm_mouse_entered"]
+[connection signal="pressed" from="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm" to="." method="_on_button_confirm_pressed"]
+[connection signal="mouse_entered" from="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel" to="." method="_on_button_cancel_mouse_entered"]
+[connection signal="pressed" from="ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel" to="." method="_on_button_cancel_pressed"]

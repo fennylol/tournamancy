@@ -30,6 +30,7 @@ static func init_inputs() -> void:
    ## MENU
    register_keyboard_input.call("menu", KEY_ESCAPE)
    register_keyboard_input.call("free_mouse", KEY_TAB)
+   register_keyboard_input.call("active_shuffle", KEY_ALT)
    
    ## MOVE AND JUMP
    register_keyboard_input.call("left",  KEY_A)
@@ -56,6 +57,7 @@ static func init_inputs() -> void:
    register_keyboard_input.call("cursor_down",  KEY_S)
    register_keyboard_input.call("cursor_right", KEY_A)
    register_keyboard_input.call("cursor_up",    KEY_W)
+   register_mouse_button_input.call("select", MOUSE_BUTTON_LEFT)
    register_keyboard_input.call("select", KEY_ENTER)
    register_keyboard_input.call("select", KEY_E)
    register_keyboard_input.call("cancel", KEY_ESCAPE)
@@ -71,6 +73,7 @@ static func init_inputs() -> void:
    register_joypad_button_input.call("menu", JOY_BUTTON_GUIDE)
    register_joypad_button_input.call("menu", JOY_BUTTON_START)
    register_joypad_button_input.call("free_mouse", JOY_BUTTON_Y)
+   register_joypad_button_input.call("active_shuffle", JOY_BUTTON_RIGHT_STICK)
    
    ## CAMERA
    register_joypad_axis_input.call("camera_left",  JOY_AXIS_RIGHT_X, 1.0)

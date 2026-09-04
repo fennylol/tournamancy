@@ -16,9 +16,11 @@ const TRANSFORM_DATA_SIZE: int = (4*9)+1
 
 @onready var EFFECTORY : Effectory       = $Effectory
 @onready var HEALTHBAR : HealthComponent = $Healthbar
+
 @onready var HUD       : HeadsUpDisplay  = $CanvasLayer/HeadsUpDisplay
 @onready var THE_WHEEL : SelectionWheel  = $CanvasLayer/GenericSelectionWheel
 @onready var PRISMMENU : PrismMenu       = $CanvasLayer/PrismMenu
+@onready var ACTV_SHFL : ActiveShuffle   = $CanvasLayer/ActiveShuffle
 
 ## SETTINGS AND REFERENCE FILES
 var personal_settings : PersonalSettings = PersonalSettings.new()
@@ -35,10 +37,11 @@ var Enabled: bool = false:
          Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 var is_sprinting  : bool = false
 var shove_vector  := Vector3.ZERO
-var prism_is_open : bool = false
 var time_since_melee  : float = 0.0
 const MELEE_WAIT : float = 1.0
 var ActiveMeshArray : Array[Node3D] = []
+enum Menu {NONE, CONNECTION, PRISM, ACTIVE, WHEEL}
+var menu_open : Menu = Menu.CONNECTION
 
 ## SIGNALS
 signal open_connection_menu_please(show_menu:bool)
@@ -63,8 +66,10 @@ func _ready() -> void:
    SpellBook.spell_change_state.connect(_on_change_spell_state)
    EFFECTORY.spell_state_changed.connect(_on_change_spell_state)
    PRISMMENU.close_menu.connect(close_prism)
-   PRISMMENU.visible = false
+   ACTV_SHFL.close_menu.connect(close_activeshuffle)
    THE_WHEEL.visible = false
+   PRISMMENU.visible = false
+   ACTV_SHFL.visible = false
    set_colors()
    
    #ActiveMeshArray.resize(SpellBook.ActiveSlots)
@@ -85,10 +90,13 @@ func _ready() -> void:
 func _process(delta):
    ## MOUSE CAPTURE
    if Input.is_action_just_pressed("menu"):
-      if prism_is_open: return
-      Enabled = !Enabled
-      open_connection_menu_please.emit(not(Enabled))
-      HUD.visible = Enabled
+      if menu_open == Menu.NONE or menu_open == Menu.CONNECTION:
+         Enabled = !Enabled
+         menu_open = Menu.CONNECTION if menu_open == Menu.NONE else Menu.NONE
+         open_connection_menu_please.emit(not(Enabled))
+         HUD.visible = Enabled
+   
+   if Input.is_action_just_pressed("active_shuffle") and menu_open == Menu.NONE: open_activeshuffle()
    
    ## HUD PROCESS
    HUD.process(delta)
@@ -234,15 +242,37 @@ func _physics_process(delta):
 # ================== #
 
 func open_prism(prism : Prism):
-   prism_is_open = true
+   menu_open = Menu.PRISM
    PRISMMENU.visible = true
    Enabled = false
    PRISMMENU.setup(prism)
 func close_prism(prism : Prism):
-   prism_is_open = false
+   menu_open = Menu.NONE
    PRISMMENU.visible = false
    Enabled = true
    prism.destroy_self_if_limit()
+
+# =================== #
+#   active shuffler   #
+# =================== #
+
+func open_activeshuffle(import_spells : Array[SpellData.ActiveSpellIDs] = []):
+   Enabled = false
+   menu_open = Menu.ACTIVE
+   ACTV_SHFL.setup(import_spells)
+   ACTV_SHFL.visible = true
+   HUD.toggle_reticle(false)
+func close_activeshuffle(updated_list : Array[SpellData.ActiveSpellIDs] = []):
+   if updated_list != []:
+      for i in range(updated_list.size()):
+         SpellBook.remove_active_at_slot(i)
+         SpellBook.add_active(updated_list[i], i)
+      update_HUD_icons()
+   menu_open = Menu.NONE
+   ACTV_SHFL.visible = false
+   HUD.visible = true
+   HUD.toggle_reticle(true)
+   Enabled = true
 
 # =================== #
 #  data manipulation  #
