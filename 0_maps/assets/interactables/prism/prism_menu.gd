@@ -7,11 +7,6 @@ class_name PrismMenu
 @onready var BUTTON_CONFIRM : Button          = $ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Confirm
 @onready var BUTTON_CANCEL  : Button          = $ButtonContainer/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/HBoxContainerD/VBoxContainer/Button_Cancel
 
-@onready var ACTIVE_MENU    : HBoxContainer   = $ActiveConfirm
-@onready var ACTIVE_SEL     : CenterContainer = $ActiveConfirm/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/SpellInstance_SELECTED
-@onready var ACTIVE_CL      : CenterContainer = $ActiveConfirm/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/SpellInstance_CLEFT
-@onready var ACTIVE_CR      : CenterContainer = $ActiveConfirm/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainerD/SpellInstanceCRIGHT
-
 @onready var CURSOR         : Marker2D        = $Cursor
 
 @onready var SpellSlotInstance : PackedScene = load("res://0_maps/assets/interactables/prism/prism_spell_instance.tscn")
@@ -20,7 +15,7 @@ const ICONMARGIN : Rect2 = Rect2(8,8,16,16)
 
 var CurrentActivePrism : Prism
 
-signal close_menu()
+signal close_menu(prism : Prism, new_actives : Array[SpellData.ActiveSpellIDs])
 
 var SpellSlotPool    : Array[PrismSlotCounter] = []
 var SlotPointers : Array[PrismSlotCounter] = []
@@ -32,12 +27,7 @@ var reroll_count : int = 0
 
 var accept_inputs    : bool = false
 
-var selecting_active        : bool = false
-var ActiveButton_Selected   : TextureButton
-var ActiveButton_Left       : TextureButton
-var ActiveButton_Right      : TextureButton
 var remaining_active_spells : Array[PrismSlotCounter]
-var new_active_spell        : PrismSlotCounter
 
 # ========= #
 #   setup   #
@@ -45,12 +35,8 @@ var new_active_spell        : PrismSlotCounter
 
 func _ready() -> void: 
    get_viewport().gui_focus_changed.connect(_on_focus_changed)
-   ActiveButton_Selected = ACTIVE_SEL.get_child(0).get_child(1)
-   ActiveButton_Left = ACTIVE_CL.get_child(0).get_child(1)
-   ActiveButton_Right = ACTIVE_CR.get_child(0).get_child(1)
 func setup(the_prism_in_question : Prism) -> void:
    MAIN_MENU.visible = true
-   ACTIVE_MENU.visible = false
    CurrentActivePrism = the_prism_in_question
    SpellSlotPool.clear()
    for i : ActiveSpell in CurrentActivePrism.get_active_spells():
@@ -95,7 +81,7 @@ func gridmap_setup(slot_number : int):
       SlotPointers[i].IconLabel         = new_slot_instance.get_child(1)              as Label
    ## CONNECT BUTTONS TOGETHER
    for i in range(slot_number):
-      SlotPointers[i].IconTextureButton.pressed.connect(_on_spell_icon_button_pressed)
+      #SlotPointers[i].IconTextureButton.pressed.connect(_on_spell_icon_button_pressed)
       SlotPointers[i].IconTextureButton.mouse_entered.connect(_on_spell_icon_mouseover.bind(SlotPointers[i]))
       SlotPointers[i].IconTextureButton.mouse_exited.connect(_on_spell_icon_mouse_exit)
       if i == 0:
@@ -181,15 +167,7 @@ func _process(_delta: float) -> void:
    
    if Input.is_action_just_pressed("select"):
       if CurrentButton is Button: CurrentButton.pressed.emit()
-      if CurrentButton is TextureButton: 
-         if selecting_active:
-            if accept_inputs == false: return
-            match CurrentButton:
-               ActiveButton_Selected: _on_active_spell_chooser_button_press(-1)
-               ActiveButton_Left:     _on_active_spell_chooser_button_press(0)
-               ActiveButton_Right:    _on_active_spell_chooser_button_press(1)
-         else:
-            _on_spell_icon_button_pressed()
+      if CurrentButton is TextureButton: _on_spell_icon_button_pressed()
    if Input.is_action_just_released("cancel"): _on_button_cancel_pressed()
    if Input.is_action_just_released("lock"): pass
    if Input.is_action_just_released("reroll"): _on_button_reroll_pressed()
@@ -241,16 +219,9 @@ func _on_button_confirm_pressed() -> void:
          SpellSlotPool[i].is_selected = false
       if SpellSlotPool[i].is_selected and SpellSlotPool[i].is_active:
          selected_active_list.append(SpellSlotPool[i].duplicate_self())
-   ## IF THERE ARE ANY ACTIVES SELECTED, MOVE TO ACTIVE SELECTION MENU
-   if selected_active_list != []:
-      selecting_active = true
-      MAIN_MENU.visible = false
-      ACTIVE_MENU.visible = true
-      remaining_active_spells = selected_active_list
-      setup_active_spell_chooser()
-   ## ... OTHERWISE, CLOSE MENU
-   else:
-      _attempt_close_menu()
+   ## CLOSE MENU
+   remaining_active_spells = selected_active_list
+   _attempt_close_menu()
 func _on_button_cancel_pressed() -> void:
    ## IF THERE IS ANYTHING SELECTED, DESELECT ALL SPELLS
    
@@ -259,7 +230,11 @@ func _on_button_cancel_pressed() -> void:
       _attempt_close_menu()
 func _attempt_close_menu():
    accept_inputs = false
-   close_menu.emit(CurrentActivePrism)
+   var export_actives : Array[SpellData.ActiveSpellIDs] = []
+   export_actives.resize(remaining_active_spells.size())
+   for i in range(remaining_active_spells.size()):
+      export_actives[i] = remaining_active_spells[i].ActiveSpellID
+   close_menu.emit(CurrentActivePrism, export_actives)
 
 # ======================== #
 #   inspect descriptions   #
@@ -277,68 +252,6 @@ func _setup_description_box(spell : PrismSlotCounter):
       CURSOR.get_child(0).get_child(0).get_child(0).label_settings.font_color = Color.ORANGE if spell.is_active else Color.CYAN
       CURSOR.get_child(0).get_child(0).get_child(1).text = spell_name
       CURSOR.get_child(0).get_child(0).get_child(2).text = "[font_size=" + str(SettingsManager.personal_settings.TEXTSIZE) + "]" + spell_desc + "[/font_size]"
-
-# ================================ #
-#  active spell selection handling #
-# ================================ #
-
-func setup_active_spell_chooser():
-   accept_inputs = false
-   new_active_spell = remaining_active_spells.pop_front()
-   ## SELECTED SPELL TEXTURE
-   new_active_spell.IconTextureButton = ActiveButton_Selected
-   new_active_spell.atlastexture.margin = ICONMARGIN
-   new_active_spell.atlastexture.atlas = SpellList.get_active_spell_data(new_active_spell.ActiveSpellID).get(SpellData.SpellFields.IconPath)
-   new_active_spell.atlastexture.region = SpellList.get_active_spell_data(new_active_spell.ActiveSpellID).get(SpellData.SpellFields.IconRect)
-   ACTIVE_SEL.get_child(0).texture = new_active_spell.atlastexture
-   ActiveButton_Left.grab_focus()
-   
-   ## CURRENT SPELLS TEXTURE
-   ## if we add more active ability slots beyond just left and right hand, we'll have to refactor how we calculate 
-   ## current_slots.resize() and ACTIVE_CL.get_child(0).texture (and also _CR)
-   var current_slots : Array[PrismSlotCounter]
-   current_slots.resize(2)
-   for i in range(current_slots.size()):
-      current_slots[i] = PrismSlotCounter.new()
-      current_slots[i].ActiveSpellID = get_parent().get_parent().get_active(i)
-      if current_slots[i].ActiveSpellID == SpellData.ActiveSpellIDs.ERROR:
-         current_slots[i].atlastexture.atlas = load("res://0_maps/assets/interactables/prism/prism_buttons.png")
-         current_slots[i].atlastexture.region = Rect2((48*i),48,48,48)
-      else:
-         current_slots[i].atlastexture.margin = ICONMARGIN
-         current_slots[i].atlastexture.atlas = SpellList.get_active_spell_data(current_slots[i].ActiveSpellID).get(SpellData.SpellFields.IconPath)
-         current_slots[i].atlastexture.region = SpellList.get_active_spell_data(current_slots[i].ActiveSpellID).get(SpellData.SpellFields.IconRect)
-   current_slots[0].IconTextureButton = ActiveButton_Left
-   current_slots[1].IconTextureButton = ActiveButton_Right
-   ACTIVE_CL.get_child(0).texture = current_slots[0].atlastexture
-   ACTIVE_CR.get_child(0).texture = current_slots[1].atlastexture
-   
-   ## BUTTON SETUP
-   if ActiveButton_Selected.mouse_entered.has_connections(): ActiveButton_Selected.mouse_entered.disconnect(_on_spell_icon_mouseover)
-   if ActiveButton_Left.mouse_entered.has_connections(): ActiveButton_Left.mouse_entered.disconnect(_on_spell_icon_mouseover)
-   if ActiveButton_Right.mouse_entered.has_connections(): ActiveButton_Right.mouse_entered.disconnect(_on_spell_icon_mouseover)
-   ActiveButton_Selected.mouse_entered.connect(_on_spell_icon_mouseover.bind(new_active_spell))
-   ActiveButton_Left.mouse_entered.connect(_on_spell_icon_mouseover.bind(current_slots[0]))
-   ActiveButton_Right.mouse_entered.connect(_on_spell_icon_mouseover.bind(current_slots[1]))
-   if ActiveButton_Selected.mouse_exited.has_connections(): ActiveButton_Selected.mouse_exited.disconnect(_on_spell_icon_mouse_exit)
-   if ActiveButton_Left.mouse_exited.has_connections(): ActiveButton_Left.mouse_exited.disconnect(_on_spell_icon_mouse_exit)
-   if ActiveButton_Right.mouse_exited.has_connections(): ActiveButton_Right.mouse_exited.disconnect(_on_spell_icon_mouse_exit)
-   ActiveButton_Selected.mouse_exited.connect(_on_spell_icon_mouse_exit)
-   ActiveButton_Left.mouse_exited.connect(_on_spell_icon_mouse_exit)
-   ActiveButton_Right.mouse_exited.connect(_on_spell_icon_mouse_exit)
-   if ActiveButton_Selected.pressed.has_connections(): ActiveButton_Selected.pressed.disconnect(_on_active_spell_chooser_button_press)
-   if ActiveButton_Left.pressed.has_connections(): ActiveButton_Left.pressed.disconnect(_on_active_spell_chooser_button_press)
-   if ActiveButton_Right.pressed.has_connections(): ActiveButton_Right.pressed.disconnect(_on_active_spell_chooser_button_press)
-   ActiveButton_Selected.pressed.connect(_on_active_spell_chooser_button_press.bind(-1))
-   ActiveButton_Left.pressed.connect(_on_active_spell_chooser_button_press.bind(0))
-   ActiveButton_Right.pressed.connect(_on_active_spell_chooser_button_press.bind(1))
-func _on_active_spell_chooser_button_press(slot : int = -1,):
-   if slot != -1: 
-      get_parent().get_parent().request_new_active_spell(new_active_spell.ActiveSpellID, slot)
-   if remaining_active_spells == []:
-      _attempt_close_menu()
-   else:
-      setup_active_spell_chooser()
 
 # =========================== #
 #  background button handling #

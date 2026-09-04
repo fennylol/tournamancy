@@ -246,11 +246,12 @@ func open_prism(prism : Prism):
    PRISMMENU.visible = true
    Enabled = false
    PRISMMENU.setup(prism)
-func close_prism(prism : Prism):
+func close_prism(prism : Prism, new_actives : Array[SpellData.ActiveSpellIDs] = []):
    menu_open = Menu.NONE
    PRISMMENU.visible = false
    Enabled = true
    prism.destroy_self_if_limit()
+   if new_actives != []: open_activeshuffle(new_actives)
 
 # =================== #
 #   active shuffler   #

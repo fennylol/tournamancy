@@ -23,7 +23,7 @@ var cursor_spell : SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR
 var base_count : int = 0
 var import_count : int = 0
 
-func setup(import_spells : Array[SpellData.ActiveSpellIDs] = []):
+func setup(import_spells : Array[SpellData.ActiveSpellIDs] = []) -> void:
    Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
    ## SETUP SPELL ARRAYS
    base_count = PLAYER.SpellBook.ActiveSlots
@@ -38,14 +38,14 @@ func setup(import_spells : Array[SpellData.ActiveSpellIDs] = []):
    icon_slot_array.resize(base_count + import_count + 1)
    selected_slot_array.resize(base_count + import_count + 1)
    ## CLEAR AND RESET BASE SLOTS
-   for i in ACT_SLOTS.get_children(): i.queue_free()
+   for i in ACT_SLOTS.get_children(): i.free()
    for i in range(base_count):
       var base_slot := create_slot_node(i)
       ACT_SLOTS.add_child(base_slot)
       icon_slot_array[i] = base_slot.get_child(0)
       selected_slot_array[i] = base_slot.get_child(1)
    ## CLEAR AND RESET NEW SLOTS
-   for i in NEW_SLOTS.get_children(): i.queue_free()
+   for i in NEW_SLOTS.get_children(): i.free()
    for i in range(import_count):
       var new_slot := create_slot_node(i, true)
       NEW_SLOTS.add_child(new_slot)
@@ -71,8 +71,8 @@ func _process(_delta: float) -> void:
       else:
          selected_slot_array[i].visible = false
    
-   ## ON MOUSE CLICK
    if Input.is_action_just_pressed("select"):
+      ## GET RELEVANT SLOT
       var selected_slot : int = -1
       for i in range(selected_slot_array.size()):
          if selected_slot_array[i].visible == true:
@@ -80,20 +80,26 @@ func _process(_delta: float) -> void:
             break
       if selected_slot == -1: return
       
-      ## send cursor id to slot texture
+      ## SWAP IDS AND TEXTURES
+      ## SPECIAL CASE: DON'T SWAP TRASH
       sync_slot_texture(selected_slot,cursor_spell)
-      ## send slot texture to cursor texture
-      var pick_id : SpellData.ActiveSpellIDs = spell_id_array[selected_slot]
+      var pick_id : SpellData.ActiveSpellIDs = SpellData.ActiveSpellIDs.ERROR if ( selected_slot == (spell_id_array.size()-1) and cursor_spell != SpellData.ActiveSpellIDs.ERROR) else spell_id_array[selected_slot]
       if pick_id == SpellData.ActiveSpellIDs.ERROR:
          CURSOR_ICON.texture.atlas = UI_TEXTURES
          CURSOR_ICON.texture.region = Rect2(0,198,48,48)
       else:
          CURSOR_ICON.texture.atlas = SpellList.ActiveSpells.get(pick_id).get(SpellData.SpellFields.IconPath)
          CURSOR_ICON.texture.region = SpellList.ActiveSpells.get(pick_id).get(SpellData.SpellFields.IconRect)
-      ## send cursor id to id array
       spell_id_array[selected_slot] = cursor_spell
-      ## send id array to cursor id
       cursor_spell = pick_id
+      
+      ## REMOVE SLOT IF NEW
+      if selected_slot >= base_count and selected_slot < (base_count + import_count) and spell_id_array[selected_slot] == SpellData.ActiveSpellIDs.ERROR:
+         NEW_SLOTS.get_child(selected_slot-base_count).queue_free()
+         icon_slot_array.pop_at(selected_slot)
+         selected_slot_array.pop_at(selected_slot)
+         spell_id_array.pop_at(selected_slot)
+         import_count -= 1
 
 ## Creates a new node tree for a slot icon and returns it. To be used immediately prior to an add_child() call.
 func create_slot_node(slot : int, new_spell : bool = false) -> CenterContainer:
@@ -119,14 +125,17 @@ func create_slot_node(slot : int, new_spell : bool = false) -> CenterContainer:
    selected_rect.texture = selected_texture
    new_slot.add_child(selected_rect)
    return new_slot
-## Places the correct texture into the "ICON" TextureRect based on a spellid.
-func sync_slot_texture(slot : int, id : int = -1):
+## Places the correct texture into the 'ICON' TextureRect based on a spellid.
+func sync_slot_texture(slot : int, id : int = -1) -> void:
    var slot_texture : AtlasTexture = icon_slot_array[slot].texture
    if id == -1 or id == SpellData.ActiveSpellIDs.ERROR:
       slot_texture.atlas = UI_TEXTURES
-      if slot < base_count: slot_texture.region = Rect2(Vector2(SLOT0_REGION.position.x + (48*slot),SLOT0_REGION.position.y),SLOT0_REGION.size)
-      elif slot < import_count: slot_texture.region = NEW_REGION
-      else: slot_texture.region = TRASH_REGION
+      if slot < base_count: 
+         slot_texture.region = Rect2(Vector2(SLOT0_REGION.position.x + (48*slot),SLOT0_REGION.position.y),SLOT0_REGION.size)
+      elif slot < (base_count + import_count): 
+         slot_texture.region = NEW_REGION
+      else: 
+         slot_texture.region = TRASH_REGION
    else:
       slot_texture.atlas = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.IconPath)
       slot_texture.region = SpellList.ActiveSpells.get(id).get(SpellData.SpellFields.IconRect)

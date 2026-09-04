@@ -146,17 +146,17 @@ layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 4.0
 
-[node name="New_0" type="CenterContainer" parent="ActiveConfirm/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/New_Slots" unique_id=379646855]
+[node name="old" type="CenterContainer" parent="ActiveConfirm/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/New_Slots" unique_id=379646855]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Icon" type="TextureRect" parent="ActiveConfirm/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/New_Slots/New_0" unique_id=2081258634]
+[node name="Icon" type="TextureRect" parent="ActiveConfirm/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/New_Slots/old" unique_id=2081258634]
 texture_filter = 1
 layout_mode = 2
 texture = SubResource("AtlasTexture_wgvuh")
 
-[node name="Selected" type="TextureRect" parent="ActiveConfirm/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/New_Slots/New_0" unique_id=504617576]
+[node name="Selected" type="TextureRect" parent="ActiveConfirm/VBoxContainer/PanelContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/New_Slots/old" unique_id=504617576]
 visible = false
 self_modulate = Color(1, 1, 1, 0.5019608)
 texture_filter = 1
